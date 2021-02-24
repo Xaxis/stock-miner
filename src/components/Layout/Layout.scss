@@ -1,0 +1,19 @@
+.layout-container {
+  width: 100%;
+  height: 100%;
+
+  .layout-container-header {
+    border: 2px dashed slategray;
+    height: 40px;
+  }
+
+  .layout-container-body {
+    border: 2px dashed slategray;
+    height: calc(100% - 80px)
+  }
+
+  .layout-container-footer {
+    border: 2px dashed slategray;
+    height: 40px;
+  }
+}
