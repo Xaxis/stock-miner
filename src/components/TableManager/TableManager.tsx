@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import './TableManager.scss'
-import DataTable from 'react-data-table-component';
+import DataTable, { defaultThemes } from 'react-data-table-component';
+import { orderBy } from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 
@@ -43,44 +44,41 @@ export default function TableManager() {
       right: false,
     },
   ];
-  const data = [
-    { id: 0, title: 'BTC', symbol: 'BTC', price: '62000', shares: '-', equity: '-', change: '-' },
-    { id: 1, title: 'LTC', symbol: 'LTC', price: '250', shares: '-', equity: '-', change: '-' },
-    { id: 2, title: 'ETH', symbol: 'ETH', price: '2200', shares: '-', equity: '-', change: '-' },
-    { id: 3, title: 'ETC', symbol: 'ETC', price: '560', shares: '-', equity: '-', change: '-' },
-  ];
-  const row_template = { title: '-', symbol: '-', status: '-', price: '-', shares: '-', equity: '-', change: '-' }
+  //@todo - Use this when working in development mode - remove later
+  let test_data = {
+    BTC: {id: 0, symbol: 'BTC', bp: 49038, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1},
+    LTC: {id: 2, symbol: 'LTC', bp: 250, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1},
+    ETC: {id: 1, symbol: 'ETC', bp: 1980, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1},
+  };
+  const row_template = { id: 0, title: '-', symbol: '-', status: '-', price: '-', shares: '-', equity: '-', change: '-' }
+  const [devMode, setDevMode] = useState(false)
   const [columnData, setColumnData] = useState(columns)
   const [tableData, setTableData] = useState([]);
+  const [tableDataInterval, setTableDataInterval] = useState(0)
 
+  /*
+   * @todo - ...
+   */
   const handleRowSelection = (state) => {
     console.log('Selected Rows: ', state.selectedRows)
   }
 
-  const handleColumnSort = (state, obj) => {
-    // console.log(state.selector)
-    // console.log('Column Sorted: ', state, obj)
-  }
-
-  const handleCustomColumnSort = (state, test, test2) => {
-    // console.log('Column Sorted: ', state, test, test2)
-    return [...tableData]
-  }
-
-  //@todo - Use this when working in development mode - remove later
-  let test_data = {
-    BTC: {symbol: 'BTC', bp: 49038, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1},
-    LTC: {symbol: 'LTC', bp: 250, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1}
+  /*
+   * Custom onSort event for table.
+   */
+  const handleColumnSort = (column, sortDirection) => {
+    let sorted = orderBy(tableData, column.selector, sortDirection)
+    setTableData([...sorted])
   }
 
   /*
    * Returns an array with references to all row objects that contain
    * the matching 'symbol' property.
    */
-  const getRowsWithSymbol = (symbol, table) => {
+  const getRowsWithSymbol = (symbol, table_data) => {
     let ret = []
-    for (let idx in table) {
-      let row = table[idx]
+    for (let idx in table_data) {
+      let row = table_data[idx]
       if (row.symbol == symbol) {
         ret.push(row)
       }
@@ -89,16 +87,19 @@ export default function TableManager() {
   }
 
   /*
-   * @todo - ... Parses streamed stock data into our table component.
+   * Receives data from API backend and creates new rows as well as updates the dataTable
+   * objects representative of each row.
    */
-  const parseStreamDataObject = (obj) => {
+  const parseStreamDataObject = (obj, table_data) => {
+    let id = 0;
     for (const symbol in obj) {
       let row_data = obj[symbol]
 
       // Add new row to table if doesn't yet exist
-      let matching_rows = getRowsWithSymbol(symbol, tableData)
+      let matching_rows = getRowsWithSymbol(symbol, table_data)
       if (!matching_rows.length) {
         let new_row = Object.assign({}, row_template)
+        new_row.id = id
         new_row.title = symbol
         new_row.symbol = symbol
         new_row.price = row_data.bp
@@ -112,35 +113,44 @@ export default function TableManager() {
           row_obj.price = row_data.bp
         }
       }
-
+      id += 1;
     }
 
     return tableData
   }
 
+  /*
+   * This method, useEffect is triggered every time the table is re-rendered. The interval loop
+   * must be rebuilt every rerender so as to maintain access to the non-closure tableData. Without
+   * this convenction of re-initializing the interval, sorting functionality on the table is
+   * reset every time the table is updated with new data.
+   */
   useEffect(() => {
 
-    // Process streamed market data when we receive it, populate the
-    // table view, rerender React component.
-    window.addEventListener('pywebviewready', function() {
-      setInterval(function() {
-        let promise = window.pywebview.api.get_stream_data()
-        promise.then((result) => {
-          let new_table_data = parseStreamDataObject(result)
-          setTableData([...new_table_data])
-        })
-      }, 1000)
-    })
+      // Loop interval is recreated every time dataTable changes (such as on a sort event or
+      // stream data update. This SHOULD be within a 'pywebviewready' event, however the interval
+      // seems to allow the race condition to satisfy this functionality. If this chunk of code
+      // is placed inside the event (a closure) sorting no longer functions properly because loopFunc
+      // only has access to the initial state of tableData. Sigh. But this works.
+     //  clearInterval(tableDataInterval)
+     //  let loopFunc = () => {
+     //    let promise = window.pywebview.api.get_stream_data()
+     //    promise.then((result) => {
+     //      let new_table_data = parseStreamDataObject(result, tableData)
+     //      setTableData([...new_table_data])
+     //    })
+     //  }
+     // setTableDataInterval(setInterval(loopFunc, 1000))
 
-    // setInterval(function() {
-    //   let new_table_data = parseStreamDataObject(test_data)
-    //   setTableData([...new_table_data])
-    //   console.log(new_table_data)
-    // }, 3000)
+    //@todo - For frontend dev
+    clearInterval(tableDataInterval)
+    let loopFunc = () => {
+        let new_table_data = parseStreamDataObject(test_data, tableData)
+        setTableData([...new_table_data])
+    }
+    setTableDataInterval(setInterval(loopFunc, 1000))
 
-  }, [])
-
-
+  }, tableData)
 
   return (
     <div className='tablemanager-container'>
@@ -156,9 +166,9 @@ export default function TableManager() {
         selectableRowsComponent={Checkbox}
         sortIcon={<ArrowDownward />}
         onSelectedRowsChange={handleRowSelection}
+        sortServer
         onSort={handleColumnSort}
-        // sortFunction={handleCustomColumnSort}
-        // defaultSortField="symbol"
+        defaultSortField="symbol"
       />
     </div>
   );

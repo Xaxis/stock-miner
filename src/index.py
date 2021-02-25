@@ -3,7 +3,7 @@ import webview
 from sm_data_provider import DataProvider
 
 #@todo - This is only here for testing purposes for the time being!!! MUCH WORK TO DO!
-dp = DataProvider(['BTC', 'LTC'], 'crypto', debug=False)
+dp = DataProvider(['BTC', 'LTC', 'ETH'], 'crypto', debug=False)
 
 class Api:
     def fullscreen(self):
@@ -11,6 +11,12 @@ class Api:
 
     def get_stream_data(self):
         return dp.stream_data_obj
+
+    def add_stock_to_stream(self):
+        return
+
+    def remove_stock_from_stream(self):
+        return
 
 
 def get_entrypoint():
