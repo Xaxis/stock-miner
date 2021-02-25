@@ -6,7 +6,6 @@ import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
 import SearchList from './SearchList'
 import {makeStyles} from '@material-ui/core/styles'
-import './Search.scss'
 
 export default function Search() {
     const classes = makeStyles((theme) => ({
@@ -22,9 +21,11 @@ export default function Search() {
                     id="symbol-search"
                     options={SearchList}
                     groupBy={(option) => option.title[0].toUpperCase()}
-                    getOptionLabel={(option) => option.title}
+                    getOptionLabel={(option) => option.title + ' - ' + option.name}
                     filterSelectedOptions
                     disableClearable
+                    clearOnEscape
+                    limitTags={4}
                     forcePopupIcon={false}
                     renderInput={params => {
                         return (

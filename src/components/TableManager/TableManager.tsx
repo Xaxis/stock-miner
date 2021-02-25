@@ -2,49 +2,56 @@ import * as React from 'react'
 import {useState, useEffect, useRef, useMemo, useCallback} from "react";
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Paper from '@material-ui/core/Paper'
 import DataTable, {defaultThemes} from 'react-data-table-component';
 import {orderBy} from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 
 export default function TableManager() {
-    const columns = [
-        {
-            name: 'Symbol',
-            selector: row => row.symbol,
-            sortable: true,
-        },
-        {
-            name: 'Price',
-            selector: row => row.price,
-            sortable: true,
-            right: false,
-        },
-        {
-            name: 'Status',
-            selector: row => row.status,
-            sortable: true,
-            right: false,
-        },
-        {
-            name: 'Shares',
-            selector: row => row.shares,
-            sortable: true,
-            right: false,
-        },
-        {
-            name: 'Equity',
-            selector: row => row.equity,
-            sortable: true,
-            right: false,
-        },
-        {
-            name: 'Change %',
-            selector: row => row.change,
-            sortable: true,
-            right: false,
-        },
-    ];
+    // const columns = [
+    //     {
+    //         name: 'Symbol',
+    //         selector: row => row.symbol,
+    //         sortable: true,
+    //     },
+    //     {
+    //         name: 'Price',
+    //         selector: row => row.price,
+    //         sortable: true,
+    //         right: false,
+    //     },
+    //     {
+    //         name: 'Status',
+    //         selector: row => row.status,
+    //         sortable: true,
+    //         right: false,
+    //     },
+    //     {
+    //         name: 'Shares',
+    //         selector: row => row.shares,
+    //         sortable: true,
+    //         right: false,
+    //     },
+    //     {
+    //         name: 'Equity',
+    //         selector: row => row.equity,
+    //         sortable: true,
+    //         right: false,
+    //     },
+    //     {
+    //         name: 'Change %',
+    //         selector: row => row.change,
+    //         sortable: true,
+    //         right: false,
+    //     },
+    // ];
     //@todo - Use this when working in development mode - remove later
     // let test_data = {
     //   BTC: {id: 0, symbol: 'BTC', bp: 49038, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1},
@@ -52,12 +59,72 @@ export default function TableManager() {
     //   ETC: {id: 1, symbol: 'ETC', bp: 1980, bs: 0.0164, ap: 48349.18, t:167342897343, r:234283974382, x:1},
     // };
     let test_data = [
-        {id: 0, symbol: 'BTC', bp: 49038, bs: 0.0164, ap: 48349.18, t: 167342897343, r: 234283974382, x: 1},
-        {id: 2, symbol: 'LTC', bp: 250, bs: 0.0164, ap: 48349.18, t: 167342897343, r: 234283974382, x: 1},
-        {id: 1, symbol: 'ETC', bp: 1980, bs: 0.0164, ap: 48349.18, t: 167342897343, r: 234283974382, x: 1},
+        {id: 0, symbol: 'BTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'LTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'ETC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'BTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'LTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'ETC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'BTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'LTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'ETC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'BTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'LTC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
+        {id: 0, symbol: 'ETC', price: 90000, status: '-', shares: '-', equity: '-', change: '-'},
     ];
 
-    
+    const columns = [
+        {
+            name: "symbol",
+            label: "Symbol",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "price",
+            label: "Price",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "status",
+            label: "Status",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "shares",
+            label: "Shares",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+
+        {
+            name: "equity",
+            label: "Equity",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+
+        {
+            name: "change",
+            label: "Change %",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+    ]
 
     const row_template = {
         id: 0,
@@ -70,7 +137,6 @@ export default function TableManager() {
         change: '-'
     }
     const [devMode, setDevMode] = useState(false)
-    const [columnData, setColumnData] = useState(columns)
     const [tableData, setTableData] = useState([]);
     const [tableDataInterval, setTableDataInterval] = useState(0)
 
@@ -177,8 +243,33 @@ export default function TableManager() {
 
                 <MUIDataTable
                     title="Profile Name"
-                    data={tableData}
+                    data={test_data}
+                    columns={columns}
+                    options={{
+                        filterType: "checkbox",
+                        responsive: "standard",
+                        selectableRows: "multiple",
+                        selectableRowsOnClick: true,
+                        responsive: "vertical",
+                        rowsPerPage: 10,
+                        draggableColumns: {
+                            enabled: true
+                        },
+                        // expandableRows: true,
+                        // renderExpandableRow: (rowData, rowMeta) => {
+                        //     return (
+                        //         <TableRow>
+                        //             <TableCell>
+                        //                 TEST
+                        //             </TableCell>
+                        //         </TableRow>
+                        //     )
+                        // }
+                    }}
                 />
+
+
+
                 {/*<DataTable*/}
                 {/*  columns={columnData}*/}
                 {/*  data={tableData}*/}
