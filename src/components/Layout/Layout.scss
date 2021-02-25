@@ -3,17 +3,14 @@
   height: 100%;
 
   .layout-container-header {
-    border: 2px dashed slategray;
-    height: 40px;
+    padding: 20px 10px 10px 10px;
   }
 
   .layout-container-body {
-    border: 2px dashed slategray;
-    height: calc(100% - 80px)
+    padding: 10px;
   }
 
   .layout-container-footer {
-    border: 2px dashed slategray;
-    height: 40px;
+    padding: 10px;
   }
 }
