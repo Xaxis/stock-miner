@@ -1,36 +1,42 @@
 import * as React from 'react'
-import Grid from '@material-ui/core/Grid'
+import Box from '@material-ui/core/Box'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
-import Typography from "@material-ui/core/Typography";
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
-import {makeStyles} from '@material-ui/core/styles'
+import LogoIcon from '@material-ui/icons/FingerPrint'
+import Search from "../Search/Search";
+import './MainMenu.scss'
+
 
 export default function MainMenu() {
-    const classes = makeStyles((theme) => ({
-        root: {
-            flexGrow: 1
-        },
-        menuButton: {
-            marginRight: theme.spacing(2)
-        },
-        title: {
-            flexGrow: 1
-        }
-    }))
-
     return (
-        <AppBar position="fixed" className={classes.root}>
+        <AppBar position="sticky" className="mainmenu">
             <Toolbar>
-                <IconButton edge="start" color="inherit">
-                    <MenuIcon />
-                </IconButton>
-                <Typography variant="h6" className={classes.title}>
-                    Stock Miner
-                </Typography>
+                <Box display='flex' flexGrow={1}>
+                    <IconButton edge="start" color="inherit">
+                        <LogoIcon/>
+                    </IconButton>
+
+                    <Button aria-controls="file-menu" aria-haspopup="true">
+                        File
+                    </Button>
+
+                    <Button aria-controls="file-menu" aria-haspopup="true">
+                        Settings
+                    </Button>
+
+                    <Button aria-controls="file-menu" aria-haspopup="true">
+                        View
+                    </Button>
+
+                    <Button aria-controls="file-menu" aria-haspopup="true">
+                        Help
+                    </Button>
+                </Box>
+                <Search/>
             </Toolbar>
         </AppBar>
+
     );
 };

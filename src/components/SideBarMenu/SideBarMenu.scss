@@ -1,0 +1,26 @@
+.sidebarmenu {
+  height: 100%;
+  $sidebar-controls-width: 68px;
+
+  .sidebarmenu-controls {
+    float: left;
+    width: $sidebar-controls-width;
+    height: 100%;
+    background-color: #151515;
+    border-right: 1px solid #242424;
+
+    .MuiTabs-flexContainer {
+      button {
+        min-width: auto !important;
+      }
+    }
+  }
+
+  .sidebarmenu-panels {
+    float: right;
+    width: calc(100% - #{$sidebar-controls-width} - 2px);
+    height: 100%;
+    background-color: #151515;
+    border-right: 1px solid #242424;
+  }
+}
