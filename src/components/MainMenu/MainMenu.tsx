@@ -8,7 +8,6 @@ import LogoIcon from '@material-ui/icons/FingerPrint'
 import Search from "../Search/Search";
 import './MainMenu.scss'
 
-
 export default function MainMenu() {
     return (
         <AppBar position="sticky" className="mainmenu">
@@ -18,21 +17,21 @@ export default function MainMenu() {
                         <LogoIcon/>
                     </IconButton>
 
-                    <Button aria-controls="file-menu" aria-haspopup="true">
-                        File
-                    </Button>
+                    {/*<Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*    File*/}
+                    {/*</Button>*/}
 
-                    <Button aria-controls="file-menu" aria-haspopup="true">
-                        Settings
-                    </Button>
+                    {/*<Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*    Portfolio*/}
+                    {/*</Button>*/}
 
-                    <Button aria-controls="file-menu" aria-haspopup="true">
-                        View
-                    </Button>
+                    {/*<Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*    View*/}
+                    {/*</Button>*/}
 
-                    <Button aria-controls="file-menu" aria-haspopup="true">
-                        Help
-                    </Button>
+                    {/*<Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*    Help*/}
+                    {/*</Button>*/}
                 </Box>
                 <Search/>
             </Toolbar>

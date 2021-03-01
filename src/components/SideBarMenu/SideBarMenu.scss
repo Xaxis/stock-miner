@@ -1,5 +1,5 @@
 .sidebarmenu {
-  height: 100%;
+  height: calc(100vh - 85px);
   $sidebar-controls-width: 68px;
 
   .sidebarmenu-controls {
@@ -8,19 +8,15 @@
     height: 100%;
     background-color: #151515;
     border-right: 1px solid #242424;
-
-    .MuiTabs-flexContainer {
-      button {
-        min-width: auto !important;
-      }
-    }
   }
 
   .sidebarmenu-panels {
-    float: right;
+    float: left;
     width: calc(100% - #{$sidebar-controls-width} - 2px);
     height: 100%;
     background-color: #151515;
     border-right: 1px solid #242424;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
