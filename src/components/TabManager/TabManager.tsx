@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TableManager from '../TableManager/TableManager'
+import Search from "../Search/Search";
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -15,13 +16,13 @@ function TabPanel(props) {
         <div
             role="tabpanel"
             hidden={value !== index}
-            id={`scrollable-auto-tabpanel-${index}`}
-            aria-labelledby={`scrollable-auto-tab-${index}`}
+            id={`tabmanager-mainpanel-${index}`}
+            aria-labelledby={`tabmanager-mainpanel-${index}`}
             {...other}
         >
             {value === index && (
-                <Box p={3}>
-                    <Typography>{children}</Typography>
+                <Box>
+                    {children}
                 </Box>
             )}
         </div>
@@ -45,7 +46,14 @@ const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         width: '100%',
-        backgroundColor: theme.palette.background.paper,
+        height: '100%',
+        backgroundColor: '#151515',
+        overflow: 'hidden',
+        '& [role="tabpanel"]': {
+            height: 'calc(100vh - 117px)',
+            overflowY: 'auto',
+            overflowX: 'hidden'
+        }
     },
 }));
 
@@ -60,41 +68,31 @@ export default function TabManager() {
     return (
         <div className={classes.root}>
             <AppBar position="static" color="default">
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    aria-label="scrollable auto tabs example"
-                >
-                    <Tab label="Watching" {...a11yProps(0)} />
-                    <Tab label="Simulating" {...a11yProps(1)} />
-                    <Tab label="Scanning" {...a11yProps(2)} />
-                    <Tab label="Holding" {...a11yProps(3)} />
-                </Tabs>
+                <Box display='flex' flexGrow={1}>
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        aria-label="scrollable auto tabs example"
+                    >
+                        <Tab label="Simulating" {...a11yProps(0)} />
+                        <Tab label="Scanning" {...a11yProps(1)} />
+                        <Tab label="Holding" {...a11yProps(2)} />
+                    </Tabs>
+                    {/*<Search/>*/}
+                </Box>
             </AppBar>
             <TabPanel value={value} index={0}>
-                <TableManager/>
+                {/*<TableManager/>*/}
             </TabPanel>
             <TabPanel value={value} index={1}>
                 Item Two
             </TabPanel>
             <TabPanel value={value} index={2}>
                 Item Three
-            </TabPanel>
-            <TabPanel value={value} index={3}>
-                Item Four
-            </TabPanel>
-            <TabPanel value={value} index={4}>
-                Item Five
-            </TabPanel>
-            <TabPanel value={value} index={5}>
-                Item Six
-            </TabPanel>
-            <TabPanel value={value} index={6}>
-                Item Seven
             </TabPanel>
         </div>
     );

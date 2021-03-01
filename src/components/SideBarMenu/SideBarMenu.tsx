@@ -3,6 +3,7 @@ import {useState} from "react"
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
 import PropTypes from "prop-types";
 import './SideBarMenu.scss'
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'
@@ -51,8 +52,13 @@ export default function SideBarMenu() {
     }
 
     return (
-        <div className="sidebarmenu">
-            <div className="sidebarmenu-controls">
+        <Grid
+            container
+            spacing={0}
+            justify='flex-start'
+            className="sidebarmenu"
+        >
+            <Grid item xs={3} className="sidebarmenu-controls">
                 <Tabs
                     orientation="vertical"
                     variant="scrollable"
@@ -66,8 +72,8 @@ export default function SideBarMenu() {
                     <Tab icon={<SettingsIcon/>} aria-label="Settings"></Tab>
                     <Tab icon={<HistoryIcon/>} aria-label="History"></Tab>
                 </Tabs>
-            </div>
-            <div className="sidebarmenu-panels">
+            </Grid>
+            <Grid item xs className="sidebarmenu-panels">
                 <TabPanel value={value} index={0}>
                     <SideBarTradeMenu/>
                 </TabPanel>
@@ -78,17 +84,16 @@ export default function SideBarMenu() {
                     <SideBarProfilesMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={3}>
-                    <SideBarExtensionsMenu />
+                    <SideBarExtensionsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={4}>
-                    <SideBarSettingsMenu />
+                    <SideBarSettingsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={5}>
-                    <SideBarHistoryMenu />
+                    <SideBarHistoryMenu/>
                 </TabPanel>
-            </div>
+            </Grid>
 
-
-        </div>
+        </Grid>
     );
 };

@@ -10,11 +10,12 @@ import {makeStyles} from '@material-ui/core/styles'
 export default function Search() {
     const classes = makeStyles((theme) => ({
         formGroup: {
-            float: 'right'
+            width: '350px',
+            marginLeft: 'auto',
+            marginRight: '24px'
         },
         autoComplete: {
-            minWidth: '350px',
-            float: 'right'
+
         },
     }))()
 

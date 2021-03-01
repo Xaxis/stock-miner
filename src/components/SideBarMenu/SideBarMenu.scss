@@ -1,21 +1,18 @@
 .sidebarmenu {
-  height: calc(100vh - 85px);
+  height: calc(100vh - 68px);
   $sidebar-controls-width: 68px;
+  background-color: #151515;
+  border-right: 1px solid #242424;
 
   .sidebarmenu-controls {
-    float: left;
-    width: $sidebar-controls-width;
+    max-width: $sidebar-controls-width;
+    min-width: $sidebar-controls-width;
     height: 100%;
-    background-color: #151515;
     border-right: 1px solid #242424;
   }
 
   .sidebarmenu-panels {
-    float: left;
-    width: calc(100% - #{$sidebar-controls-width} - 2px);
     height: 100%;
-    background-color: #151515;
-    border-right: 1px solid #242424;
     overflow-y: auto;
     overflow-x: hidden;
   }

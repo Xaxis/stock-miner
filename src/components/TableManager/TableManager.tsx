@@ -242,6 +242,7 @@ export default function TableManager() {
             <Grid item xs={12}>
 
                 <MUIDataTable
+                    square
                     title="Profile Name"
                     data={test_data}
                     columns={columns}

@@ -13,7 +13,7 @@ import './Layout.scss'
 export default function Layout() {
     const theme = createMuiTheme({
         typography: {
-          fontSize: 12
+            fontSize: 12
         },
         palette: {
             type: "dark",
@@ -38,6 +38,21 @@ export default function Layout() {
             }
         },
         overrides: {
+            MuiAppBar: {
+                root: {
+                    backgroundColor: '#151515 !important',
+                    borderBottom: '1px solid #242424',
+                    boxShadow: 'none'
+                },
+            },
+            MuiButton: {
+                root: {
+                    minWidth: 'auto',
+                    padding: '4px 12px !important',
+                    borderRadius: '2px',
+                    textTransform: 'none'
+                }
+            },
             MuiCssBaseline: {
                 '@global': {
                     '*': {
@@ -58,6 +73,9 @@ export default function Layout() {
                 }
             },
             MuiTabs: {
+                root: {
+                    backgroundColor: '#121212;'
+                },
                 indicator: {
                     backgroundColor: '#7b1fa2'
                 }
@@ -66,6 +84,7 @@ export default function Layout() {
                 root: {
                     minWidth: 'auto !important',
                     color: '#999999 !important',
+                    textTransform: 'none',
                     '&$selected': {
                         backgroundColor: '#242424',
                         color: '#ffffff !important'
@@ -124,14 +143,6 @@ export default function Layout() {
         }
     })
 
-    const classes = makeStyles((theme) => ({
-        root: {},
-        sideBarMenu: {
-            border: '1px solid red',
-            height: 'calc(100% - 42px)'
-        },
-    }))()
-
     return (
         <MuiThemeProvider theme={theme}>
             <CssBaseline/>
@@ -141,11 +152,10 @@ export default function Layout() {
                     <SideBarMenu/>
                 </Grid>
                 <Grid item xs={9} className="layout-mainpanel">
-                    {/*<TabManager/>*/}
+                    <TabManager/>
                 </Grid>
             </Grid>
             <StatusBar/>
         </MuiThemeProvider>
-
     );
 };

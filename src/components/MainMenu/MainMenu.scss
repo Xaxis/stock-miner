@@ -1,4 +1,25 @@
 .mainmenu {
-  background-color: #151515 !important;
-  border-bottom: 1px solid #242424;
+  height: 48px;
+
+  .mainmenu-wrapper {
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .mainmenu-grid-col1 {
+    max-width: 68px;
+    min-width: 68px;
+    text-align: center;
+  }
+
+  .mainmenu-grid-col2 {
+    button + button {
+      margin-left: 8px;
+    }
+    button:first-child {
+      margin-left: 4px;
+    }
+  }
 }

@@ -30,7 +30,7 @@ export default function SideBarTradeMenu() {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Lots of junk goes here.
+                        ...
                     </Typography>
                 </AccordionDetails>
             </Accordion>
