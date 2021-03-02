@@ -113,6 +113,13 @@ export default function Layout() {
                     }
                 }
             },
+            MuiTableFooter: {
+                root: {
+                    '& .MuiTableCell-root': {
+                        borderBottom: 'none !important'
+                    }
+                }
+            },
             MuiTableRow: {
                 root: {
                     '&:hover': {
@@ -120,12 +127,13 @@ export default function Layout() {
                     },
                     '&$selected': {
                         backgroundColor: '#242424 !important'
-                    }
+                    },
+                    '&:last-child': {}
                 }
             },
             MuiTableCell: {
                 root: {
-                    borderBottom: '1px solid #242424'
+                    borderBottom: '1px solid #242424',
                 }
             },
             MuiCssBaseline: {

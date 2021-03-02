@@ -259,6 +259,7 @@ export default function TableManager() {
                             enabled: true
                         },
                         fixedSelectColumn: true,
+                        tableBodyHeight: 'calc(100vh - 254px)'
                         // expandableRowsHeader: true,
                         // expandableRows: true,
                         // renderExpandableRow: (rowData, rowMeta) => {
