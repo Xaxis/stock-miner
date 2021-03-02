@@ -8,6 +8,7 @@
     max-width: $sidebar-controls-width;
     min-width: $sidebar-controls-width;
     height: 100%;
+    background-color: #121212;
     border-right: 1px solid #242424;
   }
 
@@ -15,5 +16,12 @@
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    background-color: #151515;
+
+    .MuiFormControl-root {
+      & + .MuiFormControl-root {
+        margin-top: 16px !important;
+      }
+    }
   }
 }

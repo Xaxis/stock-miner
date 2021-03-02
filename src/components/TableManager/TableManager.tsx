@@ -2,6 +2,7 @@ import * as React from 'react'
 import {useState, useEffect, useRef, useMemo, useCallback} from "react";
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
+import Search from "../Search/Search";
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -13,6 +14,7 @@ import DataTable, {defaultThemes} from 'react-data-table-component';
 import {orderBy} from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import './TableManager.scss'
 
 export default function TableManager() {
     // const columns = [
@@ -238,12 +240,11 @@ export default function TableManager() {
     }, tableData)
 
     return (
-        <Grid container spacing={1}>
-            <Grid item xs={12}>
-
+        <Grid container spacing={0}>
+            <Grid item xs={12} className="tablemanager-datatable">
                 <MUIDataTable
                     square
-                    title="Profile Name"
+                    title={<Search />}
                     data={test_data}
                     columns={columns}
                     options={{
@@ -253,9 +254,12 @@ export default function TableManager() {
                         selectableRowsOnClick: true,
                         responsive: "vertical",
                         rowsPerPage: 10,
+                        elevation: 0,
                         draggableColumns: {
                             enabled: true
                         },
+                        fixedSelectColumn: true,
+                        // expandableRowsHeader: true,
                         // expandableRows: true,
                         // renderExpandableRow: (rowData, rowMeta) => {
                         //     return (

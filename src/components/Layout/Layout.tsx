@@ -35,22 +35,88 @@ export default function Layout() {
             },
             MuiButton: {
                 size: 'small'
+            },
+            MuiChip: {
+                size: 'small'
             }
         },
         overrides: {
             MuiAppBar: {
                 root: {
-                    backgroundColor: '#151515 !important',
+                    backgroundColor: '#121212 !important',
                     borderBottom: '1px solid #242424',
                     boxShadow: 'none'
                 },
             },
             MuiButton: {
                 root: {
+                    color: '#999999 !important',
                     minWidth: 'auto',
                     padding: '4px 12px !important',
                     borderRadius: '2px',
                     textTransform: 'none'
+                }
+            },
+            MuiChip: {
+                root: {
+                    height: '26px',
+                    backgroundColor: '#242424',
+                    '& .MuiChip-deleteIcon': {
+                        backgroundColor: '#242424'
+                    }
+                }
+            },
+            MuiFormGroup: {
+                root: {
+                    width: '100%'
+                }
+            },
+            MuiInputBase: {
+                root: {
+                    borderRadius: '2px !important',
+                    '& .MuiChip-root': {
+                        margin: '2px 3px 0 3px',
+                    }
+                },
+            },
+            MuiOutlinedInput: {
+                notchedOutline: {
+                    borderColor: '#424242',
+                    borderWidth: '1px',
+                }
+            },
+            MuiFormControl: {
+                root: {
+                    marginTop: '6px !important',
+                    marginBottom: '6px !important'
+                }
+            },
+            MuiPaper: {
+                root: {
+                    backgroundColor: '#151515',
+                    borderRadius: '0 !important',
+                }
+            },
+            MuiTableHead: {
+                root: {
+                    '& .MuiTableCell-root': {
+                        backgroundColor: '#242424'
+                    }
+                }
+            },
+            MuiTableRow: {
+                root: {
+                    '&:hover': {
+                        backgroundColor: '#242424 !important'
+                    },
+                    '&$selected': {
+                        backgroundColor: '#242424 !important'
+                    }
+                }
+            },
+            MuiTableCell: {
+                root: {
+                    borderBottom: '1px solid #242424'
                 }
             },
             MuiCssBaseline: {
@@ -70,6 +136,12 @@ export default function Layout() {
                         backgroundColor: '#242424',
                         outline: 'none'
                     },
+                    '.MuiAutocomplete-option': {
+                        color: '#999999'
+                    },
+                    '.MuiAutocomplete-option[data-focus="true"]': {
+                        backgroundColor: '#242424'
+                    }
                 }
             },
             MuiTabs: {
@@ -138,6 +210,11 @@ export default function Layout() {
                     '& .MuiIconButton-label': {
                         color: '#999999 !important'
                     }
+                }
+            },
+            MuiAccordionDetails: {
+                root: {
+                    padding: '16px'
                 }
             }
         }

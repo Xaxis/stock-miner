@@ -1,0 +1,15 @@
+.tablemanager-datatable {
+
+  .MuiToolbar-root {
+    min-height: 68px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  button {
+    color: #999999 !important;
+    &:hover {
+      color: #ffffff !important;
+    }
+  }
+}

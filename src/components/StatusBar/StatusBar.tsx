@@ -10,7 +10,8 @@ export default function StatusBar() {
             height: '24px',
             bottom: '0px',
             backgroundColor: '#242424',
-            borderTop: '1px solid #242424'
+            borderTop: '1px solid #242424',
+            zIndex: '9999'
         }
     }))()
 

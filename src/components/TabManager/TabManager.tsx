@@ -7,7 +7,6 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TableManager from '../TableManager/TableManager'
-import Search from "../Search/Search";
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -79,14 +78,14 @@ export default function TabManager() {
                         aria-label="scrollable auto tabs example"
                     >
                         <Tab label="Simulating" {...a11yProps(0)} />
-                        <Tab label="Scanning" {...a11yProps(1)} />
                         <Tab label="Holding" {...a11yProps(2)} />
+                        <Tab label="Scanning" {...a11yProps(1)} />
                     </Tabs>
                     {/*<Search/>*/}
                 </Box>
             </AppBar>
             <TabPanel value={value} index={0}>
-                {/*<TableManager/>*/}
+                <TableManager/>
             </TabPanel>
             <TabPanel value={value} index={1}>
                 Item Two
