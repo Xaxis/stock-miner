@@ -6,8 +6,16 @@
     padding-right: 16px !important;
   }
 
+  .MuiPaper-root:first-child {
+    .MuiPaper-root {
+      min-height: 68px !important;
+      background-color: #151515 !important;
+    }
+  }
+
   button {
     color: #999999 !important;
+
     &:hover {
       color: #ffffff !important;
     }

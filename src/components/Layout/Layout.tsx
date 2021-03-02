@@ -180,6 +180,9 @@ export default function Layout() {
                     },
                     '&:hover': {
                         backgroundColor: '#242424',
+                    },
+                    '&.MuiButtonBase-root': {
+                       padding: '6px 16px'
                     }
                 },
             },
