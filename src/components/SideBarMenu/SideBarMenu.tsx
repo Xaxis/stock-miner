@@ -67,8 +67,8 @@ export default function SideBarMenu() {
                 >
                     <Tab label={<AttachMoneyIcon/>} aria-label="Trade"></Tab>
                     <Tab icon={<TuneIcon/>} aria-label="Controls"></Tab>
-                    <Tab icon={<RecentActorsIcon/>} aria-label="Profiles"></Tab>
                     <Tab icon={<ExtensionIcon/>} aria-label="Extensions"></Tab>
+                    <Tab icon={<RecentActorsIcon/>} aria-label="Profiles"></Tab>
                     <Tab icon={<SettingsIcon/>} aria-label="Settings"></Tab>
                     <Tab icon={<HistoryIcon/>} aria-label="History"></Tab>
                 </Tabs>
@@ -81,10 +81,10 @@ export default function SideBarMenu() {
                     <SideBarControlsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={2}>
-                    <SideBarProfilesMenu/>
+                    <SideBarExtensionsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={3}>
-                    <SideBarExtensionsMenu/>
+                    <SideBarProfilesMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={4}>
                     <SideBarSettingsMenu/>

@@ -54,7 +54,16 @@ export default function Layout() {
                     minWidth: 'auto',
                     padding: '4px 12px !important',
                     borderRadius: '2px',
-                    textTransform: 'none'
+                    textTransform: 'none',
+                    '&.StockMinerBigButton': {
+                        color: '#ffffff',
+                        backgroundColor: '#242424',
+                        padding: '16px 12px !important',
+                        borderRadius: '4px !important'
+                    },
+                    '&.StockMinerBigButton:hover': {
+                        backgroundColor: '#7b1fa2'
+                    }
                 }
             },
             MuiChip: {

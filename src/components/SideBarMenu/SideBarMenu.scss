@@ -19,7 +19,7 @@
     background-color: #151515;
 
     .MuiFormControl-root {
-      & + .MuiFormControl-root {
+      & + * {
         margin-top: 16px !important;
       }
     }
