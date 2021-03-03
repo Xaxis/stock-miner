@@ -2,7 +2,7 @@ import * as React from 'react'
 import {useState, useEffect, useRef, useMemo, useCallback} from "react";
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
-import Search from "../Search/Search";
+import SymbolSearch from "../SymbolSearch/SymbolSearch";
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -244,8 +244,8 @@ export default function TableManager() {
             <Grid item xs={12} className="tablemanager-datatable">
                 <MUIDataTable
                     square
-                    title={<Search />}
-                    data={test_data}
+                    title={<SymbolSearch />}
+                    data={[]}
                     columns={columns}
                     options={{
                         filterType: "checkbox",

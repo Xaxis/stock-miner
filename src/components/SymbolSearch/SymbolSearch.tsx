@@ -14,10 +14,11 @@ function sleep(delay = 0) {
     })
 }
 
-export default function Search() {
+export default function SymbolSearch() {
     const [open, setOpen] = useState(false)
     const [options, setOptions] = useState([])
     const [chars, setChars] = useState('')
+    const [addButtonDisabled, setAddButtonDisabled] = useState(true)
     const loading = open && options.length === 0 && chars.length > 0
 
     useEffect(() => {
@@ -27,8 +28,8 @@ export default function Search() {
         }
 
         (async () => {
-            const response = await fetch(`http://localhost:2222/api/get/symbols/${chars}/5`)
-            await sleep(250)
+            const response = await fetch(`http://localhost:2222/api/get/symbols/${chars}/10`)
+            await sleep(100)
             const symbols_arr = await response.json()
             if (active) {
                 setOptions(symbols_arr)
@@ -50,7 +51,7 @@ export default function Search() {
         <FormGroup>
             <Autocomplete
                 multiple
-                style={{width: '400px', marginRight: 'auto'}}
+                style={{width: '350px', marginRight: 'auto'}}
                 onClose={() => {
                     setOpen(false)
                 }}
@@ -59,16 +60,23 @@ export default function Search() {
                     setOptions([])
                     setChars(event.currentTarget.value)
                 }}
+                onChange={(event, value) => {
+                    if (value.length) {
+                        setAddButtonDisabled(false)
+                    } else {
+                        setAddButtonDisabled(true)
+                    }
+                }}
                 getOptionSelected={(option, value) => option.s === value.s}
                 getOptionLabel={(option) => option.s + ' - ' + option.n}
                 options={options}
                 open={open}
                 loading={loading}
-                // groupBy={(option) => option.title[0].toUpperCase()}
-                // getOptionLabel={(option) => option.title + ' - ' + option.name}
+                // groupBy={(option) => option.s[0].toUpperCase()}
                 filterSelectedOptions
                 disableClearable
                 clearOnEscape
+                autoHighlight
                 limitTags={2}
                 forcePopupIcon={false}
                 renderInput={params => {
@@ -84,7 +92,10 @@ export default function Search() {
                                 endAdornment: (
                                     <React.Fragment>
                                         {loading ? <CircularProgress color="inherit" size={20}/> : null}
-                                        {!loading ? <IconButton size="small">
+                                        {!loading ? <IconButton
+                                            size="small"
+                                            disabled={addButtonDisabled}
+                                        >
                                             <AddIcon/>
                                         </IconButton> : null}
                                     </React.Fragment>

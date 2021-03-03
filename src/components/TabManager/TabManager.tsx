@@ -81,7 +81,6 @@ export default function TabManager() {
                         <Tab label="Holding" {...a11yProps(2)} />
                         <Tab label="Scanning" {...a11yProps(1)} />
                     </Tabs>
-                    {/*<Search/>*/}
                 </Box>
             </AppBar>
             <TabPanel value={value} index={0}>

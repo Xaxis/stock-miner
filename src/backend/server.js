@@ -19,6 +19,7 @@ server.use(BodyParser.urlencoded({extended: true}))
 /**
  * Pre-load all symbols so as to be rapidly available for Stock Miner.
  * @todo - Needs some way to update symbols list every day or 24 hours.
+ * @todo - Need error handling in the case that FINRA website is down.
  */
 let all_symbols = []
 SymbolProvider.get_all_finra_symbols()

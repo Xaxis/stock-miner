@@ -38,7 +38,8 @@ const get_all_crypto_symbols = function () {
         ['ETH', 'Ethereum'],
         ['BSV', 'Bitcoin SV'],
         ['BCH', 'Bitcoin Cash'],
-        ['BTC', 'Bitcoin']
+        ['BTC', 'Bitcoin'],
+        ['BTG', 'Bitcoin Gold']
     ]
     for (let idx in cryptos) {
         let crypto = cryptos[idx]

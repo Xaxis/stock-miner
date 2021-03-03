@@ -66,9 +66,17 @@ export default function Layout() {
                     }
                 }
             },
+            MuiIconButton: {
+                root: {
+                    '&.Mui-disabled': {
+                        color: '#242424 !important'
+                    }
+                }
+            },
             MuiChip: {
                 root: {
                     height: '26px',
+                    maxWidth: '125px !important',
                     backgroundColor: '#242424',
                     '& .MuiChip-deleteIcon': {
                         backgroundColor: '#242424'
@@ -136,31 +144,6 @@ export default function Layout() {
                     borderBottom: '1px solid #242424',
                 }
             },
-            MuiCssBaseline: {
-                '@global': {
-                    '*': {
-                        'scrollbar-width': 'thin'
-                    },
-                    '*::-webkit-scrollbar': {
-                        width: '8px'
-                    },
-                    '*::-webkit-scrollbar-track': {
-                        backgroundColor: '#151515',
-                        boxShadow: 'inset 0 0 6px rgba(21,21,21,1)',
-                        webkitBoxShadow: 'inset 0 0 6px rgba(21,21,21,1)'
-                    },
-                    '*::-webkit-scrollbar-thumb': {
-                        backgroundColor: '#242424',
-                        outline: 'none'
-                    },
-                    '.MuiAutocomplete-option': {
-                        color: '#999999'
-                    },
-                    '.MuiAutocomplete-option[data-focus="true"]': {
-                        backgroundColor: '#242424'
-                    }
-                }
-            },
             MuiTabs: {
                 root: {
                     backgroundColor: '#121212;'
@@ -182,7 +165,7 @@ export default function Layout() {
                         backgroundColor: '#242424',
                     },
                     '&.MuiButtonBase-root': {
-                       padding: '6px 16px'
+                        padding: '6px 16px'
                     }
                 },
             },
@@ -236,7 +219,32 @@ export default function Layout() {
                 root: {
                     padding: '16px'
                 }
-            }
+            },
+            MuiCssBaseline: {
+                '@global': {
+                    '*': {
+                        'scrollbar-width': 'thin'
+                    },
+                    '*::-webkit-scrollbar': {
+                        width: '8px'
+                    },
+                    '*::-webkit-scrollbar-track': {
+                        backgroundColor: '#151515',
+                        boxShadow: 'inset 0 0 6px rgba(21,21,21,1)',
+                        webkitBoxShadow: 'inset 0 0 6px rgba(21,21,21,1)'
+                    },
+                    '*::-webkit-scrollbar-thumb': {
+                        backgroundColor: '#242424',
+                        outline: 'none'
+                    },
+                    '.MuiAutocomplete-option': {
+                        color: '#999999'
+                    },
+                    '.MuiAutocomplete-option[data-focus="true"]': {
+                        backgroundColor: '#242424 !important'
+                    }
+                }
+            },
         }
     })
 
