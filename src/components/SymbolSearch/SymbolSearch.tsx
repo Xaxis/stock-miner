@@ -1,5 +1,7 @@
 import * as React from 'react'
 import {useState, useEffect} from "react"
+import {connect} from 'react-redux'
+import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
 import FormGroup from '@material-ui/core/FormGroup'
 import Autocomplete from '@material-ui/lab/Autocomplete'
@@ -14,12 +16,17 @@ function sleep(delay = 0) {
     })
 }
 
-export default function SymbolSearch() {
+const SymbolSearch = ({addTableRow}) => {
     const [open, setOpen] = useState(false)
     const [options, setOptions] = useState([])
     const [chars, setChars] = useState('')
+    const [selectedSymbols, setSelectedSymbols] = useState([])
     const [addButtonDisabled, setAddButtonDisabled] = useState(true)
     const loading = open && options.length === 0 && chars.length > 0
+
+    const handleAddButtonClick = (event) => {
+        addTableRow(selectedSymbols)
+    }
 
     useEffect(() => {
         let active = true
@@ -61,6 +68,7 @@ export default function SymbolSearch() {
                     setChars(event.currentTarget.value)
                 }}
                 onChange={(event, value) => {
+                    setSelectedSymbols(value)
                     if (value.length) {
                         setAddButtonDisabled(false)
                     } else {
@@ -72,7 +80,6 @@ export default function SymbolSearch() {
                 options={options}
                 open={open}
                 loading={loading}
-                // groupBy={(option) => option.s[0].toUpperCase()}
                 filterSelectedOptions
                 disableClearable
                 clearOnEscape
@@ -95,6 +102,7 @@ export default function SymbolSearch() {
                                         {!loading ? <IconButton
                                             size="small"
                                             disabled={addButtonDisabled}
+                                            onClick={handleAddButtonClick}
                                         >
                                             <AddIcon/>
                                         </IconButton> : null}
@@ -106,5 +114,17 @@ export default function SymbolSearch() {
                 }}
             />
         </FormGroup>
-    );
-};
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addTableRow: (rows) => dispatch(ActionTypes.addTableRow(rows))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SymbolSearch)

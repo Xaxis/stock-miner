@@ -1,8 +1,11 @@
 import * as React from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import './Layout.scss'
+
+import {Provider} from 'react-redux'
+import reducer from '../../store/reducers/index'
+import {createStore} from 'redux'
+
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
-import {makeStyles} from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import MainMenu from '../MainMenu/MainMenu'
 import TabManager from '../TabManager/TabManager'
@@ -248,19 +251,23 @@ export default function Layout() {
         }
     })
 
+    const store = createStore(reducer)
+
     return (
         <MuiThemeProvider theme={theme}>
-            <CssBaseline/>
-            <MainMenu/>
-            <Grid container spacing={0} className="layout-page-grid">
-                <Grid item xs={3} className="layout-sidebarmenu">
-                    <SideBarMenu/>
+            <Provider store={store}>
+                <CssBaseline/>
+                <MainMenu/>
+                <Grid container spacing={0} className="layout-page-grid">
+                    <Grid item xs={3} className="layout-sidebarmenu">
+                        <SideBarMenu/>
+                    </Grid>
+                    <Grid item xs={9} className="layout-mainpanel">
+                        <TabManager/>
+                    </Grid>
                 </Grid>
-                <Grid item xs={9} className="layout-mainpanel">
-                    <TabManager/>
-                </Grid>
-            </Grid>
-            <StatusBar/>
+                <StatusBar/>
+            </Provider>
         </MuiThemeProvider>
     );
 };
