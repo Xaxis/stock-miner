@@ -2,6 +2,7 @@
 * List of all market symbols to trade with
 */
 let SearchList
+
 export default SearchList = [
     {title: 'ETH', name: 'Ethereum'},
     {title: 'ETC', name: 'Ethereum'},

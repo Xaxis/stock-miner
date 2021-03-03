@@ -1,7 +1,7 @@
 {
   "name": "stock-miner-rebuild",
   "version": "0.0.0",
-  "description": "Stock Miner ontop of pywebview with a React frontend.",
+  "description": "Stock Miner on top of pywebview with a React frontend.",
   "main": "index.js",
   "scripts": {
     "build": "npm run clean && npm run frontend:prod && run-script-os",
@@ -11,7 +11,7 @@
     "clean": "run-script-os",
     "clean:default": "rm -rf dist 2>/dev/null; rm -rf gui 2>/dev/null; rm -rf build 2>/dev/null; ",
     "clean:windows": "if exist dist rd /S /Q dist & if exist build rd /S /Q build & if exist gui rd /S /Q gui",
-    "dev": "parcel serve src/index.html",
+    "dev": "node src/backend/server.js & parcel serve src/index.html",
     "frontend:dev": "parcel build src/index.html --public-url . -d gui",
     "frontend:prod": "parcel build src/index.html --public-url . --no-source-maps -d gui",
     "init": "npm install && run-script-os",
@@ -45,6 +45,10 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@types/react": "^17.0.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "cross-fetch": "^3.0.6",
+    "express": "^4.17.1",
     "fontsource-roboto": "^4.0.0",
     "lodash": "^4.17.21",
     "material-design-icons": "^3.0.1",

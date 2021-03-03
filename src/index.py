@@ -33,5 +33,11 @@ def get_entrypoint():
 
 if __name__ == '__main__':
     entry = get_entrypoint()
-    window = webview.create_window('pywebview-react boilerplate', entry, js_api=Api())
+    window = webview.create_window(
+        'Stock Miner - v0.0.0',
+        entry,
+        width=1200,
+        height=1000,
+        js_api=Api()
+    )
     webview.start(debug=True)
