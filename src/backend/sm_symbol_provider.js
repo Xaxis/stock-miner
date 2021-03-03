@@ -1,31 +1,7 @@
 const fs = require('fs')
 const request = require('request')
-const symbol_file_path = __dirname + '/../data/symbol_list.txt'
 
-const symbol_file_exists = function () {
-    try {
-        if (fs.existsSync(symbol_file_path)) {
-            return true
-        } else {
-            return false
-        }
-    } catch (err) {
-        console.log(err)
-    }
-}
-
-const is_symbol_file_over_a_day_old = function () {
-    let file_stats = fs.statSync(symbol_file_path)
-    let age = Date.now() - file_stats.mtimeMs
-    let age_in_minutes = (age / 1000) / 60
-    if (age_in_minutes >= 1440) {
-        return true
-    } else {
-        return false
-    }
-}
-
-const get_all_finra_symbols_object = function () {
+const get_all_finra_symbols = function () {
     return new Promise(function (resolve, reject) {
         let req_url = 'http://oatsreportable.finra.org/OATSReportableSecurities-SOD.txt'
         request.get(req_url, function (error, response, body) {
@@ -53,8 +29,22 @@ const get_all_finra_symbols_object = function () {
     })
 }
 
-const get_crypto_symbols = function () {
-
+const get_all_crypto_symbols = function () {
+    let result = []
+    let cryptos = [
+        ['DOGE', 'Dogecoin'],
+        ['LTC', 'Litecoin'],
+        ['ETC', 'Ethereum Classic'],
+        ['ETH', 'Ethereum'],
+        ['BSV', 'Bitcoin SV'],
+        ['BCH', 'Bitcoin Cash'],
+        ['BTC', 'Bitcoin']
+    ]
+    for (let idx in cryptos) {
+        let crypto = cryptos[idx]
+        result.push({s: crypto[0], n: crypto[1], e: 'crypto'})
+    }
+    return result
 }
 
 const get_symbols_matching = function (symbols, chars, limit) {
@@ -68,6 +58,7 @@ const get_symbols_matching = function (symbols, chars, limit) {
 }
 
 module.exports = {
-    get_all_finra_symbols_object: get_all_finra_symbols_object,
+    get_all_finra_symbols: get_all_finra_symbols,
+    get_all_crypto_symbols: get_all_crypto_symbols,
     get_symbols_matching: get_symbols_matching
 }
