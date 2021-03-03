@@ -26,6 +26,7 @@ const SymbolSearch = ({addTableRow}) => {
 
     const handleAddButtonClick = (event) => {
         addTableRow(selectedSymbols)
+        setSelectedSymbols([])
     }
 
     useEffect(() => {
@@ -59,6 +60,7 @@ const SymbolSearch = ({addTableRow}) => {
             <Autocomplete
                 multiple
                 style={{width: '350px', marginRight: 'auto'}}
+                value={selectedSymbols}
                 onClose={() => {
                     setOpen(false)
                 }}
