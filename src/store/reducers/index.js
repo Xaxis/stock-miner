@@ -1,11 +1,12 @@
 import * as ActionTypes from '../actions/action_types'
+import {default as UUID} from 'node-uuid'
 
 const initialState = {
     tableRowTemplate: {id: 0, symbol: '-', price: 0, status: '-', shares: '-', equity: '-', change: '-'},
     tableData: []
 }
 
-const items = (state = initialState, action) => {
+const Reducers = (state = initialState, action) => {
     switch (action.type) {
 
         /**
@@ -15,7 +16,7 @@ const items = (state = initialState, action) => {
             let newRows = []
             action.rows.forEach((row) => {
                 let newRowObject = Object.assign({}, state.tableRowTemplate)
-                newRowObject.id = Date.now()
+                newRowObject.id = UUID.v4()
                 newRowObject.symbol = row.s
                 newRows.push(newRowObject)
             })
@@ -29,4 +30,4 @@ const items = (state = initialState, action) => {
     }
 }
 
-export default items
+export default Reducers
