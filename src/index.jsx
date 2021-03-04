@@ -11,6 +11,6 @@ const App = function () {
     )
 }
 
-const view = App('pywebview')
+const view = App('stockminer')
 const element = document.getElementById('app')
 ReactDOM.render(view, element)
