@@ -24,7 +24,7 @@ const SymbolSearch = ({addTableRow}) => {
     const [addButtonDisabled, setAddButtonDisabled] = useState(true)
     const loading = open && options.length === 0 && chars.length > 0
 
-    const handleAddButtonClick = (event) => {
+    const handleAddButtonClick = () => {
         addTableRow(selectedSymbols)
         setSelectedSymbols([])
         setAddButtonDisabled(true)
@@ -106,11 +106,17 @@ const SymbolSearch = ({addTableRow}) => {
                                             size="small"
                                             disabled={addButtonDisabled}
                                             onClick={handleAddButtonClick}
+
                                         >
                                             <AddIcon/>
                                         </IconButton> : null}
                                     </React.Fragment>
                                 )
+                            }}
+                            onKeyDown={(event) => {
+                                if (event.key.toUpperCase() === 'ENTER' && selectedSymbols.length) {
+                                    handleAddButtonClick()
+                                }
                             }}
                         />
                     )
