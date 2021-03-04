@@ -27,6 +27,7 @@ const SymbolSearch = ({addTableRow}) => {
     const handleAddButtonClick = (event) => {
         addTableRow(selectedSymbols)
         setSelectedSymbols([])
+        setAddButtonDisabled(true)
     }
 
     useEffect(() => {

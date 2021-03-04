@@ -7,14 +7,9 @@ export const addTableRow = (rows) => {
     }
 }
 
-export const deleteTableRow = () => {
+export const deleteTableRow = (uuids) => {
     return {
-        type: ActionTypes.DELETE_TABLE_ROW
-    }
-}
-
-export const setError = () => {
-    return {
-        type: ActionTypes.SET_ERROR
+        type: ActionTypes.DELETE_TABLE_ROW,
+        uuids: uuids
     }
 }

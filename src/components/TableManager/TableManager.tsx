@@ -7,8 +7,17 @@ import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch";
 import './TableManager.scss'
 
-const TableManager = ({tableData}) => {
+const TableManager = ({tableData, deleteTableRow}) => {
     const [columns, setColumns] = useState([
+        {
+            name: "uuid",
+            label: "UUID",
+            options: {
+                filter: true,
+                sort: true,
+                display: false
+            }
+        },
         {
             name: "symbol",
             label: "Symbol",
@@ -61,6 +70,11 @@ const TableManager = ({tableData}) => {
         },
     ])
 
+    const handleRowsDelete = (rowsDeleted) => {
+        const uuidsToDelete = rowsDeleted.data.map(d => tableData[d.dataIndex].uuid)
+        deleteTableRow(uuidsToDelete)
+    }
+
     return (
         <Grid container spacing={0}>
             <Grid item xs={12} className="tablemanager-datatable">
@@ -81,7 +95,8 @@ const TableManager = ({tableData}) => {
                             enabled: true
                         },
                         fixedSelectColumn: true,
-                        tableBodyHeight: 'calc(100vh - 254px)'
+                        tableBodyHeight: 'calc(100vh - 254px)',
+                        onRowsDelete: handleRowsDelete
                         // expandableRowsHeader: true,
                         // expandableRows: true,
                         // renderExpandableRow: (rowData, rowMeta) => {
@@ -108,6 +123,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        deleteTableRow: (rows) => dispatch(ActionTypes.deleteTableRow(rows))
     }
 }
 
