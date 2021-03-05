@@ -1,25 +1,24 @@
 const Lodash = require('lodash')
 const Express = require('express')
+const WebSocket = require('ws')
 const Cors = require('cors')
 const BodyParser = require('body-parser')
 const SymbolProvider = require('./sm_symbol_provider.js')
+const { DataProvider } = require('./sm_data_provider.js')
+const { v4: uuidv4 } = require('node-uuid')
 const server = Express()
 const server_name = 'Stock Miner API Server'
 const server_port = 2222;
 
 /**
- * Configure server.
+ * Configure API server.
  */
-server.use(Cors({
-    origin: 'http://localhost:1234'
-}))
+server.use(Cors({origin: 'http://localhost:1234'}))
 server.use(BodyParser.json())
 server.use(BodyParser.urlencoded({extended: true}))
 
 /**
  * Pre-load all symbols so as to be rapidly available for Stock Miner.
- * @todo - Needs some way to update symbols list every day or 24 hours.
- * @todo - Need error handling in the case that FINRA website is down.
  */
 let all_symbols = []
 SymbolProvider.get_all_finra_symbols()
@@ -34,9 +33,13 @@ SymbolProvider.get_all_finra_symbols()
     })
 
 /**
+ * Initialize the Stock Miner Data Provider.
+ */
+let DP = new DataProvider()
+
+/**
  * Define API access points.
  */
-
 server.get('/api/alive', (req, res) => {
     res.send({status: `success`})
 })
@@ -52,6 +55,12 @@ server.get('/api/get/crypto/symbols', (req, res) => {
 server.get('/api/get/symbols/:chars/:limit', (req, res) => {
     let symbols = SymbolProvider.get_symbols_matching(all_symbols, req.params.chars, req.params.limit)
     res.send(symbols)
+})
+
+server.get('/api/register/:uuid/:type/:symbol', (req, res) => {
+    console.log(req.params.uuid, req.params.type, req.params.symbol)
+    DP.register_trade()
+    res.send({registered: true})
 })
 
 /**

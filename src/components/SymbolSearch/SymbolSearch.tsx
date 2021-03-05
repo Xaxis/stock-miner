@@ -127,12 +127,13 @@ const SymbolSearch = ({addTableRow}) => {
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addTableRow: (rows) => dispatch(ActionTypes.addTableRow(rows))
+        addTableRow: (rows) => dispatch(ActionTypes.addTableRow(rows)),
     }
 }
 

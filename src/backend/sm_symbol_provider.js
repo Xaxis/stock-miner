@@ -1,7 +1,6 @@
-const fs = require('fs')
 const request = require('request')
 
-const get_all_finra_symbols = function () {
+const get_all_finra_symbols = () => {
     return new Promise(function (resolve, reject) {
         let req_url = 'http://oatsreportable.finra.org/OATSReportableSecurities-SOD.txt'
         request.get(req_url, function (error, response, body) {
@@ -20,6 +19,7 @@ const get_all_finra_symbols = function () {
                         obj['s'] = values[0]
                         obj['n'] = values[1]
                         obj['e'] = values[2]
+                        obj['t'] = 'stock'
                         result.push(obj)
                     }
                 }
@@ -29,7 +29,7 @@ const get_all_finra_symbols = function () {
     })
 }
 
-const get_all_crypto_symbols = function () {
+const get_all_crypto_symbols = () => {
     let result = []
     let cryptos = [
         ['DOGE', 'Dogecoin'],
@@ -43,12 +43,12 @@ const get_all_crypto_symbols = function () {
     ]
     for (let idx in cryptos) {
         let crypto = cryptos[idx]
-        result.push({s: crypto[0], n: crypto[1], e: 'crypto'})
+        result.push({s: crypto[0], n: crypto[1], t: 'crypto'})
     }
     return result
 }
 
-const get_symbols_matching = function (symbols, chars, limit) {
+const get_symbols_matching = (symbols, chars, limit) => {
     let chars_uppercase = chars.toUpperCase()
     let exp = `^${chars_uppercase}`
     let regex = new RegExp(exp)

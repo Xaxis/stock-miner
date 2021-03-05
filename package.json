@@ -51,7 +51,8 @@
     "redux": "^4.0.5",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "websocket": "^1.0.33"
   },
   "devDependencies": {
     "parcel-bundler": "1.12.4",

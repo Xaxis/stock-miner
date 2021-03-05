@@ -7,7 +7,12 @@ import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch";
 import './TableManager.scss'
 
-const TableManager = ({tableData, deleteTableRow}) => {
+const TableManager = ({
+                          tableData,
+                          newRegisteredTrades,
+                          deleteTableRow,
+                          registeredTradesToDelete
+                      }) => {
     const [columns, setColumns] = useState([
         {
             name: "uuid",
@@ -75,6 +80,24 @@ const TableManager = ({tableData, deleteTableRow}) => {
         deleteTableRow(uuidsToDelete)
     }
 
+    /**
+     * Register new trade with server.
+     */
+    useEffect(() => {
+        if (newRegisteredTrades.length) {
+            console.log('ADD', newRegisteredTrades)
+        }
+    }, [newRegisteredTrades])
+
+    /**
+     * Delete a registered trade on the server.
+     */
+    useEffect(() => {
+        if (registeredTradesToDelete.length) {
+            console.log('DELETE', registeredTradesToDelete)
+        }
+    }, [registeredTradesToDelete])
+
     return (
         <Grid container spacing={0}>
             <Grid item xs={12} className="tablemanager-datatable">
@@ -117,7 +140,9 @@ const TableManager = ({tableData, deleteTableRow}) => {
 
 const mapStateToProps = (state) => {
     return {
-        tableData: state.tableData
+        tableData: state.tableData,
+        newRegisteredTrades: state.newRegisteredTrades,
+        registeredTradesToDelete: state.registeredTradesToDelete
     }
 }
 
