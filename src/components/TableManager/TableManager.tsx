@@ -2,6 +2,7 @@ import * as React from 'react'
 import {useState, useEffect, useRef, useMemo, useCallback} from "react";
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
+import fetch from 'cross-fetch'
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch";
@@ -85,7 +86,9 @@ const TableManager = ({
      */
     useEffect(() => {
         if (newRegisteredTrades.length) {
-            console.log('ADD', newRegisteredTrades)
+            newRegisteredTrades.forEach((trade) => {
+                fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
+            })
         }
     }, [newRegisteredTrades])
 
@@ -94,7 +97,9 @@ const TableManager = ({
      */
     useEffect(() => {
         if (registeredTradesToDelete.length) {
-            console.log('DELETE', registeredTradesToDelete)
+            registeredTradesToDelete.forEach((trade) => {
+                fetch(`http://localhost:2222/api/deregister/${trade.uuid}`)
+            })
         }
     }, [registeredTradesToDelete])
 

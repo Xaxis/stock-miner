@@ -15,7 +15,7 @@ function DataProvider() {
     this.REGISTERED_TRADES = []
     this.STREAM_DATA = []
 
-    this.WS_CRYPTO = build_websocket(this.WS_URL+'crypto', this.API_KEY)
+    // this.WS_CRYPTO = build_websocket(this.WS_URL+'crypto', this.API_KEY)
     // this.WS_STOCKS = build_websocket(this.WS_URL+'crypto', this.API_KEY)
     // this.WS_FOREX = build_websocket(this.WS_URL+'forex', this.API_KEY)
 
@@ -70,20 +70,20 @@ function DataProvider() {
     }
 
     /**
-     *
-     * @param uuid
-     * @param type
-     * @param symbol
+     * ...
      */
     const register_trade = (uuid, type, symbol) => {
         this.REGISTERED_TRADES.push({uuid: uuid, type: type, symbol: symbol})
     }
 
     /**
-     *
+     * ...
      */
-    const deregister_trade = () => {
-
+    const deregister_trade = (uuid) => {
+        let newRegisteredTrades = this.REGISTERED_TRADES.filter((trade) => {
+            return trade.uuid !== uuid
+        })
+        this.REGISTERED_TRADES = newRegisteredTrades
     }
 
 

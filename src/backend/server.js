@@ -58,9 +58,13 @@ server.get('/api/get/symbols/:chars/:limit', (req, res) => {
 })
 
 server.get('/api/register/:uuid/:type/:symbol', (req, res) => {
-    console.log(req.params.uuid, req.params.type, req.params.symbol)
-    DP.register_trade()
-    res.send({registered: true})
+    DP.register_trade(req.params.uuid, req.params.type, req.params.symbol)
+    res.send({success: true})
+})
+
+server.get('/api/deregister/:uuid', (req, res) => {
+    DP.deregister_trade(req.params.uuid)
+    res.send({success: true})
 })
 
 /**
