@@ -10,7 +10,6 @@ class DataProvider {
     constructor() {
         this.API_KEY = '_nnkbN3IuzOKDecrdiwKe5eLmU_dAzV1'
         this.WS_URL = 'wss://socket.polygon.io/'
-        this.REST_STOCKS_URL = 'https://api.polygon.io/v1/'
         this.REGISTERED_TRADES = []
         this.STREAM_DATA = {
             STOCK: [],
@@ -45,7 +44,7 @@ class DataProvider {
 
             // Log non data messages to the console
             if (stream_arr[0].hasOwnProperty("status")) {
-                console.log('MESSAGE from ' + ws_url, msg.data)
+                console.log('SM API: MESSAGE from ' + ws_url, msg.data)
             }
 
             // Continually build STREAM_DATA object from streamed data
@@ -77,11 +76,11 @@ class DataProvider {
         }
 
         ws.onclose = (msg) => {
-            // console.log('CLOSE', msg)
+            console.log('SM API: MESSAGE from ' + ws_url, msg.data)
         }
 
         ws.onerror = (msg) => {
-            // console.log('ONERROR', msg)
+            console.log('SM API: MESSAGE from ' + ws_url, msg.data)
         }
 
         return ws

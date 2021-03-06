@@ -1,12 +1,18 @@
 import * as React from 'react'
-import {useState, useEffect, useRef, useMemo, useCallback} from "react";
+import {useState, useEffect, useRef, useMemo, useCallback} from "react"
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
+import {w3cwebsocket as W3CWebSocket} from 'websocket'
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
-import SymbolSearch from "../SymbolSearch/SymbolSearch";
+import SymbolSearch from "../SymbolSearch/SymbolSearch"
 import './TableManager.scss'
+
+const socket = new W3CWebSocket('ws://localhost:2222')
+socket.onmessage = (payload) => {
+    console.log('Message from server: ', JSON.parse(payload.data))
+}
 
 const TableManager = ({
                           tableData,
@@ -75,11 +81,19 @@ const TableManager = ({
             }
         },
     ])
+    const [socketEstablished, setSocketEstablished] = useState(false)
 
-    const handleRowsDelete = (rowsDeleted) => {
-        const uuidsToDelete = rowsDeleted.data.map(d => tableData[d.dataIndex].uuid)
-        deleteTableRow(uuidsToDelete)
-    }
+    /**
+     * ...
+     */
+    useEffect(() => {
+        if (!socketEstablished) {
+            // socket.onmessage = (payload) => {
+            //     console.log('Message from server: ', JSON.parse(payload.data))
+            // }
+            setSocketEstablished(true)
+        }
+    })
 
     /**
      * Register new trade with server.
@@ -102,6 +116,14 @@ const TableManager = ({
             })
         }
     }, [registeredTradesToDelete])
+
+    /**
+     * Handles table's row delete event.
+     */
+    const handleRowsDelete = (rowsDeleted) => {
+        const uuidsToDelete = rowsDeleted.data.map(d => tableData[d.dataIndex].uuid)
+        deleteTableRow(uuidsToDelete)
+    }
 
     return (
         <Grid container spacing={0}>
