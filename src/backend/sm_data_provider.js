@@ -88,52 +88,95 @@ class DataProvider {
     }
 
     /**
-     * ...
+     * Build the Polygon.io subscription parameter string
      */
-    add_trade_to_stream = (trade) => {
+    build_param_string = (trade) => {
         let param_str = ''
         switch (trade.type) {
-            case 'stock':
+            case 'STOCK':
                 param_str += 'Q.' + trade.symbol.toUpperCase() + '-USD'
                 break
-            case 'forex':
+            case 'FOREX':
                 param_str += 'C.' + trade.symbol.toUpperCase() + '-USD'
                 break
-            case 'crypto':
+            case 'CRYPTO':
                 param_str += 'XQ.' + trade.symbol.toUpperCase() + '-USD'
                 break
         }
 
-        this.WS[trade.type.toUpperCase()].send(JSON.stringify({
-            "action": "subscribe",
-            "params": param_str
-        }))
+        return param_str
     }
 
     /**
-     * ...
+     * Subscribes to a websocket stream channel from Polygon.io
      */
-    remove_trade_from_stream = (uuid) => {
+    add_trade_to_stream = (tradeToAdd) => {
+        let tradesOfSameType = this.REGISTERED_TRADES.filter((trade) => {
+            return tradeToAdd.type === trade.type && tradeToAdd.symbol === trade.symbol
+        })
 
+        // Don't subscribe if channel subscription already exists
+        if (!tradesOfSameType.length) {
+            let param_str = this.build_param_string(tradeToAdd)
+            this.WS[tradeToAdd.type].send(JSON.stringify({
+                "action": "subscribe",
+                "params": param_str
+            }))
+        }
     }
 
     /**
-     * ...
+     * Unsubscribes from a websocket stream channel from Polygon.io
+     */
+    remove_trade_from_stream = (tradeToRemove) => {
+        let tradesOfSameType = this.REGISTERED_TRADES.filter((trade) => {
+            return trade.type === tradeToRemove.type && trade.symbol === tradeToRemove.symbol
+        })
+
+        // Don't unsubscribe stream if there are other active trades of the same type and symbol
+        if (!tradesOfSameType.length) {
+            let param_str = this.build_param_string(tradeToRemove)
+            this.WS[tradeToRemove.type].send(JSON.stringify({
+                "action": "unsubscribe",
+                "params": param_str
+            }))
+        }
+    }
+
+    /**
+     * Registers a trade with the REGISTERED_TRADES object, a single source of truth
+     * containing all active trade instances the app is using. Each trade object contains
+     * a unique id, trade type, and corresponding symbol.
+     *
+     * Secondly, subscribes to another trade channel if one does not already exist.
      */
     register_trade = (uuid, type, symbol) => {
         let trade = {uuid: uuid, type: type, symbol: symbol}
-        this.REGISTERED_TRADES.push(trade)
         this.add_trade_to_stream(trade)
+        this.REGISTERED_TRADES.push(trade)
     }
 
     /**
-     * ...
+     * Deregisters and removes a trade from the REGISTERED_TRADES object.
+     *
+     * Secondly, unsubscribes from channel subscription if there aren't any other trades
+     * actively using the same channel.
      */
     deregister_trade = (uuid) => {
-        let newRegisteredTrades = this.REGISTERED_TRADES.filter((trade) => {
+        let newRegisteredTradesArray = this.REGISTERED_TRADES.filter((trade) => {
             return trade.uuid !== uuid
         })
-        this.REGISTERED_TRADES = newRegisteredTrades
+        let tradeBeingDeregistered = this.REGISTERED_TRADES.filter((trade) => {
+            return trade.uuid === uuid
+        })
+        if (!tradeBeingDeregistered.length) {
+            console.log(`SM API: UUID (${uuid}) provided not found in registered trades.`)
+            return false
+        } else {
+            this.REGISTERED_TRADES = newRegisteredTradesArray
+            this.remove_trade_from_stream(tradeBeingDeregistered[0])
+            return true
+        }
     }
 }
 

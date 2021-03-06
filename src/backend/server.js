@@ -4,8 +4,8 @@ const WebSocket = require('ws')
 const Cors = require('cors')
 const BodyParser = require('body-parser')
 const SymbolProvider = require('./sm_symbol_provider.js')
-const { DataProvider } = require('./sm_data_provider.js')
-const { v4: uuidv4 } = require('node-uuid')
+const {DataProvider} = require('./sm_data_provider.js')
+const {v4: uuidv4} = require('node-uuid')
 const server = Express()
 const server_name = 'Stock Miner API Server'
 const server_port = 2222;
@@ -72,13 +72,16 @@ server.get('/api/get/symbols/:chars/:limit', (req, res) => {
 })
 
 server.get('/api/register/:uuid/:type/:symbol', (req, res) => {
-    DP.register_trade(req.params.uuid, req.params.type, req.params.symbol)
+    DP.register_trade(req.params.uuid, req.params.type.toUpperCase(), req.params.symbol.toUpperCase())
     res.send({success: true})
 })
 
 server.get('/api/deregister/:uuid', (req, res) => {
-    DP.deregister_trade(req.params.uuid)
-    res.send({success: true})
+    if (!DP.deregister_trade(req.params.uuid)) {
+        res.send({success: false})
+    } else {
+        res.send({success: true})
+    }
 })
 
 /**
