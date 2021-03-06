@@ -4,6 +4,7 @@ setup.cfg
 MANIFEST
 build
 dist
+gui
 .cache
 .idea
 .vs

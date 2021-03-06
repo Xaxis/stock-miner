@@ -5,29 +5,29 @@ const W3CWebSocket = require('websocket').w3cwebsocket
  * acts as a proxy server for Stock Miner, establishing a web socket stream
  * from our data provider and distributing that data to the client application.
  */
-function DataProvider() {
-    this.API_KEY = '_nnkbN3IuzOKDecrdiwKe5eLmU_dAzV1'
-    this.WS_URL = 'wss://socket.polygon.io/'
-    this.SOCKET_CRYPTO_URL = 'wss://socket.polygon.io/crypto'
-    this.SOCKET_STOCKS_URL = 'wss://socket.polygon.io/stocks'
-    this.REST_STOCKS_URL = 'https://api.polygon.io/v1/'
+class DataProvider {
 
-    this.REGISTERED_TRADES = []
-    this.STREAM_DATA = []
-
-    // this.WS_CRYPTO = build_websocket(this.WS_URL+'crypto', this.API_KEY)
-    // this.WS_STOCKS = build_websocket(this.WS_URL+'crypto', this.API_KEY)
-    // this.WS_FOREX = build_websocket(this.WS_URL+'forex', this.API_KEY)
+    constructor() {
+        this.API_KEY = '_nnkbN3IuzOKDecrdiwKe5eLmU_dAzV1'
+        this.WS_URL = 'wss://socket.polygon.io/'
+        this.REST_STOCKS_URL = 'https://api.polygon.io/v1/'
+        this.REGISTERED_TRADES = []
+        this.STREAM_DATA = {
+            STOCK: [],
+            FOREX: [],
+            CRYPTO: []
+        }
+        this.WS = {
+            // STOCK: this.build_websocket(this.WS_URL+'stocks', this.API_KEY),
+            CRYPTO: this.build_websocket(this.WS_URL + 'crypto', this.API_KEY),
+            // FOREX: this.build_websocket(this.WS_URL+'forex', this.API_KEY)
+        }
+    }
 
     /**
      * Creates and returns a websocket and its handlers.
-     *
-     * Note that method must be declared as such in order for proper hoisting
-     * during DataProvider object initialization.
-     * @param ws_url
-     * @param api_key
      */
-    function build_websocket(ws_url, api_key) {
+    build_websocket = (ws_url, api_key) => {
         let ws = new W3CWebSocket(ws_url)
 
         ws.onopen = () => {
@@ -41,7 +41,39 @@ function DataProvider() {
         }
 
         ws.onmessage = (msg) => {
-            console.log('MESSAGE from ' + ws_url, msg.data)
+            let stream_arr = JSON.parse(msg.data)
+
+            // Log non data messages to the console
+            if (stream_arr[0].hasOwnProperty("status")) {
+                console.log('MESSAGE from ' + ws_url, msg.data)
+            }
+
+            // Continually build STREAM_DATA object from streamed data
+            stream_arr.forEach((stream) => {
+                switch (stream.ev) {
+                    case 'Q':
+                        this.STREAM_DATA.STOCK[stream.sym] = {
+                            bp: stream.bp, bs: stream.bs, bx: stream.bx,
+                            ap: stream.ap, as: stream.as, c: stream.c,
+                            t: stream.t
+                        }
+                        break
+                    case 'C':
+                        this.STREAM_DATA.STOCK[stream.p] = {
+                            x: stream.x, a: stream.a, b: stream.b,
+                            t: stream.b
+                        }
+                        break
+                    case 'XQ':
+                        let symbol = stream.pair.replace("-USD", "")
+                        this.STREAM_DATA.CRYPTO[symbol] = {
+                            lp: stream.lp, ls: stream.ls, bp: stream.bp,
+                            bs: stream.bs, ap: stream.ap, as: stream.as,
+                            t: stream.t, x: stream.x, r: stream.r
+                        }
+                        break
+                }
+            })
         }
 
         ws.onclose = (msg) => {
@@ -58,38 +90,50 @@ function DataProvider() {
     /**
      * ...
      */
-    const add_trade_to_stream = () => {
+    add_trade_to_stream = (trade) => {
+        let param_str = ''
+        switch (trade.type) {
+            case 'stock':
+                param_str += 'Q.' + trade.symbol.toUpperCase() + '-USD'
+                break
+            case 'forex':
+                param_str += 'C.' + trade.symbol.toUpperCase() + '-USD'
+                break
+            case 'crypto':
+                param_str += 'XQ.' + trade.symbol.toUpperCase() + '-USD'
+                break
+        }
+
+        this.WS[trade.type.toUpperCase()].send(JSON.stringify({
+            "action": "subscribe",
+            "params": param_str
+        }))
+    }
+
+    /**
+     * ...
+     */
+    remove_trade_from_stream = (uuid) => {
 
     }
 
     /**
      * ...
      */
-    const remove_trade_from_stream = () => {
-
+    register_trade = (uuid, type, symbol) => {
+        let trade = {uuid: uuid, type: type, symbol: symbol}
+        this.REGISTERED_TRADES.push(trade)
+        this.add_trade_to_stream(trade)
     }
 
     /**
      * ...
      */
-    const register_trade = (uuid, type, symbol) => {
-        this.REGISTERED_TRADES.push({uuid: uuid, type: type, symbol: symbol})
-    }
-
-    /**
-     * ...
-     */
-    const deregister_trade = (uuid) => {
+    deregister_trade = (uuid) => {
         let newRegisteredTrades = this.REGISTERED_TRADES.filter((trade) => {
             return trade.uuid !== uuid
         })
         this.REGISTERED_TRADES = newRegisteredTrades
-    }
-
-
-    return {
-        register_trade: register_trade,
-        deregister_trade: deregister_trade
     }
 }
 

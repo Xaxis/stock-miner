@@ -41,7 +41,7 @@ let DP = new DataProvider()
  * Define API access points.
  */
 server.get('/api/alive', (req, res) => {
-    res.send({status: `success`})
+    res.send(res.send({success: true}))
 })
 
 server.get('/api/get/symbols', (req, res) => {
@@ -50,6 +50,20 @@ server.get('/api/get/symbols', (req, res) => {
 
 server.get('/api/get/crypto/symbols', (req, res) => {
     res.send(SymbolProvider.get_all_crypto_symbols())
+})
+
+server.get('/api/quote/:type/:symbol', (req, res) => {
+    let type = req.params.type.toUpperCase()
+    let symbol = req.params.symbol.toUpperCase()
+    if (type === 'STOCK' || type === 'FOREX' || type === 'CRYPTO') {
+        if (DP.STREAM_DATA[type].hasOwnProperty(symbol)) {
+            res.send(DP.STREAM_DATA[type][symbol])
+        } else {
+            res.send({success: false})
+        }
+    } else {
+        res.send({success: false})
+    }
 })
 
 server.get('/api/get/symbols/:chars/:limit', (req, res) => {
