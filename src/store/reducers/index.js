@@ -7,7 +7,7 @@ const templateObjects = {
 }
 
 const initialState = {
-    tableData: {},
+    tableData: [],
     registeredTrades: [],
     newRegisteredTrades: [],
     registeredTradesToDelete: []
@@ -87,13 +87,15 @@ const Reducers = (state = initialState, action) => {
 
         /**
           * Updates data in the table when called.
+          * @todo - Updates streaming data but buggy!!!
           */
         case ActionTypes.UPDATE_TABLE_DATA:
-            state.tableData[action.tableID] = action.tableData
-            console.log(action)
+            state.tableData[action.tableID] = action.updatedTableData
             return {
                 ...state,
-                tableData: state.tableData
+                tableData: [...state.tableData],
+                registeredTrades: state.registeredTrades,
+                registeredTradesToDelete: state.registeredTradesToDelete
             }
 
 

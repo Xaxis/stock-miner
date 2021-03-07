@@ -105,11 +105,17 @@ const TableManager = (props) => {
                 // Iterate over each trade in table
                 if (tableData[tableID]) {
 
+                    // updateTableData(tableID, [])
+
+                    let updatedTableRows = []
                     tableData[tableID].forEach((trade) => {
                         trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
+                        updatedTableRows.push(trade)
                     })
 
-                    updateTableData(tableID, tableData[tableID])
+                    // tableData[tableID] = updatedTableRows
+                    // tableData = [...tableData]
+                    updateTableData(tableID, updatedTableRows)
                 }
 
             }
@@ -203,7 +209,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows)),
-        updateTableData: (tableID, tableData) => dispatch(ActionTypes.updateTableData(tableID, tableData))
+        updateTableData: (tableID, updatedTableData) => dispatch(ActionTypes.updateTableData(tableID, updatedTableData))
     }
 }
 
