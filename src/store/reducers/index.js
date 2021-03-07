@@ -7,7 +7,7 @@ const templateObjects = {
 }
 
 const initialState = {
-    tableData: [],
+    tableData: {},
     registeredTrades: [],
     newRegisteredTrades: [],
     registeredTradesToDelete: []
@@ -20,6 +20,13 @@ const Reducers = (state = initialState, action) => {
          * Adds new row(s) of data to a data table.
          */
         case ActionTypes.ADD_TABLE_ROW:
+
+            // If a Table's identifier doesn't exist, create a new array for that table
+            if (!(action.tableID in initialState.tableData)) {
+                state.tableData[action.tableID] = []
+            }
+
+            // Add new rows to specified table's table data
             let newRows = []
             let newRegisteredTrades = []
             action.rows.forEach((row) => {
@@ -32,14 +39,18 @@ const Reducers = (state = initialState, action) => {
 
                 // Create and add matching registered trade object to registeredTrades
                 let newRegisteredTradeObject = Object.assign({}, templateObjects.registeredTrade)
+                newRegisteredTradeObject.tableID = action.tableID
                 newRegisteredTradeObject.uuid = newRowObject.uuid
                 newRegisteredTradeObject.symbol = newRowObject.symbol
                 newRegisteredTradeObject.type = row.t
                 newRegisteredTrades.push(newRegisteredTradeObject)
             })
+
+            // Update table data on specified table
+            state.tableData[action.tableID] = state.tableData[action.tableID].concat(newRows)
             return {
                 ...state,
-                tableData: state.tableData.concat(newRows),
+                tableData: state.tableData,
                 registeredTrades: state.registeredTrades.concat(newRegisteredTrades),
                 newRegisteredTrades: newRegisteredTrades
             }
@@ -48,18 +59,27 @@ const Reducers = (state = initialState, action) => {
          * Deletes row(s) of data from a data table.
          */
         case ActionTypes.DELETE_TABLE_ROW:
-            let newTableData = state.tableData.filter((row) => {
+            
+            // What the new table will look like
+            let newTableData = state.tableData[action.tableID].filter((row) => {
                 return action.uuids.indexOf(row.uuid) <= -1
             })
+
+            // Also update the corresponding registered trades object
             let newRegisteredTradesData = state.registeredTrades.filter((row) => {
                 return action.uuids.indexOf(row.uuid) <= -1
             })
+
+            // Update which trades in the table are to be removed on the server
             let oldRegisteredTradesData = state.registeredTrades.filter((row) => {
                 return action.uuids.indexOf(row.uuid) > -1
             })
+
+            // Update table data on specified table
+            state.tableData[action.tableID] = newTableData
             return {
                 ...state,
-                tableData: newTableData,
+                tatbleData: state.tableData,
                 registeredTrades: newRegisteredTradesData,
                 registeredTradesToDelete: oldRegisteredTradesData
             }

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {useState, useEffect} from "react"
+import PropTypes from "prop-types"
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
@@ -16,7 +17,12 @@ function sleep(delay = 0) {
     })
 }
 
-const SymbolSearch = ({addTableRow}) => {
+const SymbolSearch = (props) => {
+    const {
+        tableID,
+        addTableRow,
+        ...other
+    } = props;
     const [open, setOpen] = useState(false)
     const [options, setOptions] = useState([])
     const [chars, setChars] = useState('')
@@ -25,7 +31,7 @@ const SymbolSearch = ({addTableRow}) => {
     const loading = open && options.length === 0 && chars.length > 0
 
     const handleAddButtonClick = () => {
-        addTableRow(selectedSymbols)
+        addTableRow(tableID, selectedSymbols)
         setSelectedSymbols([])
         setAddButtonDisabled(true)
     }
@@ -57,7 +63,7 @@ const SymbolSearch = ({addTableRow}) => {
     }, [open])
 
     return (
-        <FormGroup>
+        <FormGroup id={`symbol-search-datatable-${tableID}`}>
             <Autocomplete
                 multiple
                 style={{width: '350px', marginRight: 'auto'}}
@@ -126,14 +132,17 @@ const SymbolSearch = ({addTableRow}) => {
     )
 }
 
+SymbolSearch.propTypes = {
+    tableID: PropTypes.any.isRequired
+}
+
 const mapStateToProps = (state) => {
-    return {
-    }
+    return {}
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addTableRow: (rows) => dispatch(ActionTypes.addTableRow(rows)),
+        addTableRow: (tableID, rows) => dispatch(ActionTypes.addTableRow(tableID, rows)),
     }
 }
 

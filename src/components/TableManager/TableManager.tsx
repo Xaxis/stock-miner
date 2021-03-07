@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {useState, useEffect, useRef, useMemo, useCallback} from "react"
+import PropTypes from "prop-types"
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
@@ -8,18 +9,17 @@ import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch"
 import './TableManager.scss'
+// const socket = new W3CWebSocket('ws://localhost:2222')
 
-const socket = new W3CWebSocket('ws://localhost:2222')
-socket.onmessage = (payload) => {
-    console.log('Message from server: ', JSON.parse(payload.data))
-}
 
-const TableManager = ({
-                          tableData,
-                          newRegisteredTrades,
-                          deleteTableRow,
-                          registeredTradesToDelete
-                      }) => {
+const TableManager = (props) => {
+    const {
+        tableID,
+        tableData,
+        newRegisteredTrades,
+        deleteTableRow,
+        registeredTradesToDelete,
+        ...other} = props;
     const [columns, setColumns] = useState([
         {
             name: "uuid",
@@ -81,19 +81,21 @@ const TableManager = ({
             }
         },
     ])
-    const [socketEstablished, setSocketEstablished] = useState(false)
+    // const [socketEstablished, setSocketEstablished] = useState(false)
+
+    // console.log(tableID, tableData)
 
     /**
-     * ...
+     * Receive updates from web socket server.
      */
-    useEffect(() => {
-        if (!socketEstablished) {
-            // socket.onmessage = (payload) => {
-            //     console.log('Message from server: ', JSON.parse(payload.data))
-            // }
-            setSocketEstablished(true)
-        }
-    })
+    // useEffect(() => {
+    //     if (!socketEstablished) {
+    //         socket.onmessage = (payload) => {
+    //             console.log('Message from server: ', JSON.parse(payload.data))
+    //         }
+    //         setSocketEstablished(true)
+    //     }
+    // })
 
     /**
      * Register new trade with server.
@@ -121,17 +123,18 @@ const TableManager = ({
      * Handles table's row delete event.
      */
     const handleRowsDelete = (rowsDeleted) => {
-        const uuidsToDelete = rowsDeleted.data.map(d => tableData[d.dataIndex].uuid)
-        deleteTableRow(uuidsToDelete)
+        const uuidsToDelete = rowsDeleted.data.map(d => tableData[tableID][d.dataIndex].uuid)
+        deleteTableRow(tableID, uuidsToDelete)
     }
 
     return (
-        <Grid container spacing={0}>
+        <Grid container spacing={0} id={`datatable-${tableID}-wrapper`}>
             <Grid item xs={12} className="tablemanager-datatable">
                 <MUIDataTable
+                    id={`datatable-${tableID}-wrapper`}
+                    title={<SymbolSearch tableID={tableID}/>}
                     square
-                    title={<SymbolSearch/>}
-                    data={tableData}
+                    data={tableData[tableID]}
                     columns={columns}
                     options={{
                         filterType: "checkbox",
@@ -165,6 +168,10 @@ const TableManager = ({
     )
 }
 
+TableManager.propTypes = {
+    tableID: PropTypes.any.isRequired
+}
+
 const mapStateToProps = (state) => {
     return {
         tableData: state.tableData,
@@ -175,7 +182,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deleteTableRow: (rows) => dispatch(ActionTypes.deleteTableRow(rows))
+        deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows))
     }
 }
 

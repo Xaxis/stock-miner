@@ -1,15 +1,14 @@
 import * as React from 'react'
-import PropTypes from 'prop-types';
-import {makeStyles} from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import PropTypes from 'prop-types'
+import {makeStyles} from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import Box from '@material-ui/core/Box'
 import TableManager from '../TableManager/TableManager'
 
 function TabPanel(props) {
-    const {children, value, index, ...other} = props;
+    const {children, value, index, ...other} = props
 
     return (
         <div
@@ -78,19 +77,15 @@ export default function TabManager() {
                         aria-label="scrollable auto tabs example"
                     >
                         <Tab label="Simulating" {...a11yProps(0)} />
-                        <Tab label="Holding" {...a11yProps(2)} />
-                        <Tab label="Scanning" {...a11yProps(1)} />
+                        <Tab label="Holding" {...a11yProps(1)} />
                     </Tabs>
                 </Box>
             </AppBar>
             <TabPanel value={value} index={0}>
-                <TableManager/>
+                <TableManager tableID={0}/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                Item Two
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                Item Three
+                <TableManager tableID={1}/>
             </TabPanel>
         </div>
     );

@@ -52,6 +52,10 @@ app.get('/api/get/crypto/symbols', (req, res) => {
     res.send(SymbolProvider.get_all_crypto_symbols())
 })
 
+app.get('/api/get/all', (req, res) => {
+    res.send(DP.STREAM_DATA)
+})
+
 app.get('/api/quote/:type/:symbol', (req, res) => {
     let type = req.params.type.toUpperCase()
     let symbol = req.params.symbol.toUpperCase()
@@ -90,16 +94,15 @@ app.get('/api/deregister/:uuid', (req, res) => {
 const server = app.listen(server_port, () => console.log(`${server_name} -  Listening on port ${server_port}`))
 
 /**
- * ...
+ * Initialize the WebSocket server.
  */
-const wss = new WebSocket.Server({ server })
-const wss_clients = {};
-wss.on('connection', (ws) => {
-    wss_clients[uuidv4()] = ws
-    console.log('SM: MESSAGE: New WebSocket connection from client.')
-
-    setInterval(function(){
-        console.log(DP.STREAM_DATA)
-        ws.send(JSON.stringify(DP.STREAM_DATA))
-    }, 2000)
-})
+// const wss = new WebSocket.Server({ server })
+// const wss_clients = {};
+// wss.on('connection', (cobj) => {
+//     wss_clients[uuidv4()] = cobj
+//     console.log('SM: MESSAGE: New WebSocket connection from client.')
+//
+//     setInterval(function(){
+//         cobj.send(JSON.stringify(DP.STREAM_DATA))
+//     }, 2000)
+// })

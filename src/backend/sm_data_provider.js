@@ -12,9 +12,9 @@ class DataProvider {
         this.WS_URL = 'wss://socket.polygon.io/'
         this.REGISTERED_TRADES = []
         this.STREAM_DATA = {
-            STOCK: [],
-            FOREX: [],
-            CRYPTO: []
+            STOCK: {},
+            FOREX: {},
+            CRYPTO: {}
         }
         this.WS = {
             // STOCK: this.build_websocket(this.WS_URL+'stocks', this.API_KEY),
@@ -52,9 +52,9 @@ class DataProvider {
                 switch (stream.ev) {
                     case 'Q':
                         this.STREAM_DATA.STOCK[stream.sym] = {
-                            bp: stream.bp, bs: stream.bs, bx: stream.bx,
-                            ap: stream.ap, as: stream.as, c: stream.c,
-                            t: stream.t
+                            key: stream.sym, bp: stream.bp, bs: stream.bs,
+                            bx: stream.bx, ap: stream.ap, as: stream.as,
+                            c: stream.c, t: stream.t
                         }
                         break
                     case 'C':
