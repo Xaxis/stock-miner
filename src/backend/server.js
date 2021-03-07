@@ -96,13 +96,20 @@ const server = app.listen(server_port, () => console.log(`${server_name} -  List
 /**
  * Initialize the WebSocket server.
  */
-// const wss = new WebSocket.Server({ server })
-// const wss_clients = {};
-// wss.on('connection', (cobj) => {
-//     wss_clients[uuidv4()] = cobj
-//     console.log('SM: MESSAGE: New WebSocket connection from client.')
-//
-//     setInterval(function(){
-//         cobj.send(JSON.stringify(DP.STREAM_DATA))
-//     }, 2000)
-// })
+const wss = new WebSocket.Server({port: 2223})
+const wss_clients = {};
+wss.on('connection', (cobj) => {
+    let client_id = uuidv4()
+    wss_clients[client_id] = cobj
+    console.log('SM: MESSAGE: New WebSocket connection from client.')
+
+    // Send message to client
+    cobj.on('message', (message) => {
+
+    })
+
+    // Main interval loop that sends our updated stream data to client
+    setInterval(() => {
+        cobj.send(JSON.stringify(DP.STREAM_DATA))
+    }, 2000)
+})

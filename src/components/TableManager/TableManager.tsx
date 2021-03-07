@@ -9,17 +9,19 @@ import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch"
 import './TableManager.scss'
-// const socket = new W3CWebSocket('ws://localhost:2222')
 
+const socket = new W3CWebSocket('ws://localhost:2223')
 
 const TableManager = (props) => {
     const {
         tableID,
         tableData,
         newRegisteredTrades,
-        deleteTableRow,
         registeredTradesToDelete,
-        ...other} = props;
+        deleteTableRow,
+        updateTableData,
+        ...other
+    } = props;
     const [columns, setColumns] = useState([
         {
             name: "uuid",
@@ -28,6 +30,15 @@ const TableManager = (props) => {
                 filter: true,
                 sort: true,
                 display: false
+            }
+        },
+        {
+            name: "type",
+            label: "Type",
+            options: {
+                filter: true,
+                sort: true,
+                display: true
             }
         },
         {
@@ -81,21 +92,30 @@ const TableManager = (props) => {
             }
         },
     ])
-    // const [socketEstablished, setSocketEstablished] = useState(false)
-
-    // console.log(tableID, tableData)
+    const [socketEstablished, setSocketEstablished] = useState(false)
 
     /**
      * Receive updates from web socket server.
      */
-    // useEffect(() => {
-    //     if (!socketEstablished) {
-    //         socket.onmessage = (payload) => {
-    //             console.log('Message from server: ', JSON.parse(payload.data))
-    //         }
-    //         setSocketEstablished(true)
-    //     }
-    // })
+    useEffect(() => {
+        if (!socketEstablished) {
+            socket.onmessage = (payload) => {
+                let data = JSON.parse(payload.data)
+
+                // Iterate over each trade in table
+                if (tableData[tableID]) {
+
+                    tableData[tableID].forEach((trade) => {
+                        trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
+                    })
+
+                    updateTableData(tableID, tableData[tableID])
+                }
+
+            }
+            setSocketEstablished(true)
+        }
+    })
 
     /**
      * Register new trade with server.
@@ -182,7 +202,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows))
+        deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows)),
+        updateTableData: (tableID, tableData) => dispatch(ActionTypes.updateTableData(tableID, tableData))
     }
 }
 

@@ -2,7 +2,7 @@ import * as ActionTypes from '../actions/action_types'
 import {default as UUID} from 'node-uuid'
 
 const templateObjects = {
-    tableRow: {uuid: '', symbol: '-', price: '-', status: '-', shares: '-', equity: '-', change: '-'},
+    tableRow: {uuid: '', type: '-', symbol: '-', price: '-', status: '-', shares: '-', equity: '-', change: '-'},
     registeredTrade: {uuid: '', symbol: '', type: ''}
 }
 
@@ -35,6 +35,7 @@ const Reducers = (state = initialState, action) => {
                 let newRowObject = Object.assign({}, templateObjects.tableRow)
                 newRowObject.uuid = UUID.v4()
                 newRowObject.symbol = row.s
+                newRowObject.type = row.t
                 newRows.push(newRowObject)
 
                 // Create and add matching registered trade object to registeredTrades
@@ -59,7 +60,7 @@ const Reducers = (state = initialState, action) => {
          * Deletes row(s) of data from a data table.
          */
         case ActionTypes.DELETE_TABLE_ROW:
-            
+
             // What the new table will look like
             let newTableData = state.tableData[action.tableID].filter((row) => {
                 return action.uuids.indexOf(row.uuid) <= -1
@@ -79,9 +80,20 @@ const Reducers = (state = initialState, action) => {
             state.tableData[action.tableID] = newTableData
             return {
                 ...state,
-                tatbleData: state.tableData,
+                tableData: state.tableData,
                 registeredTrades: newRegisteredTradesData,
                 registeredTradesToDelete: oldRegisteredTradesData
+            }
+
+        /**
+          * Updates data in the table when called.
+          */
+        case ActionTypes.UPDATE_TABLE_DATA:
+            state.tableData[action.tableID] = action.tableData
+            console.log(action)
+            return {
+                ...state,
+                tableData: state.tableData
             }
 
 
