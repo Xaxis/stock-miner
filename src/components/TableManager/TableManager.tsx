@@ -105,17 +105,15 @@ const TableManager = (props) => {
                 // Iterate over each trade in table
                 if (tableData[tableID]) {
 
-                    // updateTableData(tableID, [])
-
-                    let updatedTableRows = []
+                    // let updatedTableRows = []
                     tableData[tableID].forEach((trade) => {
                         trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
-                        updatedTableRows.push(trade)
+                        // updatedTableRows.push(trade)
                     })
 
                     // tableData[tableID] = updatedTableRows
                     // tableData = [...tableData]
-                    updateTableData(tableID, updatedTableRows)
+                    updateTableData(tableID, tableData[tableID])
                 }
 
             }
