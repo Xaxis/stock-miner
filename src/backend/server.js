@@ -111,5 +111,5 @@ wss.on('connection', (cobj) => {
     // Main interval loop that sends our updated stream data to client
     setInterval(() => {
         cobj.send(JSON.stringify(DP.STREAM_DATA))
-    }, 2000)
+    }, 1000)
 })

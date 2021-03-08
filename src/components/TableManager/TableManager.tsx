@@ -38,7 +38,7 @@ const TableManager = (props) => {
             options: {
                 filter: true,
                 sort: true,
-                display: true
+                display: false
             }
         },
         {
@@ -92,32 +92,25 @@ const TableManager = (props) => {
             }
         },
     ])
-    const [socketEstablished, setSocketEstablished] = useState(false)
 
     /**
      * Receive updates from web socket server.
      */
     useEffect(() => {
-        if (!socketEstablished) {
-            socket.onmessage = (payload) => {
-                let data = JSON.parse(payload.data)
+        socket.onmessage = (payload) => {
+            let data = JSON.parse(payload.data)
 
-                // Iterate over each trade in table
-                if (tableData[tableID]) {
-
-                    // let updatedTableRows = []
-                    tableData[tableID].forEach((trade) => {
+            // Iterate over each trade in table
+            if (tableData[tableID]) {
+                tableData[tableID].forEach((trade) => {
+                    try {
                         trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
-                        // updatedTableRows.push(trade)
-                    })
-
-                    // tableData[tableID] = updatedTableRows
-                    // tableData = [...tableData]
-                    updateTableData(tableID, tableData[tableID])
-                }
-
+                    } catch (error) {
+                        console.log('Data Table will update on next iteration.')
+                    }
+                })
+                updateTableData()
             }
-            setSocketEstablished(true)
         }
     })
 
@@ -207,7 +200,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows)),
-        updateTableData: (tableID, updatedTableData) => dispatch(ActionTypes.updateTableData(tableID, updatedTableData))
+        updateTableData: () => dispatch(ActionTypes.updateTableData())
     }
 }
 

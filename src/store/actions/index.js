@@ -16,10 +16,8 @@ export const deleteTableRow = (tableID, uuids) => {
     }
 }
 
-export const updateTableData = (tableID, updatedTableData) => {
+export const updateTableData = () => {
     return {
-        type: ActionTypes.UPDATE_TABLE_DATA,
-        tableID: tableID,
-        updatedTableData: updatedTableData
+        type: ActionTypes.UPDATE_TABLE_DATA
     }
 }

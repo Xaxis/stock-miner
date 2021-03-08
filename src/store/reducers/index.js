@@ -22,7 +22,7 @@ const Reducers = (state = initialState, action) => {
         case ActionTypes.ADD_TABLE_ROW:
 
             // If a Table's identifier doesn't exist, create a new array for that table
-            if (!(action.tableID in initialState.tableData)) {
+            if (!(state.tableData.hasOwnProperty(action.tableID))) {
                 state.tableData[action.tableID] = []
             }
 
@@ -87,10 +87,8 @@ const Reducers = (state = initialState, action) => {
 
         /**
           * Updates data in the table when called.
-          * @todo - Updates streaming data but buggy!!!
           */
         case ActionTypes.UPDATE_TABLE_DATA:
-            state.tableData[action.tableID] = action.updatedTableData
             return {
                 ...state,
                 tableData: [...state.tableData],
