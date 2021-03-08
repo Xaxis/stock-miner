@@ -48,6 +48,24 @@ const get_all_crypto_symbols = () => {
     return result
 }
 
+const get_all_forex_symbols = () => {
+    let result = []
+    let forex = [
+        ['EUR', 'Euro'],
+        ['GBP', 'Great British Pound'],
+        ['JPY', 'Japanese Yen'],
+        ['CHF', 'Swiss Franc'],
+        ['CAD', 'Canadian Dollar'],
+        ['AUD', 'Australian Dollar'],
+        ['NZD', 'New Zealand Dollar']
+    ]
+    for (let idx in forex) {
+        let f = forex[idx]
+        result.push({s: f[0], n: f[1], t: 'forex'})
+    }
+    return result
+}
+
 const get_symbols_matching = (symbols, chars, limit) => {
     let chars_uppercase = chars.toUpperCase()
     let exp = `^${chars_uppercase}`
@@ -61,5 +79,6 @@ const get_symbols_matching = (symbols, chars, limit) => {
 module.exports = {
     get_all_finra_symbols: get_all_finra_symbols,
     get_all_crypto_symbols: get_all_crypto_symbols,
+    get_all_forex_symbols: get_all_forex_symbols,
     get_symbols_matching: get_symbols_matching
 }

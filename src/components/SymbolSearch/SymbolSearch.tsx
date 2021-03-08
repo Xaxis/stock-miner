@@ -43,11 +43,15 @@ const SymbolSearch = (props) => {
         }
 
         (async () => {
-            const response = await fetch(`http://localhost:2222/api/get/symbols/${chars}/10`)
-            await sleep(100)
-            const symbols_arr = await response.json()
-            if (active) {
-                setOptions(symbols_arr)
+            try {
+                const response = await fetch(`http://localhost:2222/api/get/symbols/${chars}/10`)
+                await sleep(100)
+                const symbols_arr = await response.json()
+                if (active) {
+                    setOptions(symbols_arr)
+                }
+            } catch (error) {
+                console.log(`Symbol Search didn't like that input. Stock Miner handled it.`)
             }
         })();
 

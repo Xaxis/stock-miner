@@ -120,6 +120,9 @@ const TableManager = (props) => {
     useEffect(() => {
         if (newRegisteredTrades.length) {
             newRegisteredTrades.forEach((trade) => {
+                if (trade.type === 'forex') {
+                    trade.symbol = trade.symbol.replace('/', '-')
+                }
                 fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
             })
         }

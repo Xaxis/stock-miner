@@ -19,7 +19,7 @@ class DataProvider {
         this.WS = {
             // STOCK: this.build_websocket(this.WS_URL+'stocks', this.API_KEY),
             CRYPTO: this.build_websocket(this.WS_URL + 'crypto', this.API_KEY),
-            // FOREX: this.build_websocket(this.WS_URL+'forex', this.API_KEY)
+            FOREX: this.build_websocket(this.WS_URL+'forex', this.API_KEY)
         }
     }
 
@@ -58,7 +58,7 @@ class DataProvider {
                         }
                         break
                     case 'C':
-                        this.STREAM_DATA.STOCK[stream.p] = {
+                        this.STREAM_DATA.FOREX[stream.p] = {
                             x: stream.x, a: stream.a, b: stream.b,
                             t: stream.b
                         }
@@ -150,6 +150,9 @@ class DataProvider {
      * Secondly, subscribes to another trade channel if one does not already exist.
      */
     register_trade = (uuid, type, symbol) => {
+        if (type === 'forex' || type === 'FOREX') {
+            symbol += '/USD'
+        }
         let trade = {uuid: uuid, type: type, symbol: symbol}
         this.add_trade_to_stream(trade)
         this.REGISTERED_TRADES.push(trade)

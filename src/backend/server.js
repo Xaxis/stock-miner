@@ -24,7 +24,8 @@ let all_symbols = []
 SymbolProvider.get_all_finra_symbols()
     .then((res) => {
         let crypto_symbols = SymbolProvider.get_all_crypto_symbols()
-        let concat_symbols = res.concat(crypto_symbols)
+        let forex_symbols = SymbolProvider.get_all_forex_symbols()
+        let concat_symbols = res.concat(crypto_symbols).concat(forex_symbols)
         let sorted_symbols = Lodash.orderBy(concat_symbols, 's', 'asc')
         all_symbols = sorted_symbols
     })
