@@ -21,3 +21,10 @@ export const updateTableData = () => {
         type: ActionTypes.UPDATE_TABLE_DATA
     }
 }
+
+export const setSelectedTrade = (row) => {
+    return {
+        type: ActionTypes.SET_SELECTED_TRADE,
+        row: row
+    }
+}

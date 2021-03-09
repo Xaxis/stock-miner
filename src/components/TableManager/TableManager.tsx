@@ -21,6 +21,7 @@ const TableManager = (props) => {
         registeredTradesToDelete,
         deleteTableRow,
         updateTableData,
+        setSelectedTrade,
         ...other
     } = props;
 
@@ -152,6 +153,19 @@ const TableManager = (props) => {
         // return false
     }
 
+    /**
+     * Handles when row selection changes.
+     */
+    const handleRowSelectionChange = (currentRowArr, allRowsArr) => {
+        if (allRowsArr.length) {
+            let rowIndex = allRowsArr[allRowsArr.length-1].dataIndex
+            let selectedRow = tableData[tableID][rowIndex]
+            setSelectedTrade(selectedRow)
+        } else {
+            setSelectedTrade(null)
+        }
+    }
+
     return (
         <Grid container spacing={0} id={`datatable-${tableID}-wrapper`}>
             <Grid item xs={12} className="tablemanager-datatable">
@@ -174,7 +188,8 @@ const TableManager = (props) => {
                         },
                         fixedSelectColumn: true,
                         tableBodyHeight: 'calc(100vh - 254px)',
-                        onRowsDelete: handleRowsDelete
+                        onRowsDelete: handleRowsDelete,
+                        onRowSelectionChange: handleRowSelectionChange
                         // expandableRowsHeader: true,
                         // expandableRows: true,
                         // renderExpandableRow: (rowData, rowMeta) => {
@@ -225,7 +240,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows)),
-        updateTableData: () => dispatch(ActionTypes.updateTableData())
+        updateTableData: () => dispatch(ActionTypes.updateTableData()),
+        setSelectedTrade: (row) => dispatch(ActionTypes.setSelectedTrade(row))
     }
 }
 

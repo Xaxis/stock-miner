@@ -1,4 +1,6 @@
 import * as React from 'react'
+import {connect} from 'react-redux'
+import * as ActionTypes from '../../store/actions'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
@@ -8,7 +10,7 @@ import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
-export default function SideBarTradeMenu() {
+const SideBarTradeMenu = ({currentSelectedTrade}) => {
     const [expandedPanel1, setExpandedPanel1] = React.useState(true)
 
     const handleChange = (panel) => (event) => {
@@ -23,17 +25,20 @@ export default function SideBarTradeMenu() {
                     aria-controls="sidebar-trade-panel1"
                     id="sidebar-trade-panel1"
                 >
-                    <Typography>Buy</Typography>
+                    <Typography>
+                        Buy&nbsp;
+                        <span className="current-selected-trade-symbol">{currentSelectedTrade ? currentSelectedTrade.symbol : ""}</span>
+                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <FormGroup>
                         <TextField
                             id="sidebar-trade-buy-estprice"
                             label="Estimated Price"
-                            placeholder="$0.00"
+                            placeholder={currentSelectedTrade ? currentSelectedTrade.price : "$0.00"}
                             variant="outlined"
-                            defaultValue="$0.00"
-                            InputProps={{readOnly: true}}
+                            defaultValue={currentSelectedTrade ? currentSelectedTrade.price : "$0.00"}
+                            InputProps={{readOnly: false}}
                             InputLabelProps={{shrink: true}}
                         />
                         <TextField
@@ -101,5 +106,17 @@ export default function SideBarTradeMenu() {
             </Accordion>
 
         </div>
-    );
-};
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {
+        currentSelectedTrade: state.currentSelectedTrade
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBarTradeMenu)

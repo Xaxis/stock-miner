@@ -10,7 +10,8 @@ const initialState = {
     tableData: [],
     registeredTrades: [],
     newRegisteredTrades: [],
-    registeredTradesToDelete: []
+    registeredTradesToDelete: [],
+    currentSelectedTrade: null
 }
 
 const Reducers = (state = initialState, action) => {
@@ -96,6 +97,14 @@ const Reducers = (state = initialState, action) => {
                 registeredTradesToDelete: state.registeredTradesToDelete
             }
 
+        /**
+         * Set the most recently selected trade object.
+         */
+        case ActionTypes.SET_SELECTED_TRADE:
+            return {
+                ...state,
+                currentSelectedTrade: action.row
+            }
 
         /**
          * Returns default state upon no action call.
