@@ -8,9 +8,10 @@ import {w3cwebsocket as W3CWebSocket} from 'websocket'
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch"
+import AlertDialog from '../AlertDialog/AlertDialog'
 import './TableManager.scss'
 
-const socket = new W3CWebSocket('ws://localhost:2223')
+// const socket = new W3CWebSocket('ws://localhost:2223')
 
 const TableManager = (props) => {
     const {
@@ -22,6 +23,7 @@ const TableManager = (props) => {
         updateTableData,
         ...other
     } = props;
+
     const [columns, setColumns] = useState([
         {
             name: "uuid",
@@ -93,25 +95,28 @@ const TableManager = (props) => {
         },
     ])
 
+    const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
+    const [rowsToDeleteNext, setRowsToDeleteNext] = useState([])
+
     /**
      * Receive updates from web socket server.
      */
     useEffect(() => {
-        socket.onmessage = (payload) => {
-            let data = JSON.parse(payload.data)
-
-            // Iterate over each trade in table
-            if (tableData[tableID]) {
-                tableData[tableID].forEach((trade) => {
-                    try {
-                        trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
-                    } catch (error) {
-                        console.log('Data Table will update on next iteration.')
-                    }
-                })
-                updateTableData()
-            }
-        }
+        // socket.onmessage = (payload) => {
+        //     let data = JSON.parse(payload.data)
+        //
+        //     // Iterate over each trade in table
+        //     if (tableData[tableID]) {
+        //         tableData[tableID].forEach((trade) => {
+        //             try {
+        //                 trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
+        //             } catch (error) {
+        //                 console.log('Data Table will update on next iteration.')
+        //             }
+        //         })
+        //         updateTableData()
+        //     }
+        // }
     })
 
     /**
@@ -120,9 +125,6 @@ const TableManager = (props) => {
     useEffect(() => {
         if (newRegisteredTrades.length) {
             newRegisteredTrades.forEach((trade) => {
-                if (trade.type === 'forex') {
-                    trade.symbol = trade.symbol.replace('/', '-')
-                }
                 fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
             })
         }
@@ -144,7 +146,10 @@ const TableManager = (props) => {
      */
     const handleRowsDelete = (rowsDeleted) => {
         const uuidsToDelete = rowsDeleted.data.map(d => tableData[tableID][d.dataIndex].uuid)
+        setRowsToDeleteNext(uuidsToDelete)
+        // setDeleteAlertDialogOpen(true)
         deleteTableRow(tableID, uuidsToDelete)
+        // return false
     }
 
     return (
@@ -165,7 +170,7 @@ const TableManager = (props) => {
                         rowsPerPage: 10,
                         elevation: 0,
                         draggableColumns: {
-                            enabled: true
+                            enabled: false
                         },
                         fixedSelectColumn: true,
                         tableBodyHeight: 'calc(100vh - 254px)',
@@ -183,6 +188,23 @@ const TableManager = (props) => {
                         // }
                     }}
                 />
+                <AlertDialog
+                    isOpen={deleteAlertDialogOpen}
+                    onClose={() => {
+                        setRowsToDeleteNext([])
+                        setDeleteAlertDialogOpen(false)
+                    }}
+                    onSubmit={() => {
+                        deleteTableRow(tableID, rowsToDeleteNext)
+                        setDeleteAlertDialogOpen(false)
+                    }}
+                    title='Delete trades in table?'
+                    subtitle='Are you sure you want to attempt to delete the selected trades?
+                    Note: Any held trades will not be deleted. You must sell them first.'
+                    agree={'Delete'}
+                    disagree={'Cancel'}
+                >
+                </AlertDialog>
             </Grid>
         </Grid>
     )
