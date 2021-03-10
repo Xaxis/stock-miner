@@ -59,7 +59,6 @@ class DBManager {
                     query += ';'
                     this.DB.run(query, (err) => {
                         if (err) throw err;
-                        else console.log("SMDB: Building table.")
                     })
                 }
             })
@@ -80,6 +79,23 @@ class DBManager {
      */
     drop_tables = () => {
         this.run_sql_file('sm_drop_tables.sql')
+    }
+
+    /**
+     * Updates the config parameters in the Config table.
+     */
+    update_config = (last_profile, default_profile) => {
+        let sql = `
+            INSERT OR REPLACE INTO Config (id, last_profile, default_profile)
+            VALUES (1, ?, ?) `
+        this.DB.run(sql, [last_profile, default_profile], function (err) {
+            if (err) {
+                console.log("SMDB:" + err)
+            } else {
+                console.log("SMDB: Config: Last ID: " + this.lastID)
+                console.log("SMDB: Config: # of Row Changes: " + this.changes)
+            }
+        })
     }
 
     /**
@@ -169,9 +185,11 @@ module.exports = {
 //@todo - Testing and development
 let DBM = new DBManager()
 
+// DBM.drop_tables()
+
 // DBM.build_tables()
 
-// DBM.drop_tables()
+DBM.update_config('test_profile1', 'test_profile3')
 
 // DBM.add_profile_entry("test_profile")
 

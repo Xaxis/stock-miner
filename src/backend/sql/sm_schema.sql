@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Records` (
     `timestamp`     DATE NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `Config` (
-    `open_pref`	        TEXT DEFAULT 'last',
+    `id`            INTEGER NOT NULL PRIMARY KEY,
     `last_profile`	    TEXT DEFAULT 'Profile 1',
     `default_profile`	TEXT DEFAULT 'Profile 1'
 );
