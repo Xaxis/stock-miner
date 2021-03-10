@@ -189,7 +189,7 @@ let DBM = new DBManager()
 
 // DBM.build_tables()
 
-DBM.update_config('test_profile1', 'test_profile3')
+// DBM.update_config('test_profile1', 'test_profile3')
 
 // DBM.add_profile_entry("test_profile")
 
