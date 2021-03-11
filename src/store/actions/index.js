@@ -1,5 +1,19 @@
 import * as ActionTypes from './action_types'
 
+export const setProfileActive = (active) => {
+    return {
+        type: ActionTypes.SET_PROFILE_ACTIVE,
+        active: active
+    }
+}
+
+export const setProfileList = (list) => {
+    return {
+        type: ActionTypes.SET_PROFILE_LIST,
+        list: list
+    }
+}
+
 export const addTableRow = (tableID, rows) => {
     return {
         type: ActionTypes.ADD_TABLE_ROW,

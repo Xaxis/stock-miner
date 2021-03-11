@@ -3,6 +3,7 @@ const Express = require('express')
 const WebSocket = require('ws')
 const Cors = require('cors')
 const BodyParser = require('body-parser')
+const {DBManager} = require('./sm_db_manager.js')
 const {SymbolProvider} = require('./sm_symbol_provider.js')
 const {DataProvider} = require('./sm_data_provider.js')
 const {v4: uuidv4} = require('node-uuid')
@@ -35,6 +36,11 @@ SP.get_all_finra_symbols()
     })
 
 /**
+ * Initialize the Stock Miner Data Base Manager.
+ */
+let DBM = new DBManager()
+
+/**
  * Initialize the Stock Miner Data Provider.
  */
 let DP = new DataProvider()
@@ -44,6 +50,26 @@ let DP = new DataProvider()
  */
 app.get('/api/alive', (req, res) => {
     res.send(res.send({success: true}))
+})
+
+app.get('/app/get/profiles/list', (req, res) => {
+    DBM.get_profile_list()
+        .then((rows) => {
+            res.send(rows)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
+app.get('/app/get/profiles/active', (req, res) => {
+    DBM.get_profile_active()
+        .then((row) => {
+            res.send(row)
+        })
+        .catch(() => {
+            res.send([])
+        })
 })
 
 app.get('/api/get/symbols', (req, res) => {

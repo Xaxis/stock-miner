@@ -7,6 +7,8 @@ const templateObjects = {
 }
 
 const initialState = {
+    profileActive: [],
+    profileList: [],
     tableData: [],
     registeredTrades: [],
     newRegisteredTrades: [],
@@ -16,6 +18,24 @@ const initialState = {
 
 const Reducers = (state = initialState, action) => {
     switch (action.type) {
+
+        /**
+         * Set active profile.
+         */
+        case ActionTypes.SET_PROFILE_ACTIVE:
+            return {
+                ...state,
+                profileActive: action.active
+            }
+
+        /**
+         * Set profile list.
+         */
+        case ActionTypes.SET_PROFILE_LIST:
+            return {
+                ...state,
+                profileList: action.list
+            }
 
         /**
          * Adds new row(s) of data to a data table.
@@ -87,8 +107,8 @@ const Reducers = (state = initialState, action) => {
             }
 
         /**
-          * Updates data in the table when called.
-          */
+         * Updates data in the table when called.
+         */
         case ActionTypes.UPDATE_TABLE_DATA:
             return {
                 ...state,

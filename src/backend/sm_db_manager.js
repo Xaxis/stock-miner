@@ -84,13 +84,13 @@ class DBManager {
     /**
      * Updates the config parameters in the Config table.
      */
-    update_config = (last_profile, default_profile) => {
+    update_config = (active_profile, default_profile) => {
         let sql = `
-            INSERT OR REPLACE INTO Config (id, last_profile, default_profile)
+            INSERT OR REPLACE INTO Config (id, active_profile, default_profile)
             VALUES (1, ?, ?) `
-        this.DB.run(sql, [last_profile, default_profile], function (err) {
+        this.DB.run(sql, [active_profile, default_profile], function (err) {
             if (err) {
-                console.log("SMDB:" + err)
+                console.log("SMDB: " + err)
             } else {
                 console.log("SMDB: Config: Last ID: " + this.lastID)
                 console.log("SMDB: Config: # of Row Changes: " + this.changes)
@@ -106,7 +106,7 @@ class DBManager {
         sql += "VALUES (?) "
         this.DB.run(sql, [profile_name], function (err) {
             if (err) {
-                console.log("SMDB:" + err)
+                console.log("SMDB: " + err)
             } else {
                 console.log("SMDB: Profiles: Last ID: " + this.lastID)
                 console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
@@ -137,7 +137,7 @@ class DBManager {
         sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
         this.DB.run(sql, [uuid, profile, market, order_type, symbol, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
             if (err) {
-                console.log("SMDB:" + err)
+                console.log("SMDB: " + err)
             } else {
                 console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
                 console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
@@ -153,7 +153,7 @@ class DBManager {
         sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
         this.DB.run(sql, [uuid, profile, market, symbol, shares, price, cost_basis, simulated], function (err) {
             if (err) {
-                console.log("SMDB:" + err)
+                console.log("SMDB: " + err)
             } else {
                 console.log("SMDB: Stock_Holdings: Last ID: " + this.lastID)
                 console.log("SMDB: Stock_Holdings: # of Row Changes: " + this.changes)
@@ -169,11 +169,49 @@ class DBManager {
         sql += "VALUES (?, ?, ?, ?) "
         this.DB.run(sql, [market, symbol, quote, timestamp], function (err) {
             if (err) {
-                console.log("SMDB:" + err)
+                console.log("SMDB: " + err)
             } else {
                 console.log("SMDB: Stock_Records: Last ID: " + this.lastID)
                 console.log("SMDB: Stock_Records: # of Row Changes: " + this.changes)
             }
+        })
+    }
+
+    /**
+     * Returns a Promise that returns all profile names in the Profile table.
+     */
+    get_profile_list = () => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT DISTINCT profile_name FROM Profiles`
+            self.DB.all(sql, function (err, rows) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row.profile_name)
+                })
+                resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Returns a Promise containing the active profile name from the Config table.
+     */
+    get_profile_active = () => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT active_profile FROM Config`
+            self.DB.get(sql, function (err, row) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject([])
+                }
+                resolve(row)
+            })
         })
     }
 }
@@ -183,15 +221,16 @@ module.exports = {
 }
 
 //@todo - Testing and development
-let DBM = new DBManager()
+// let DBM = new DBManager()
 
 // DBM.drop_tables()
 
 // DBM.build_tables()
 
-// DBM.update_config('test_profile1', 'test_profile3')
+// DBM.update_config('Profile 1', 'Profile 1')
 
-// DBM.add_profile_entry("test_profile")
+// DBM.add_profile_entry("Profile 1")
+// DBM.add_profile_entry("Profile 2")
 
 // DBM.add_stock_record_entry("CRYPTO", "BTC", "100000", Date.now())
 
@@ -221,3 +260,13 @@ let DBM = new DBManager()
 //     "5000",
 //     true
 // )
+
+// DBM.get_profile_list()
+//     .then((res) => {
+//         console.log('Profile Results: ', res)
+//     })
+
+// DBM.get_profile_active()
+//     .then((res) => {
+//         console.log('Active Profile: ', res)
+//     })
