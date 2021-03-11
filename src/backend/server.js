@@ -55,7 +55,14 @@ app.get('/api/alive', (req, res) => {
 app.get('/app/get/profiles/list', (req, res) => {
     DBM.get_profile_list()
         .then((rows) => {
-            res.send(rows)
+            let profileList = []
+            rows.forEach((profile_name) => {
+                profileList.push({
+                    value: profile_name,
+                    label: profile_name
+                })
+            })
+            res.send(profileList)
         })
         .catch(() => {
             res.send([])
@@ -65,11 +72,22 @@ app.get('/app/get/profiles/list', (req, res) => {
 app.get('/app/get/profiles/active', (req, res) => {
     DBM.get_profile_active()
         .then((row) => {
-            res.send(row)
+            let activeProfile = row ? [row.active_profile] : []
+            res.send(activeProfile)
         })
         .catch(() => {
             res.send([])
         })
+})
+
+app.get('/app/add/profiles/:profile', (req, res) => {
+    DBM.add_profile_entry(req.params.profile)
+    res.send({success: true})
+})
+
+app.get('/app/add/profiles/active/:profile', (req, res) => {
+    DBM.update_config(req.params.profile, req.params.profile)
+    res.send({success: true})
 })
 
 app.get('/api/get/symbols', (req, res) => {

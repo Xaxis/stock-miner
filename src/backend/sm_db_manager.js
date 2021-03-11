@@ -222,9 +222,9 @@ module.exports = {
 
 //@todo - Testing and development
 // let DBM = new DBManager()
-
+//
 // DBM.drop_tables()
-
+//
 // DBM.build_tables()
 
 // DBM.update_config('Profile 1', 'Profile 1')

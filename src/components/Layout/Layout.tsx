@@ -264,23 +264,18 @@ const Layout = ({
             /**
              * Load and set state with active profile
              */
-            const response = await fetch(`http://localhost:2222/app/get/profiles/active`)
-            const res = await response.json()
-            setProfileActive(res)
+            const ap_response = await fetch(`http://localhost:2222/app/get/profiles/active`)
+            const ap_result = await ap_response.json()
+            // console.log('ap_result', ap_result)
+            setProfileActive(ap_result)
 
             /**
              * Load and set state with profile list.
              */
-            const response = await fetch(`http://localhost:2222/app/get/profiles/list`)
-            const res = await response.json()
-            let profileList = []
-            res.forEach((profile_name) => {
-                profileList.push({
-                    value: profile_name,
-                    label: profile_name
-                })
-            })
-            setProfileList(profileList)
+            const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
+            const pl_result = await pl_response.json()
+            // console.log('pl_result', pl_result)
+            setProfileList(pl_result)
         })()
     })
 

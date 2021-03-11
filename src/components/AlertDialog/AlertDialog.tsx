@@ -1,6 +1,5 @@
 import * as React from 'react'
-import {useState} from "react"
-import PropTypes from "prop-types"
+import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -27,22 +26,26 @@ const AlertDialog = (props) => {
                 open={isOpen}
                 onClose={onClose}
                 onSubmit={onSubmit}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                disableBackdropClick
             >
                 <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         {subtitle}
                     </DialogContentText>
+                    {children}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose} color="primary">
-                        {(disagree) ? disagree : 'Disagree'}
-                    </Button>
-                    <Button onClick={onSubmit} color="primary" autoFocus>
-                        {(agree) ? agree : 'Agree'}
-                    </Button>
+                    {(disagree) ?
+                        <Button onClick={onClose} color="primary">
+                            {(disagree) ? disagree : 'Disagree'}
+                        </Button> : ""
+                    }
+                    {(agree) ?
+                        <Button onClick={onSubmit} color="primary" autoFocus>
+                            {(agree) ? agree : 'Agree'}
+                        </Button> : ""
+                    }
                 </DialogActions>
             </Dialog>
         </>
@@ -55,8 +58,14 @@ AlertDialog.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     subtitle: PropTypes.string,
-    agree: PropTypes.string,
-    disagree: PropTypes.string,
+    agree: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.bool
+    ]),
+    disagree: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.bool
+    ]),
     children: PropTypes.element
 }
 
