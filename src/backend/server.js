@@ -90,6 +90,11 @@ app.get('/app/add/profiles/active/:profile', (req, res) => {
     res.send({success: true})
 })
 
+app.get('/app/delete/profiles/:profile', (req, res) => {
+    DBM.delete_profile_entry(req.params.profile)
+    res.send({success: true})
+})
+
 app.get('/api/get/symbols', (req, res) => {
     res.send(all_symbols)
 })

@@ -214,6 +214,21 @@ class DBManager {
             })
         })
     }
+
+    /**
+     * Removes a row from the Profile table that matches 'profile_name'
+     */
+    delete_profile_entry = (profile_name) => {
+        let sql = "DELETE FROM Profiles WHERE profile_name = ? "
+        this.DB.run(sql, [profile_name], function (err) {
+            if (err) {
+                console.log("SMDB: " + err)
+            } else {
+                console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+            }
+        })
+    }
 }
 
 module.exports = {
@@ -270,3 +285,5 @@ module.exports = {
 //     .then((res) => {
 //         console.log('Active Profile: ', res)
 //     })
+
+// DBM.delete_profile_entry('flakcannon')
