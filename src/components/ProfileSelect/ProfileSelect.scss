@@ -1,0 +1,25 @@
+.sm-profile-selector {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+
+  & > * {
+    border: 0 !important
+  }
+
+  .MuiSelect-root {
+    padding-right: 38px !important;
+    padding-left: 9px !important;
+
+    &:focus {
+      background-color: #121212 !important;
+    }
+
+    &:hover {
+      background-color: #242424 !important;
+    }
+  }
+
+  .MuiSelect-icon {
+    margin-top: 1px;
+  }
+}

@@ -12,27 +12,12 @@ import TextField from "@material-ui/core/TextField"
 import MenuItem from "@material-ui/core/MenuItem"
 
 const SideBarProfilesMenu = ({
-    profileActive,
-    profileList,
-    setProfileActive,
-    setProfileList
+                                 profileActive,
+                                 profileList,
+                                 setProfileActive,
+                                 setProfileList
                              }) => {
     const [expandedPanel1, setExpandedPanel1] = useState(true)
-    const [activeProfile, setActiveProfile] = useState('')
-    const [profileOptions, setProfileOptions] = useState([])
-
-    useEffect(() => {
-
-        // Build profile options
-        // let newProfileOptions = []
-        // profileList.forEach(() => {
-        //     newProfileOptions.push({
-        //         label: '',
-        //         value: ''
-        //     })
-        // })
-
-    })
 
     const handleChange = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
@@ -49,22 +34,7 @@ const SideBarProfilesMenu = ({
                     <Typography>Profiles</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <FormGroup>
-                        <TextField
-                            id="sidebar-profiles-select"
-                            select
-                            label="Active Profile"
-                            value={profileActive.active_profile}
-                            helperText="Select active profile"
-                            variant="outlined"
-                        >
-                            {profileList.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </FormGroup>
+
                 </AccordionDetails>
             </Accordion>
 

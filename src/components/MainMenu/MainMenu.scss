@@ -24,4 +24,12 @@
       margin-left: 4px;
     }
   }
+
+  .mainmenu-grid-col3 {
+    text-align: right;
+    padding-right: 16px;
+    & > * {
+      display: inline-block;
+    }
+  }
 }

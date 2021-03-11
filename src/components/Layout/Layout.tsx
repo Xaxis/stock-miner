@@ -25,9 +25,9 @@ const Layout = ({
             primary: {
                 main: '#7b1fa2'
             },
-            // secondary: {
-            //     main: '#152a38'
-            // },
+            secondary: {
+                main: '#242424'
+            },
             // contrastThreshold: 0.5,
             // tonalOffset: 0.7
         },
@@ -100,6 +100,11 @@ const Layout = ({
                         margin: '2px 3px 0 3px',
                     }
                 },
+            },
+            MuiSelect: {
+                root: {
+                    borderRadius: '2px !important'
+                }
             },
             MuiOutlinedInput: {
                 notchedOutline: {
