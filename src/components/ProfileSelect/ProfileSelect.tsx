@@ -95,15 +95,15 @@ const ProfileSelect = ({
 
     /**
      * This triggers the AlertDialogue 'Create a profile' modal if no profiles exist.
-     * @todo - Refactor so that this modal doesn't flash if profiles already exist.
      */
-    // useEffect(() => {
-    //     if (!profileList.length) {
-    //         setAlertDialogOpen(true)
-    //     } else {
-    //         setAlertDialogOpen(false)
-    //     }
-    // })
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!profileList.length) {
+                setAlertDialogOpen(true)
+            }
+        }, 1000)
+        return () => clearTimeout(timer)
+    }, [profileList])
 
     return (
         <>
@@ -135,8 +135,7 @@ const ProfileSelect = ({
                 <Select
                     id="sidebar-profiles-select"
                     className="sm-profile-selector"
-                    value={profileList.length ? (profileActive.length ? profileActive[0] : 'Active Profile') : defaultActiveProfile}
-                    // defaultValue={profileList.length ? profileActive.active_profile : defaultActiveProfile}
+                    value={profileList.length ? (profileActive.length ? profileActive[0] : 'noop') : defaultActiveProfile}
                     variant="outlined"
                     onChange={handleProfileChange}
                     IconComponent={props => (<RecentActorsIcon {...props} />)}
@@ -157,14 +156,14 @@ const ProfileSelect = ({
                     }
                     <Divider/>
                     <MenuItem
-                        key="add"
-                        value="add"
+                        key="add" value="add"
                         onClick={() => {
                             setAlertDialogOpen(true)
                         }}
                     >
                         <AddIcon/> New Profile
                     </MenuItem>
+                    <MenuItem key="noop" value="noop" style={{display: "none"}}></MenuItem>
                 </Select>
             </FormGroup>
         </>
