@@ -11,8 +11,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import CheckIcon from '@material-ui/icons/Check'
 import AddIcon from '@material-ui/icons/Add'
 import FormGroup from '@material-ui/core/FormGroup'
+import InputLabel from '@material-ui/core/InputLabel'
 import TextField from '@material-ui/core/TextField'
-import Divider from '@material-ui/core/Divider'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
@@ -27,6 +27,7 @@ const SideBarProfilesMenu = ({
     const [expandedPanel1, setExpandedPanel1] = useState(true)
     const [newProfileName, setNewProfileName] = useState("")
     const [renameProfileName, setRenameProfileName] = useState("")
+    const [profileStatus, setProfileStatus] = useState("active")
 
     const handleChange = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
@@ -52,7 +53,7 @@ const SideBarProfilesMenu = ({
 
                 // Rename new profile in database
                 if (new_profile_name) {
-                    const ren_response = await fetch(`http://localhost:2222/app/update/profiles/${profile_name}/${new_profile_name}`)
+                    const ren_response = await fetch(`http://localhost:2222/app/rename/profiles/${profile_name}/${new_profile_name}`)
                     const ren_result = await ren_response.json()
 
                     // Add new profile to database
@@ -67,7 +68,7 @@ const SideBarProfilesMenu = ({
                 setProfileList(pl_result)
 
                 // Set which profile is active in the database
-                const sap_response = await fetch(`http://localhost:2222/app/add/profiles/active/${(new_profile_name || profile_name)}`)
+                const sap_response = await fetch(`http://localhost:2222/app/set/profiles/active/${(new_profile_name || profile_name)}`)
                 const sap_result = await sap_response.json()
 
                 // Update the active profile in state
@@ -78,17 +79,6 @@ const SideBarProfilesMenu = ({
 
     return (
         <>
-
-            {/*<Accordion square expanded={expandedPanel1} onChange={handleChange()}>*/}
-            {/*    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>*/}
-            {/*        <Typography>New Profile</Typography>*/}
-            {/*    </AccordionSummary>*/}
-            {/*    <AccordionDetails>*/}
-            {/*        <FormGroup>*/}
-
-            {/*        </FormGroup>*/}
-            {/*    </AccordionDetails>*/}
-            {/*</Accordion>*/}
 
             <Accordion square expanded={expandedPanel1} onChange={handleChange()}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
@@ -102,7 +92,7 @@ const SideBarProfilesMenu = ({
                             value={newProfileName}
                             InputLabelProps={{shrink: true}}
                             placeholder=""
-                            helperText="Enter/Return to create."
+                            helperText="Hit Enter/Return to create."
                             onChange={(event) => {
                                 setNewProfileName(event.target.value)
                             }}
@@ -149,30 +139,34 @@ const SideBarProfilesMenu = ({
                                 }
                             }}
                         />
+
+                        <TextField
+                            select
+                            label="Profile Status"
+                            variant="outlined"
+                            value={profileStatus}
+                            InputLabelProps={{shrink: true}}
+                            placeholder={profileActive.length ? profileActive[0] : ''}
+                            helperText="Set the status of the currently open profile. Profiles that are 'Paused' stop acting on trades and recording data."
+                            onChange={(event) => {
+                                setProfileStatus(event.target.value)
+                            }}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: (
+                                    <CheckIcon
+                                        color={renameProfileName.length ? "action" : "secondary"}
+                                        style={{marginRight: '-8px'}}
+                                    />
+                                )
+                            }}
+                        >
+                            <MenuItem key="active" value="active">Active</MenuItem>
+                            <MenuItem key="paused" value="paused">Paused</MenuItem>
+                        </TextField>
+
                     </FormGroup>
 
-                </AccordionDetails>
-            </Accordion>
-
-            <Accordion square>
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                    <Typography>Profile Status</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        ...
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-
-            <Accordion square>
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                    <Typography>Delete Profile</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        ...
-                    </Typography>
                 </AccordionDetails>
             </Accordion>
 

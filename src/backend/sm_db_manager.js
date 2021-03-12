@@ -183,7 +183,7 @@ class DBManager {
     get_profile_list = () => {
         const self = this
         return new Promise(function (resolve, reject) {
-            let sql = `SELECT DISTINCT profile_name FROM Profiles`
+            let sql = `SELECT DISTINCT profile_name, status FROM Profiles`
             self.DB.all(sql, function (err, rows) {
                 if (err) {
                     console.log("SMDB: " + err)
@@ -191,7 +191,7 @@ class DBManager {
                 }
                 let result = []
                 rows.forEach((row) => {
-                    result.push(row.profile_name)
+                    result.push(row)
                 })
                 resolve(result)
             })
@@ -231,9 +231,9 @@ class DBManager {
     }
 
     /**
-     * Changes an existing 'profile_name' in the Profiles table.
+     * Renames an existing 'profile_name' in the Profiles table.
      */
-    update_profile_entry = (old_name, new_name) => {
+    rename_profile = (old_name, new_name) => {
         let sql = `UPDATE Profiles SET profile_name = ? WHERE profile_name = ?`
         this.DB.run(sql, [new_name, old_name], function (err) {
             if (err) {
@@ -244,6 +244,22 @@ class DBManager {
             }
         })
     }
+
+    /**
+     * Sets a given profiles 'status' flag in the Profiles table.
+     */
+    set_profile_status = (profile_name, status) => {
+        let sql = `UPDATE Profiles SET status = ? WHERE profile_name = ?`
+        this.DB.run(sql, [status, profile_name], function (err) {
+            if (err) {
+                console.log("SMDB: " + err)
+            } else {
+                console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+            }
+        })
+    }
+
 }
 
 module.exports = {

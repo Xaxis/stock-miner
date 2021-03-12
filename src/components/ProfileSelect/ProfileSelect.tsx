@@ -22,8 +22,7 @@ const ProfileSelect = (props) => {
         ...other
     } = props;
     const [defaultOptions, setDefaultOptions] = useState([{
-        label: 'No Profile',
-        value: 'No Profile'
+        name: 'No Profile',
     }])
     const [defaultActiveProfile, setDefaultActiveProfile] = useState('No Profile')
     const [alertDialogOpen, setAlertDialogOpen] = useState(false)
@@ -56,6 +55,9 @@ const ProfileSelect = (props) => {
                 return profile.value === profile_name
             })
 
+            // Set active profile to noop while updating profile
+            setProfileActive(['noop'])
+
             // When the profile doesn't already exist
             if (!existingProfile.length) {
 
@@ -70,7 +72,7 @@ const ProfileSelect = (props) => {
             }
 
             // Set which profile is active in the database
-            const sap_response = await fetch(`http://localhost:2222/app/add/profiles/active/${profile_name}`)
+            const sap_response = await fetch(`http://localhost:2222/app/set/profiles/active/${profile_name}`)
             const sap_result = await sap_response.json()
 
             // Update the active profile in state
@@ -153,7 +155,6 @@ const ProfileSelect = (props) => {
 
             <FormGroup>
                 <Select
-                    id="sidebar-profiles-select"
                     className="sm-profile-selector"
                     value={profileList.length ? (profileActive.length ? profileActive[0] : 'noop') : defaultActiveProfile}
                     variant="outlined"
@@ -164,14 +165,14 @@ const ProfileSelect = (props) => {
                         profileList.length
                             ?
                             profileList.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
+                                <MenuItem key={option.name} value={option.name}>
+                                    {option.name}
                                 </MenuItem>
                             ))
                             :
                             defaultOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
+                                <MenuItem key={option.name} value={option.name}>
+                                    {option.name}
                                 </MenuItem>
                     }
                     <MenuItem key="noop" value="noop" style={{display: "none"}}/>E

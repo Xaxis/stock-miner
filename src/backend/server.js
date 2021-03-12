@@ -56,10 +56,10 @@ app.get('/app/get/profiles/list', (req, res) => {
     DBM.get_profile_list()
         .then((rows) => {
             let profileList = []
-            rows.forEach((profile_name) => {
+            rows.forEach((row) => {
                 profileList.push({
-                    value: profile_name,
-                    label: profile_name
+                    name: row.profile_name,
+                    status: row.status
                 })
             })
             res.send(profileList)
@@ -85,7 +85,7 @@ app.get('/app/add/profiles/:profile', (req, res) => {
     res.send({success: true})
 })
 
-app.get('/app/add/profiles/active/:profile', (req, res) => {
+app.get('/app/set/profiles/active/:profile', (req, res) => {
     DBM.update_config(req.params.profile, req.params.profile)
     res.send({success: true})
 })
@@ -95,8 +95,13 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
     res.send({success: true})
 })
 
-app.get('/app/update/profiles/:oldprofile/:newprofile', (req, res) => {
-    DBM.update_profile_entry(req.params.oldprofile, req.params.newprofile)
+app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
+    DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
+    res.send({success: true})
+})
+
+app.get('/app/set/profiles/:profile/:status', (req, res) => {
+    DBM.set_profile_status(req.params.profile, req.params.status)
     res.send({success: true})
 })
 
