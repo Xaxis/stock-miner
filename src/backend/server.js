@@ -100,7 +100,7 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
     res.send({success: true})
 })
 
-app.get('/app/set/profiles/:profile/:status', (req, res) => {
+app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     DBM.set_profile_status(req.params.profile, req.params.status)
     res.send({success: true})
 })

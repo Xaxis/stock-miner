@@ -77,6 +77,38 @@ const SideBarProfilesMenu = ({
         })()
     }
 
+    /**
+     * Updates the 'status' field in the database and resyncs the profile list.
+     */
+    const handleProfileStatusChange = (status) => {
+        (async () => {
+            let activeProfileName = profileActive[0]
+
+            // Update the status of the current profile
+            const stat_response = await fetch(`http://localhost:2222/app/set/profiles/status/${activeProfileName}/${status}`)
+            const stat_result = await stat_response.json()
+
+            // Update the state's profile list
+            const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
+            const pl_result = await pl_response.json()
+            setProfileList(pl_result)
+
+        })()
+    }
+
+    /**
+     * Updates the Profile Status flag upon change.
+     */
+    useEffect(() => {
+        if (profileList.length && profileActive.length) {
+            let activeProfileKey = profileActive[0]
+            let activeProfile = profileList.filter((profile) => {
+                return profile.name === activeProfileKey
+            })
+            setProfileStatus(activeProfile[0].status)
+        }
+    }, [profileList])
+
     return (
         <>
 
@@ -149,7 +181,7 @@ const SideBarProfilesMenu = ({
                             placeholder={profileActive.length ? profileActive[0] : ''}
                             helperText="Set the status of the currently open profile. Profiles that are 'Paused' stop acting on trades and recording data."
                             onChange={(event) => {
-                                setProfileStatus(event.target.value)
+                                handleProfileStatusChange(event.target.value)
                             }}
                             InputProps={{
                                 readOnly: false,
