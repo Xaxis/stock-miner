@@ -9,12 +9,13 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import CheckIcon from '@material-ui/icons/Check'
+import AddIcon from '@material-ui/icons/Add'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
+import Divider from '@material-ui/core/Divider'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import ProfileSelect from '../ProfileSelect/ProfileSelect'
 import fetch from 'cross-fetch'
 
 const SideBarProfilesMenu = ({
@@ -25,17 +26,22 @@ const SideBarProfilesMenu = ({
                              }) => {
     const [expandedPanel1, setExpandedPanel1] = useState(true)
     const [newProfileName, setNewProfileName] = useState("")
+    const [renameProfileName, setRenameProfileName] = useState("")
 
     const handleChange = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
     }
 
-    const renameUpdateProfile = (old_profile_name, new_profile_name) => {
+    /**
+     * Called when renaming or updating a profile name in the database. When one profile name is passed a new
+     * profile is being added. When two profile names are passed a profile name is being renamed.
+     */
+    const updateProfileAll = (profile_name, new_profile_name) => {
         (async () => {
 
             // Check if profile_name already exists
             let existingProfile = profileList.filter((profile) => {
-                return profile.value === new_profile_name
+                return profile.value === (new_profile_name || profile_name)
             })
 
             // When the profile doesn't already exist
@@ -44,9 +50,16 @@ const SideBarProfilesMenu = ({
                 // Set active profile to noop while updating profile
                 setProfileActive(['noop'])
 
-                // Add new profile to database
-                const ren_response = await fetch(`http://localhost:2222/app/update/profiles/${old_profile_name}/${new_profile_name}`)
-                const ren_result = await ren_response.json()
+                // Rename new profile in database
+                if (new_profile_name) {
+                    const ren_response = await fetch(`http://localhost:2222/app/update/profiles/${profile_name}/${new_profile_name}`)
+                    const ren_result = await ren_response.json()
+
+                    // Add new profile to database
+                } else {
+                    const apl_response = await fetch(`http://localhost:2222/app/add/profiles/${profile_name}`)
+                    const apl_result = await apl_response.json()
+                }
 
                 // Update the state's profile list
                 const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
@@ -54,11 +67,11 @@ const SideBarProfilesMenu = ({
                 setProfileList(pl_result)
 
                 // Set which profile is active in the database
-                const sap_response = await fetch(`http://localhost:2222/app/add/profiles/active/${new_profile_name}`)
+                const sap_response = await fetch(`http://localhost:2222/app/add/profiles/active/${(new_profile_name || profile_name)}`)
                 const sap_result = await sap_response.json()
 
                 // Update the active profile in state
-                setProfileActive([new_profile_name])
+                setProfileActive([(new_profile_name || profile_name)])
             }
         })()
     }
@@ -68,33 +81,35 @@ const SideBarProfilesMenu = ({
 
             {/*<Accordion square expanded={expandedPanel1} onChange={handleChange()}>*/}
             {/*    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>*/}
-            {/*        <Typography>Load Profile</Typography>*/}
+            {/*        <Typography>New Profile</Typography>*/}
             {/*    </AccordionSummary>*/}
             {/*    <AccordionDetails>*/}
-            {/*        <ProfileSelect/>*/}
+            {/*        <FormGroup>*/}
+
+            {/*        </FormGroup>*/}
             {/*    </AccordionDetails>*/}
             {/*</Accordion>*/}
 
             <Accordion square expanded={expandedPanel1} onChange={handleChange()}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                    <Typography>Rename Profile</Typography>
+                    <Typography>Manage Profiles</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <FormGroup>
                         <TextField
-                            label={`Profile Name`}
+                            label={`New Profile`}
                             variant="outlined"
                             value={newProfileName}
                             InputLabelProps={{shrink: true}}
-                            placeholder={profileActive.length ? profileActive[0] : ''}
-                            helperText="Enter/Return saves new name."
+                            placeholder=""
+                            helperText="Enter/Return to create."
                             onChange={(event) => {
                                 setNewProfileName(event.target.value)
                             }}
                             InputProps={{
                                 readOnly: false,
                                 endAdornment: (
-                                    <CheckIcon
+                                    <AddIcon
                                         color={newProfileName.length ? "action" : "secondary"}
                                         style={{marginRight: '-8px'}}
                                     />
@@ -102,12 +117,40 @@ const SideBarProfilesMenu = ({
                             }}
                             onKeyDown={(event) => {
                                 if (event.key.toUpperCase() === 'ENTER' && newProfileName) {
-                                    renameUpdateProfile(profileActive[0], newProfileName)
+                                    updateProfileAll(newProfileName)
                                     setNewProfileName("")
                                 }
                             }}
                         />
+
+                        <TextField
+                            label={`Rename Profile`}
+                            variant="outlined"
+                            value={renameProfileName}
+                            InputLabelProps={{shrink: true}}
+                            placeholder={profileActive.length ? profileActive[0] : ''}
+                            helperText="Enter/Return saves new name."
+                            onChange={(event) => {
+                                setRenameProfileName(event.target.value)
+                            }}
+                            InputProps={{
+                                readOnly: false,
+                                endAdornment: (
+                                    <CheckIcon
+                                        color={renameProfileName.length ? "action" : "secondary"}
+                                        style={{marginRight: '-8px'}}
+                                    />
+                                )
+                            }}
+                            onKeyDown={(event) => {
+                                if (event.key.toUpperCase() === 'ENTER' && renameProfileName) {
+                                    updateProfileAll(profileActive[0], renameProfileName)
+                                    setRenameProfileName("")
+                                }
+                            }}
+                        />
                     </FormGroup>
+
                 </AccordionDetails>
             </Accordion>
 

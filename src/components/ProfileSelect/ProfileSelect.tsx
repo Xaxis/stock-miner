@@ -6,7 +6,6 @@ import * as ActionTypes from '../../store/actions'
 import FormGroup from '@material-ui/core/FormGroup'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
-import Divider from '@material-ui/core/Divider'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import AddIcon from '@material-ui/icons/Add'
 import AlertDialog from '../AlertDialog/AlertDialog'
@@ -28,7 +27,7 @@ const ProfileSelect = (props) => {
     }])
     const [defaultActiveProfile, setDefaultActiveProfile] = useState('No Profile')
     const [alertDialogOpen, setAlertDialogOpen] = useState(false)
-    const [newProfileName, setNewProfileName] = useState(false)
+    const [newProfileName, setNewProfileName] = useState("")
 
     /**
      * When a different profile OR action on a profile is taken, handle it.
@@ -118,15 +117,35 @@ const ProfileSelect = (props) => {
                 subtitle={"Stock Miner requires a profile. A profile is the hierarchy underwhich multiple tables of" +
                 " trades are organized. You can have an unlimited number of profiles though only one can be viewed at" +
                 " a time."}
-                agree={'Create Profile'}
+                agree={false}
                 disagree={false}
             >
                 <FormGroup>
                     <TextField
-                        label="Profile Name"
+                        label={`Profile Name`}
                         variant="outlined"
+                        value={newProfileName}
+                        InputLabelProps={{shrink: true}}
+                        placeholder=""
+                        helperText="Enter/Return to create."
                         onChange={(event) => {
                             setNewProfileName(event.target.value)
+                        }}
+                        InputProps={{
+                            readOnly: false,
+                            endAdornment: (
+                                <AddIcon
+                                    color={newProfileName.length ? "action" : "secondary"}
+                                    style={{marginRight: '-8px'}}
+                                />
+                            )
+                        }}
+                        onKeyDown={(event) => {
+                            if (event.key.toUpperCase() === 'ENTER' && newProfileName) {
+                                updateProfileAll(newProfileName)
+                                setNewProfileName("")
+                                setAlertDialogOpen(false)
+                            }
                         }}
                     />
                 </FormGroup>
@@ -155,15 +174,6 @@ const ProfileSelect = (props) => {
                                     {option.label}
                                 </MenuItem>
                     }
-                    <Divider/>
-                    <MenuItem
-                        key="add" value="add"
-                        onClick={() => {
-                            setAlertDialogOpen(true)
-                        }}
-                    >
-                        <AddIcon/> New Profile
-                    </MenuItem>
                     <MenuItem key="noop" value="noop" style={{display: "none"}}/>E
                 </Select>
             </FormGroup>
