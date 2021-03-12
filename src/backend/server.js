@@ -95,6 +95,11 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
     res.send({success: true})
 })
 
+app.get('/app/update/profiles/:oldprofile/:newprofile', (req, res) => {
+    DBM.update_profile_entry(req.params.oldprofile, req.params.newprofile)
+    res.send({success: true})
+})
+
 app.get('/api/get/symbols', (req, res) => {
     res.send(all_symbols)
 })

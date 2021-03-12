@@ -65,26 +65,26 @@ export default function SideBarMenu() {
                     value={value}
                     onChange={handleChange}
                 >
+                    <Tab icon={<RecentActorsIcon/>} aria-label="Profiles"></Tab>
                     <Tab label={<AttachMoneyIcon/>} aria-label="Trade"></Tab>
                     <Tab icon={<TuneIcon/>} aria-label="Controls"></Tab>
                     <Tab icon={<ExtensionIcon/>} aria-label="Extensions"></Tab>
-                    <Tab icon={<RecentActorsIcon/>} aria-label="Profiles"></Tab>
                     <Tab icon={<SettingsIcon/>} aria-label="Settings"></Tab>
                     <Tab icon={<HistoryIcon/>} aria-label="History"></Tab>
                 </Tabs>
             </Grid>
             <Grid item xs className="sidebarmenu-panels">
                 <TabPanel value={value} index={0}>
-                    <SideBarTradeMenu/>
+                    <SideBarProfilesMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <SideBarControlsMenu/>
+                    <SideBarTradeMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={2}>
-                    <SideBarExtensionsMenu/>
+                    <SideBarControlsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={3}>
-                    <SideBarProfilesMenu/>
+                    <SideBarExtensionsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={4}>
                     <SideBarSettingsMenu/>

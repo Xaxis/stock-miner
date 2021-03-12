@@ -229,6 +229,21 @@ class DBManager {
             }
         })
     }
+
+    /**
+     * Changes an existing 'profile_name' in the Profiles table.
+     */
+    update_profile_entry = (old_name, new_name) => {
+        let sql = `UPDATE Profiles SET profile_name = ? WHERE profile_name = ?`
+        this.DB.run(sql, [new_name, old_name], function (err) {
+            if (err) {
+                console.log("SMDB: " + err)
+            } else {
+                console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+            }
+        })
+    }
 }
 
 module.exports = {

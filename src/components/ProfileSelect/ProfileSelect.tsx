@@ -1,5 +1,6 @@
 import * as React from 'react'
-import {useState, useEffect} from "react"
+import {useState, useEffect} from 'react'
+import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import FormGroup from '@material-ui/core/FormGroup'
@@ -9,18 +10,18 @@ import Divider from '@material-ui/core/Divider'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import AddIcon from '@material-ui/icons/Add'
 import AlertDialog from '../AlertDialog/AlertDialog'
+import TextField from '@material-ui/core/TextField'
+import fetch from 'cross-fetch'
 import './ProfileSelect.scss'
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import fetch from "cross-fetch";
 
-const ProfileSelect = ({
-                           profileActive,
-                           profileList,
-                           setProfileActive,
-                           setProfileList
-                       }) => {
+const ProfileSelect = (props) => {
+    const {
+        profileActive,
+        profileList,
+        setProfileActive,
+        setProfileList,
+        ...other
+    } = props;
     const [defaultOptions, setDefaultOptions] = useState([{
         label: 'No Profile',
         value: 'No Profile'
@@ -101,7 +102,7 @@ const ProfileSelect = ({
             if (!profileList.length) {
                 setAlertDialogOpen(true)
             }
-        }, 1000)
+        }, 2000)
         return () => clearTimeout(timer)
     }, [profileList])
 
@@ -163,11 +164,15 @@ const ProfileSelect = ({
                     >
                         <AddIcon/> New Profile
                     </MenuItem>
-                    <MenuItem key="noop" value="noop" style={{display: "none"}}></MenuItem>
+                    <MenuItem key="noop" value="noop" style={{display: "none"}}/>E
                 </Select>
             </FormGroup>
         </>
     )
+}
+
+ProfileSelect.propTypes = {
+    type: PropTypes.any
 }
 
 const mapStateToProps = (state) => {
