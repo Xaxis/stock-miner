@@ -1,19 +1,25 @@
 import * as React from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
-
-import {Provider} from 'react-redux'
-import reducer from '../../store/reducers/index'
-import {createStore} from 'redux'
-
-import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
+import {connect} from 'react-redux'
+import * as ActionTypes from '../../store/actions'
+import {createMuiTheme, MuiThemeProvider} from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import MainMenu from '../MainMenu/MainMenu'
 import TabManager from '../TabManager/TabManager'
 import SideBarMenu from '../SideBarMenu/SideBarMenu'
 import StatusBar from '../StatusBar/StatusBar'
+import {useEffect} from 'react'
+import fetch from 'cross-fetch'
 import './Layout.scss'
 
-export default function Layout() {
+const Layout = ({
+                    setProfileActive,
+                    setProfileList
+                }) => {
+
+    /**
+     * Root MUI component overrides.
+     */
     const theme = createMuiTheme({
         typography: {
             fontSize: 12
@@ -23,9 +29,9 @@ export default function Layout() {
             primary: {
                 main: '#7b1fa2'
             },
-            // secondary: {
-            //     main: '#152a38'
-            // },
+            secondary: {
+                main: '#242424'
+            },
             // contrastThreshold: 0.5,
             // tonalOffset: 0.7
         },
@@ -99,6 +105,11 @@ export default function Layout() {
                     }
                 },
             },
+            MuiSelect: {
+                root: {
+                    borderRadius: '2px !important',
+                }
+            },
             MuiOutlinedInput: {
                 notchedOutline: {
                     borderColor: '#424242',
@@ -149,7 +160,7 @@ export default function Layout() {
             },
             MuiTabs: {
                 root: {
-                    backgroundColor: '#121212;'
+                    backgroundColor: '#121212'
                 },
                 indicator: {
                     backgroundColor: '#7b1fa2'
@@ -251,23 +262,50 @@ export default function Layout() {
         }
     })
 
-    const store = createStore(reducer)
+    /**
+     * Load initial values from the server.
+     */
+    useEffect(() => {
+        (async () => {
+
+            // Load active profile and set its state
+            const ap_response = await fetch(`http://localhost:2222/app/get/profiles/active`)
+            const ap_result = await ap_response.json()
+            setProfileActive(ap_result)
+
+            // Load profile list and set its state
+            const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
+            const pl_result = await pl_response.json()
+            setProfileList(pl_result)
+        })()
+    })
 
     return (
         <MuiThemeProvider theme={theme}>
-            <Provider store={store}>
-                <CssBaseline/>
-                <MainMenu/>
-                <Grid container spacing={0} className="layout-page-grid">
-                    <Grid item xs={3} className="layout-sidebarmenu">
-                        <SideBarMenu/>
-                    </Grid>
-                    <Grid item xs={9} className="layout-mainpanel">
-                        <TabManager/>
-                    </Grid>
+            <CssBaseline/>
+            <MainMenu/>
+            <Grid container spacing={0} className="layout-page-grid">
+                <Grid item xs={3} className="layout-sidebarmenu">
+                    <SideBarMenu/>
                 </Grid>
-                <StatusBar/>
-            </Provider>
+                <Grid item xs={9} className="layout-mainpanel">
+                    <TabManager/>
+                </Grid>
+            </Grid>
+            <StatusBar/>
         </MuiThemeProvider>
-    );
-};
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setProfileActive: (active) => dispatch(ActionTypes.setProfileActive(active)),
+        setProfileList: (list) => dispatch(ActionTypes.setProfileList(list)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout)

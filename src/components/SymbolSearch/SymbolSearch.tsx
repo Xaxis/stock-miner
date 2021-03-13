@@ -21,6 +21,7 @@ const SymbolSearch = (props) => {
     const {
         tableID,
         addTableRow,
+        profileActive,
         ...other
     } = props;
     const [open, setOpen] = useState(false)
@@ -31,7 +32,7 @@ const SymbolSearch = (props) => {
     const loading = open && options.length === 0 && chars.length > 0
 
     const handleAddButtonClick = () => {
-        addTableRow(tableID, selectedSymbols)
+        addTableRow(profileActive[0], tableID, selectedSymbols)
         setSelectedSymbols([])
         setAddButtonDisabled(true)
     }
@@ -141,12 +142,14 @@ SymbolSearch.propTypes = {
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+        profileActive: state.profileActive
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addTableRow: (tableID, rows) => dispatch(ActionTypes.addTableRow(tableID, rows)),
+        addTableRow: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRow(tableProfile, tableID, rows)),
     }
 }
 

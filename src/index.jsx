@@ -1,12 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Layout from './components/Layout/Layout'
+import {Provider} from 'react-redux'
+import reducer from './store/reducers/index'
+import {createStore} from 'redux'
 import './index.scss'
 
 const App = function () {
+    const store = createStore(reducer)
+
     return (
         <>
-            <Layout/>
+            <Provider store={store}>
+                <Layout/>
+            </Provider>
         </>
     )
 }

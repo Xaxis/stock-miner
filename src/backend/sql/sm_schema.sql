@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
-    `profile_name`  TEXT NOT NULL UNIQUE
+    `profile_name`  TEXT NOT NULL UNIQUE,
+    `status`        TEXT DEFAULT 'active'
 );
 CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
@@ -54,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Records` (
     `timestamp`     DATE NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `Config` (
-    `open_pref`	        TEXT DEFAULT 'last',
-    `last_profile`	    TEXT DEFAULT 'Profile 1',
-    `default_profile`	TEXT DEFAULT 'Profile 1'
+    `id`                INTEGER NOT NULL PRIMARY KEY,
+    `active_profile`    TEXT DEFAULT 'Profile 1',
+    `default_profile`   TEXT DEFAULT 'Profile 1'
 );

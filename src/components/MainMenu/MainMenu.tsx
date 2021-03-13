@@ -6,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import LogoIcon from '@material-ui/icons/FingerPrint'
+import ProfileSelect from '../ProfileSelect/ProfileSelect'
 import './MainMenu.scss'
 
 export default function MainMenu() {
@@ -24,22 +25,25 @@ export default function MainMenu() {
                             <LogoIcon/>
                         </IconButton>
                     </Grid>
-                    <Grid item xs className="mainmenu-grid-col2">
-                        <Button aria-controls="file-menu" aria-haspopup="true">
-                            File
-                        </Button>
+                    {/*<Grid item xs className="mainmenu-grid-col2">*/}
+                    {/*    <Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*        File*/}
+                    {/*    </Button>*/}
 
-                        <Button aria-controls="file-menu" aria-haspopup="true">
-                            Portfolio
-                        </Button>
+                    {/*    <Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*        Portfolio*/}
+                    {/*    </Button>*/}
 
-                        <Button aria-controls="file-menu" aria-haspopup="true">
-                            View
-                        </Button>
+                    {/*    <Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*        View*/}
+                    {/*    </Button>*/}
 
-                        <Button aria-controls="file-menu" aria-haspopup="true">
-                            Help
-                        </Button>
+                    {/*    <Button aria-controls="file-menu" aria-haspopup="true">*/}
+                    {/*        Help*/}
+                    {/*    </Button>*/}
+                    {/*</Grid>*/}
+                    <Grid item xs className="mainmenu-grid-col3">
+                        <ProfileSelect />
                     </Grid>
                 </Grid>
 

@@ -3,7 +3,8 @@ const Express = require('express')
 const WebSocket = require('ws')
 const Cors = require('cors')
 const BodyParser = require('body-parser')
-const SymbolProvider = require('./sm_symbol_provider.js')
+const {DBManager} = require('./sm_db_manager.js')
+const {SymbolProvider} = require('./sm_symbol_provider.js')
 const {DataProvider} = require('./sm_data_provider.js')
 const {v4: uuidv4} = require('node-uuid')
 const app = Express()
@@ -21,10 +22,11 @@ app.use(BodyParser.urlencoded({extended: true}))
  * Pre-load all symbols so as to be rapidly available for Stock Miner.
  */
 let all_symbols = []
-SymbolProvider.get_all_finra_symbols()
+let SP = new SymbolProvider()
+SP.get_all_finra_symbols()
     .then((res) => {
-        let crypto_symbols = SymbolProvider.get_all_crypto_symbols()
-        let forex_symbols = SymbolProvider.get_all_forex_symbols()
+        let crypto_symbols = SP.get_all_crypto_symbols()
+        let forex_symbols = SP.get_all_forex_symbols()
         let concat_symbols = res.concat(crypto_symbols).concat(forex_symbols)
         let sorted_symbols = Lodash.orderBy(concat_symbols, 's', 'asc')
         all_symbols = sorted_symbols
@@ -32,6 +34,11 @@ SymbolProvider.get_all_finra_symbols()
     .catch((error) => {
         console.log('Error: ', error)
     })
+
+/**
+ * Initialize the Stock Miner Data Base Manager.
+ */
+let DBM = new DBManager()
 
 /**
  * Initialize the Stock Miner Data Provider.
@@ -45,12 +52,66 @@ app.get('/api/alive', (req, res) => {
     res.send(res.send({success: true}))
 })
 
+app.get('/app/get/profiles/list', (req, res) => {
+    DBM.get_profile_list()
+        .then((rows) => {
+            let profileList = []
+            rows.forEach((row) => {
+                profileList.push({
+                    name: row.profile_name,
+                    status: row.status
+                })
+            })
+            res.send(profileList)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
+app.get('/app/get/profiles/active', (req, res) => {
+    DBM.get_profile_active()
+        .then((row) => {
+            let activeProfile = row ? [row.active_profile] : []
+            res.send(activeProfile)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
+app.get('/app/add/profiles/:profile', (req, res) => {
+    DBM.add_profile_entry(req.params.profile)
+    res.send({success: true})
+})
+
+app.get('/app/set/profiles/active/:profile', (req, res) => {
+    DBM.update_config(req.params.profile, req.params.profile)
+    res.send({success: true})
+})
+
+app.get('/app/delete/profiles/:profile', (req, res) => {
+    DBM.delete_profile_entry(req.params.profile)
+    DBM.update_config('noop', 'noop')
+    res.send({success: true})
+})
+
+app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
+    DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
+    res.send({success: true})
+})
+
+app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
+    DBM.set_profile_status(req.params.profile, req.params.status)
+    res.send({success: true})
+})
+
 app.get('/api/get/symbols', (req, res) => {
     res.send(all_symbols)
 })
 
 app.get('/api/get/crypto/symbols', (req, res) => {
-    res.send(SymbolProvider.get_all_crypto_symbols())
+    res.send(SP.get_all_crypto_symbols())
 })
 
 app.get('/api/get/all', (req, res) => {
@@ -72,7 +133,7 @@ app.get('/api/quote/:type/:symbol', (req, res) => {
 })
 
 app.get('/api/get/symbols/:chars/:limit', (req, res) => {
-    let symbols = SymbolProvider.get_symbols_matching(all_symbols, req.params.chars, req.params.limit)
+    let symbols = SP.get_symbols_matching(all_symbols, req.params.chars, req.params.limit)
     res.send(symbols)
 })
 
