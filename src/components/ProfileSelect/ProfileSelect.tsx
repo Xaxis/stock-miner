@@ -30,22 +30,6 @@ const ProfileSelect = (props) => {
     const [newProfileName, setNewProfileName] = useState("")
 
     /**
-     * When a different profile OR action on a profile is taken, handle it.
-     */
-    const handleProfileChange = (event) => {
-        switch (event.target.value) {
-            case 'add':
-                break
-            case 'rename':
-                break
-            case 'delete':
-                break
-            default:
-                updateProfileAll(event.target.value)
-        }
-    }
-
-    /**
      * Handles creating a new profile and updating which profile is active.
      */
     const updateProfileAll = (profile_name) => {
@@ -159,7 +143,9 @@ const ProfileSelect = (props) => {
                     className="sm-profile-selector"
                     value={profileList.length ? (profileActive.length ? profileActive[0] : 'noop') : defaultActiveProfile}
                     variant="outlined"
-                    onChange={handleProfileChange}
+                    onChange={(event) => {
+                        updateProfileAll(event.target.value)
+                    }}
                     IconComponent={props => (<RecentActorsIcon {...props} />)}
                 >
                     {
