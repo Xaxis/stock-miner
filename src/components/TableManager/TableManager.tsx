@@ -16,6 +16,7 @@ import './TableManager.scss'
 const TableManager = (props) => {
     const {
         tableID,
+        tableType,
         tableData,
         profileActive,
         newRegisteredTrades,
@@ -157,6 +158,7 @@ const TableManager = (props) => {
         if (newRegisteredTrades.length) {
             newRegisteredTrades.forEach((trade) => {
                 fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
+                fetch(`http://localhost:2222/app/register/orders/${profileActive[0]}/${tableType}/${trade.uuid}/${trade.type}/${trade.symbol}`)
             })
         }
     }, [newRegisteredTrades])
@@ -261,7 +263,8 @@ const TableManager = (props) => {
 }
 
 TableManager.propTypes = {
-    tableID: PropTypes.any.isRequired
+    tableID: PropTypes.any.isRequired,
+    tableType: PropTypes.any.isRequired
 }
 
 const mapStateToProps = (state) => {

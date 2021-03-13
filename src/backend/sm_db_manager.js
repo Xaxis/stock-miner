@@ -119,20 +119,19 @@ class DBManager {
      */
     add_stock_orders_entry = (options) => {
         let
-            simulation = options.simulation || false,
-            table = simulation ? 'Stock_Simulations' : 'Stock_Orders',
+            table = options.simulated ? 'Stock_Simulations' : 'Stock_Orders',
             uuid = options.uuid,
             profile = options.profile,
             market = options.market,
-            order_type = options.order_type,
+            order_type = options.order_type || 'waiting',
             symbol = options.symbol,
-            price = options.price,
-            shares = options.shares,
-            cost_basis = options.cost_basis,
-            limit_buy = options.limit_buy,
-            limit_sell = options.limit_sell,
+            price = options.price || -1,
+            shares = options.shares || -1,
+            cost_basis = options.cost_basis || -1,
+            limit_buy = options.limit_buy || -1,
+            limit_sell = options.limit_sell || -1,
             order_date = options.order_date,
-            exec_date = options.exec_date
+            exec_date = options.exec_date || -1
         let sql = `INSERT INTO ${table} (uuid, profile, market, order_type, symbol, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
         sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
         this.DB.run(sql, [uuid, profile, market, order_type, symbol, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
@@ -257,6 +256,29 @@ class DBManager {
                 console.log("SMDB: Profiles: Last ID: " + this.lastID)
                 console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
             }
+        })
+    }
+
+    /**
+     * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
+     * their profile association.
+     */
+    get_stock_orders_by_profile = (profile, simulated) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT * FROM ${table} WHERE profile = ?`
+            self.DB.all(sql, [profile], function (err, rows) {
+                if (err) {
+                    console.log("SMDB: " + table + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row)
+                })
+                resolve(result)
+            })
         })
     }
 

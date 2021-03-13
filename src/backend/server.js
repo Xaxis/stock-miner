@@ -11,15 +11,17 @@ const app = Express()
 const server_name = 'Stock Miner API Server'
 const server_port = 2222;
 
+
 /**
- * Configure API server.
+ * Configure APP/API server for application routes.
  */
 app.use(Cors({origin: 'http://localhost:1234'}))
 app.use(BodyParser.json())
 app.use(BodyParser.urlencoded({extended: true}))
 
+
 /**
- * Pre-load all symbols so as to be rapidly available for Stock Miner.
+ * Pre-load all symbols so as to be rapidly available for consumption.
  */
 let all_symbols = []
 let SP = new SymbolProvider()
@@ -35,22 +37,23 @@ SP.get_all_finra_symbols()
         console.log('Error: ', error)
     })
 
+
 /**
  * Initialize the Stock Miner Data Base Manager.
  */
 let DBM = new DBManager()
+
 
 /**
  * Initialize the Stock Miner Data Provider.
  */
 let DP = new DataProvider()
 
+
 /**
- * Define API access points.
+ * APP routes - Routes that should not be used outside the APP. Most of them
+ * interact with the database in some way.
  */
-app.get('/api/alive', (req, res) => {
-    res.send(res.send({success: true}))
-})
 
 app.get('/app/get/profiles/list', (req, res) => {
     DBM.get_profile_list()
@@ -106,6 +109,36 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     res.send({success: true})
 })
 
+app.get('/app/get/orders/list/:profile/:type', (req, res) => {
+    DBM.get_stock_orders_by_profile(req.params.profile, (req.params.type === 'simulated'))
+        .then((rows) => {
+            res.send(rows)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
+app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol', (req, res) => {
+    DBM.add_stock_orders_entry({
+        profile: req.params.profile,
+        simulated: (req.params.type === 'simulated'),
+        uuid: req.params.uuid,
+        market: req.params.market,
+        symbol: req.params.symbol,
+        order_date: Date.now()
+    })
+    res.send({success: true})
+})
+
+//@todo - Write an /app/deregister/orders/.... route
+
+
+/**
+ * API Routes - Routes that can be used outside of the application as standalone
+ * consumable data.
+ */
+
 app.get('/api/get/symbols', (req, res) => {
     res.send(all_symbols)
 })
@@ -150,10 +183,12 @@ app.get('/api/deregister/:uuid', (req, res) => {
     }
 })
 
+
 /**
  * Initialize the API HTTP server.
  */
 const server = app.listen(server_port, () => console.log(`${server_name} -  Listening on port ${server_port}`))
+
 
 /**
  * Initialize the WebSocket server.

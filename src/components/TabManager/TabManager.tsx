@@ -78,18 +78,14 @@ export default function TabManager() {
                     >
                         <Tab label="Simulated" {...a11yProps(0)} />
                         <Tab label="Orders" {...a11yProps(1)} />
-                        <Tab label="Holding" {...a11yProps(2)} />
                     </Tabs>
                 </Box>
             </AppBar>
             <TabPanel value={value} index={0}>
-                <TableManager tableID={0}/>
+                <TableManager tableID={0} tableType="simulated"/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <TableManager tableID={1}/>
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                <TableManager tableID={2}/>
+                <TableManager tableID={1} tableType="actual"/>
             </TabPanel>
         </div>
     );
