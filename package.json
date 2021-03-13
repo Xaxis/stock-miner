@@ -13,7 +13,8 @@
     "frontend:dev": "parcel build src/index.html --public-url . -d gui",
     "frontend:prod": "parcel build src/index.html --public-url . --no-source-maps -d gui",
     "init": "npm install",
-    "start": "npm run frontend:dev"
+    "start": "npm run frontend:dev",
+    "rebuild:db": "node src/backend/scripts/rebuild_db.js"
   },
   "repository": {
     "type": "git",
