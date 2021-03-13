@@ -76,8 +76,9 @@ export default function TabManager() {
                         scrollButtons="auto"
                         aria-label="scrollable auto tabs example"
                     >
-                        <Tab label="Simulating" {...a11yProps(0)} />
-                        <Tab label="Holding" {...a11yProps(1)} />
+                        <Tab label="Simulated" {...a11yProps(0)} />
+                        <Tab label="Orders" {...a11yProps(1)} />
+                        <Tab label="Holding" {...a11yProps(2)} />
                     </Tabs>
                 </Box>
             </AppBar>
@@ -86,6 +87,9 @@ export default function TabManager() {
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <TableManager tableID={1}/>
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+                <TableManager tableID={2}/>
             </TabPanel>
         </div>
     );

@@ -17,6 +17,7 @@ const TableManager = (props) => {
     const {
         tableID,
         tableData,
+        profileActive,
         newRegisteredTrades,
         registeredTradesToDelete,
         deleteTableRow,
@@ -99,6 +100,35 @@ const TableManager = (props) => {
     const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
     const [rowsToDeleteNext, setRowsToDeleteNext] = useState([])
 
+    const [proxyTableData, setProxyTableData] = useState([])
+    const [lastProfileActive, setLastProfileActive] = useState('')
+
+    /**
+     * Updates the MUI Datatable with data from the state store only when it is available.
+     */
+    useEffect(() => {
+        if (profileActive.length) {
+            let profileKey = profileActive[0]
+            if (profileKey !== 'noop') {
+
+                // See if corresponding table obect exists
+                let tableDataObj = tableData.filter((tableObj) => {
+                    return tableObj.tableProfile === profileKey
+                })
+
+                // Update the proxy table data a matching profile object exists
+                if (tableDataObj.length) {
+                    setProxyTableData(tableDataObj[0].tables[tableID])
+                }
+
+                // Otherwise reset a given table instance.
+                else {
+                    setProxyTableData([])
+                }
+            }
+        }
+    }, [tableData, profileActive])
+
     /**
      * Receive updates from web socket server.
      */
@@ -146,10 +176,14 @@ const TableManager = (props) => {
      * Handles table's row delete event.
      */
     const handleRowsDelete = (rowsDeleted) => {
-        const uuidsToDelete = rowsDeleted.data.map(d => tableData[tableID][d.dataIndex].uuid)
+        const profileKey = profileActive[0]
+        const tableDataObj = tableData.filter((tableObj) => {
+            return tableObj.tableProfile === profileKey
+        })[0]
+        const uuidsToDelete = rowsDeleted.data.map(d => tableDataObj.tables[tableID][d.dataIndex].uuid)
         setRowsToDeleteNext(uuidsToDelete)
+        deleteTableRow(profileActive[0], tableID, uuidsToDelete)
         // setDeleteAlertDialogOpen(true)
-        deleteTableRow(tableID, uuidsToDelete)
         // return false
     }
 
@@ -158,7 +192,7 @@ const TableManager = (props) => {
      */
     const handleRowSelectionChange = (currentRowArr, allRowsArr) => {
         if (allRowsArr.length) {
-            let rowIndex = allRowsArr[allRowsArr.length-1].dataIndex
+            let rowIndex = allRowsArr[allRowsArr.length - 1].dataIndex
             let selectedRow = tableData[tableID][rowIndex]
             setSelectedTrade(selectedRow)
         } else {
@@ -173,7 +207,8 @@ const TableManager = (props) => {
                     id={`datatable-${tableID}-wrapper`}
                     title={<SymbolSearch tableID={tableID}/>}
                     square
-                    data={tableData[tableID]}
+                    // data={tableData[tableID]}
+                    data={proxyTableData}
                     columns={columns}
                     options={{
                         filterType: "checkbox",
@@ -232,6 +267,7 @@ TableManager.propTypes = {
 const mapStateToProps = (state) => {
     return {
         tableData: state.tableData,
+        profileActive: state.profileActive,
         newRegisteredTrades: state.newRegisteredTrades,
         registeredTradesToDelete: state.registeredTradesToDelete
     }
@@ -239,7 +275,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deleteTableRow: (tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableID, rows)),
+        deleteTableRow: (tableProfile, tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableProfile, tableID, rows)),
         updateTableData: () => dispatch(ActionTypes.updateTableData()),
         setSelectedTrade: (row) => dispatch(ActionTypes.setSelectedTrade(row))
     }

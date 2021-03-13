@@ -14,17 +14,19 @@ export const setProfileList = (list) => {
     }
 }
 
-export const addTableRow = (tableID, rows) => {
+export const addTableRow = (tableProfile, tableID, rows) => {
     return {
         type: ActionTypes.ADD_TABLE_ROW,
+        tableProfile: tableProfile,
         tableID: tableID,
         rows: rows
     }
 }
 
-export const deleteTableRow = (tableID, uuids) => {
+export const deleteTableRow = (tableProfile, tableID, uuids) => {
     return {
         type: ActionTypes.DELETE_TABLE_ROW,
+        tableProfile: tableProfile,
         tableID: tableID,
         uuids: uuids
     }

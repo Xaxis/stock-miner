@@ -42,9 +42,25 @@ const Reducers = (state = initialState, action) => {
          */
         case ActionTypes.ADD_TABLE_ROW:
 
-            // If a Table's identifier doesn't exist, create a new array for that table
-            if (!(state.tableData.hasOwnProperty(action.tableID))) {
-                state.tableData[action.tableID] = []
+            // Look for existing table data object
+            let existingTable = state.tableData.filter((tableObj) => {
+                return tableObj.tableProfile === action.tableProfile
+            })
+
+            // If table object doesn't exist yet, create it
+            if (!existingTable.length) {
+                let newTableObj = {
+                    tableProfile: action.tableProfile,
+                    tables: []
+                }
+                newTableObj.tables[action.tableID] = []
+                existingTable.push(newTableObj)
+                state.tableData.push(newTableObj)
+            }
+
+            // If table data array at a given tableID doesn't exist, create it
+            if (!(existingTable[0].tables.hasOwnProperty(action.tableID))) {
+                existingTable[0].tables[action.tableID] = []
             }
 
             // Add new rows to specified table's table data
@@ -68,11 +84,11 @@ const Reducers = (state = initialState, action) => {
                 newRegisteredTrades.push(newRegisteredTradeObject)
             })
 
-            // Update table data on specified table
-            state.tableData[action.tableID] = state.tableData[action.tableID].concat(newRows)
+            // Concat new row data to a given table's array
+            existingTable[0].tables[action.tableID] = existingTable[0].tables[action.tableID].concat(newRows)
             return {
                 ...state,
-                tableData: state.tableData,
+                tableData: [...state.tableData],
                 registeredTrades: state.registeredTrades.concat(newRegisteredTrades),
                 newRegisteredTrades: newRegisteredTrades
             }
@@ -81,9 +97,12 @@ const Reducers = (state = initialState, action) => {
          * Deletes row(s) of data from a data table.
          */
         case ActionTypes.DELETE_TABLE_ROW:
+            let tableDataObj = state.tableData.filter((tableObj) => {
+                return tableObj.tableProfile === action.tableProfile
+            })[0]
 
             // What the new table will look like
-            let newTableData = state.tableData[action.tableID].filter((row) => {
+            let newTableData = tableDataObj.tables[action.tableID].filter((row) => {
                 return action.uuids.indexOf(row.uuid) <= -1
             })
 
@@ -98,10 +117,10 @@ const Reducers = (state = initialState, action) => {
             })
 
             // Update table data on specified table
-            state.tableData[action.tableID] = newTableData
+            tableDataObj.tables[action.tableID] = newTableData
             return {
                 ...state,
-                tableData: state.tableData,
+                tableData: [...state.tableData],
                 registeredTrades: newRegisteredTradesData,
                 registeredTradesToDelete: oldRegisteredTradesData
             }
