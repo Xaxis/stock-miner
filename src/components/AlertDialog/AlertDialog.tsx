@@ -10,8 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 const AlertDialog = (props) => {
     const {
         isOpen,
-        onClose,
-        onSubmit,
+        onDisagree,
+        onAgree,
         title,
         subtitle,
         agree,
@@ -24,25 +24,25 @@ const AlertDialog = (props) => {
         <>
             <Dialog
                 open={isOpen}
-                onClose={onClose}
-                onSubmit={onSubmit}
+                // onClose={onClose}
+                // onSubmit={onSubmit}
                 disableBackdropClick
             >
-                <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+                <DialogTitle>{title}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
+                    <DialogContentText>
                         {subtitle}
                     </DialogContentText>
                     {children}
                 </DialogContent>
                 <DialogActions>
                     {(disagree) ?
-                        <Button onClick={onClose} color="primary">
+                        <Button onClick={onDisagree} color="primary">
                             {(disagree) ? disagree : 'Disagree'}
                         </Button> : ""
                     }
                     {(agree) ?
-                        <Button onClick={onSubmit} color="primary" autoFocus>
+                        <Button onClick={onAgree} color="primary">
                             {(agree) ? agree : 'Agree'}
                         </Button> : ""
                     }
@@ -54,8 +54,8 @@ const AlertDialog = (props) => {
 
 AlertDialog.propTypes = {
     isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired,
+    onDisagree: PropTypes.func.isRequired,
+    onAgree: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     subtitle: PropTypes.string,
     agree: PropTypes.oneOfType([

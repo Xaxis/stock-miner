@@ -107,7 +107,7 @@ const Layout = ({
             },
             MuiSelect: {
                 root: {
-                    borderRadius: '2px !important'
+                    borderRadius: '2px !important',
                 }
             },
             MuiOutlinedInput: {
@@ -160,7 +160,7 @@ const Layout = ({
             },
             MuiTabs: {
                 root: {
-                    backgroundColor: '#121212;'
+                    backgroundColor: '#121212'
                 },
                 indicator: {
                     backgroundColor: '#7b1fa2'

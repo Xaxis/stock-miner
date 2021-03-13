@@ -92,6 +92,7 @@ app.get('/app/set/profiles/active/:profile', (req, res) => {
 
 app.get('/app/delete/profiles/:profile', (req, res) => {
     DBM.delete_profile_entry(req.params.profile)
+    DBM.update_config('noop', 'noop')
     res.send({success: true})
 })
 

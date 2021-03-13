@@ -23,6 +23,7 @@ const ProfileSelect = (props) => {
     } = props;
     const [defaultOptions, setDefaultOptions] = useState([{
         name: 'No Profile',
+        status: 'active'
     }])
     const [defaultActiveProfile, setDefaultActiveProfile] = useState('No Profile')
     const [alertDialogOpen, setAlertDialogOpen] = useState(false)
@@ -111,10 +112,10 @@ const ProfileSelect = (props) => {
         <>
             <AlertDialog
                 isOpen={alertDialogOpen}
-                onClose={() => {
+                onDisagree={() => {
                     setAlertDialogOpen(false)
                 }}
-                onSubmit={handleCreateNewProfile}
+                onAgree={handleCreateNewProfile}
                 title='Create a profile'
                 subtitle={"Stock Miner requires a profile. A profile is the hierarchy underwhich multiple tables of" +
                 " trades are organized. You can have an unlimited number of profiles though only one can be viewed at" +

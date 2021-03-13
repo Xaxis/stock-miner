@@ -205,11 +205,11 @@ const TableManager = (props) => {
                 />
                 <AlertDialog
                     isOpen={deleteAlertDialogOpen}
-                    onClose={() => {
+                    onDisagree={() => {
                         setRowsToDeleteNext([])
                         setDeleteAlertDialogOpen(false)
                     }}
-                    onSubmit={() => {
+                    onAgree={() => {
                         deleteTableRow(tableID, rowsToDeleteNext)
                         setDeleteAlertDialogOpen(false)
                     }}
