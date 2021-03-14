@@ -18,7 +18,7 @@ class DataProvider {
         }
         this.WS = {
             // STOCK: this.build_websocket(this.WS_URL+'stocks', this.API_KEY),
-            CRYPTO: this.build_websocket(this.WS_URL + 'crypto', this.API_KEY),
+            // CRYPTO: this.build_websocket(this.WS_URL + 'crypto', this.API_KEY),
             // FOREX: this.build_websocket(this.WS_URL+'forex', this.API_KEY)
         }
     }

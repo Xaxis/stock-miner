@@ -258,6 +258,10 @@ const TableManager = (props) => {
                         },
                         fixedSelectColumn: true,
                         tableBodyHeight: 'calc(100vh - 254px)',
+                        // serverSide: true,
+                        // onTableChange: (action, tableState) => {
+                        //     console.log(action, tableState)
+                        // },
                         onRowsDelete: handleRowsDelete,
                         onRowSelectionChange: handleRowSelectionChange
                         // expandableRowsHeader: true,

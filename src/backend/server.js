@@ -16,6 +16,7 @@ const server_port = 2222;
  * Configure APP/API server for application routes.
  */
 app.use(Cors())
+app.options('*', Cors())
 app.use(BodyParser.json())
 app.use(BodyParser.urlencoded({extended: true}))
 
