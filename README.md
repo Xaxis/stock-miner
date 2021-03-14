@@ -11,7 +11,7 @@ automation trades while providing loss prevention.
 
 ## Requirements
 
-- Node
+- Node >= v10
 - [Robinhood](https://robinhood.com) Credentials 
 
 ## Installation
