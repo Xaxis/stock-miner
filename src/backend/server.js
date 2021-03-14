@@ -15,7 +15,7 @@ const server_port = 2222;
 /**
  * Configure APP/API server for application routes.
  */
-app.use(Cors({origin: 'http://localhost:1234'}))
+app.use(Cors())
 app.use(BodyParser.json())
 app.use(BodyParser.urlencoded({extended: true}))
 

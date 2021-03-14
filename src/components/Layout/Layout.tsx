@@ -263,7 +263,7 @@ const Layout = ({
     })
 
     /**
-     * Load initial values from the server.
+     * Load initial profile values from the server.
      */
     useEffect(() => {
         (async () => {

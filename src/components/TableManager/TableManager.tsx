@@ -123,7 +123,6 @@ const TableManager = (props) => {
         if (profileActive.length) {
             let profileKey = profileActive[0]
             if (profileKey !== 'noop') {
-
                 (async () => {
                     const response = await fetch(`http://localhost:2222/app/get/orders/list/${profileKey}/${tableType}`)
                     let rows = await response.json()
@@ -162,7 +161,7 @@ const TableManager = (props) => {
                 }
             }
         }
-        }, [tableData, profileActive])
+    }, [tableData, profileActive])
 
     /**
      * Receive updates from web socket server.

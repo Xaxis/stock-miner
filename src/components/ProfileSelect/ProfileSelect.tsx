@@ -82,16 +82,19 @@ const ProfileSelect = (props) => {
 
     /**
      * This triggers the AlertDialogue 'Create a profile' modal if no profiles exist.
-     * @todo - FIx this, it's buggy and a race condition.
      */
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         if (!profileList.length) {
-    //             setAlertDialogOpen(true)
-    //         }
-    //     }, 2000)
-    //     return () => clearTimeout(timer)
-    // }, [profileList])
+    useEffect(() => {
+        if (!profileList.length) {
+            const timer = setTimeout(() => {
+                if (!profileList.length) {
+                    setAlertDialogOpen(true)
+                }
+            }, 1000)
+            return () => clearTimeout(timer)
+        } else {
+            setAlertDialogOpen(false)
+        }
+    }, [profileList])
 
     return (
         <>
