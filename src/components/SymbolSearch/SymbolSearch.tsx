@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import {default as UUID} from 'node-uuid'
 
 function sleep(delay = 0) {
     return new Promise((resolve) => {
@@ -20,7 +21,8 @@ function sleep(delay = 0) {
 const SymbolSearch = (props) => {
     const {
         tableID,
-        addTableRow,
+        tableType,
+        addTableRows,
         profileActive,
         ...other
     } = props;
@@ -31,12 +33,31 @@ const SymbolSearch = (props) => {
     const [addButtonDisabled, setAddButtonDisabled] = useState(true)
     const loading = open && options.length === 0 && chars.length > 0
 
-    const handleAddButtonClick = () => {
-        addTableRow(profileActive[0], tableID, selectedSymbols)
+    /**
+     * Event handler registers new trade on the server.
+     * @todo - Refactor to indicate in UI that row is being loaded
+     */
+    const handleNewTradeRegistration = () => {
+
+        // Register/add a new trade to the database
+        selectedSymbols.forEach((trade) => {
+            (async () => {
+                let response = await fetch(`http://localhost:2222/app/register/orders/${profileActive[0]}/${tableType}/${UUID.v4()}/${trade.t}/${trade.s}/${trade.n}`)
+                let row = await response.json()
+
+                // Add data to state manager
+                addTableRows(profileActive[0], tableID, row)
+            })()
+        })
+
+        // Reset the symbol search
         setSelectedSymbols([])
         setAddButtonDisabled(true)
     }
 
+    /**
+     * Loads in available symbols into the search list that match a character string.
+     */
     useEffect(() => {
         let active = true
         if (!loading) {
@@ -61,6 +82,9 @@ const SymbolSearch = (props) => {
         }
     }, [chars])
 
+    /**
+     * Clears symbol search options when closed.
+     */
     useEffect(() => {
         if (!open) {
             setOptions([])
@@ -116,7 +140,7 @@ const SymbolSearch = (props) => {
                                         {!loading ? <IconButton
                                             size="small"
                                             disabled={addButtonDisabled}
-                                            onClick={handleAddButtonClick}
+                                            onClick={handleNewTradeRegistration}
 
                                         >
                                             <AddIcon/>
@@ -126,7 +150,7 @@ const SymbolSearch = (props) => {
                             }}
                             onKeyDown={(event) => {
                                 if (event.key.toUpperCase() === 'ENTER' && selectedSymbols.length) {
-                                    handleAddButtonClick()
+                                    handleNewTradeRegistration()
                                 }
                             }}
                         />
@@ -138,7 +162,8 @@ const SymbolSearch = (props) => {
 }
 
 SymbolSearch.propTypes = {
-    tableID: PropTypes.any.isRequired
+    tableID: PropTypes.any.isRequired,
+    tableType: PropTypes.any.isRequired
 }
 
 const mapStateToProps = (state) => {
@@ -149,7 +174,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addTableRow: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRow(tableProfile, tableID, rows)),
+        addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
     }
 }
 

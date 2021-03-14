@@ -119,16 +119,44 @@ app.get('/app/get/orders/list/:profile/:type', (req, res) => {
         })
 })
 
-app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol', (req, res) => {
+app.get('/app/get/orders/:profile/:symbol/:type', (req, res) => {
+    DBM.get_stock_orders_by_profile_at_symbol(req.params.profile, req.params.symbol, (req.params.type === 'simulated'))
+        .then((rows) => {
+            res.send(rows)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
+app.get('/app/get/orders/:profile/:uuid/:type', (req, res) => {
+    DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.type === 'simulated'))
+        .then((rows) => {
+            res.send(rows)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
+app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req, res) => {
     DBM.add_stock_orders_entry({
         profile: req.params.profile,
         simulated: (req.params.type === 'simulated'),
         uuid: req.params.uuid,
         market: req.params.market,
         symbol: req.params.symbol,
+        name: req.params.name,
         order_date: Date.now()
+    }).then(() => {
+        DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.type === 'simulated'))
+            .then((rows) => {
+                res.send(rows)
+            })
+            .catch(() => {
+                res.send([])
+            })
     })
-    res.send({success: true})
 })
 
 //@todo - Write an /app/deregister/orders/.... route
