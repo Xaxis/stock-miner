@@ -19,14 +19,14 @@ const TableManager = (props) => {
         tableType,
         tableData,
         profileActive,
-        newRegisteredTrades,
-        registeredTradesToDelete,
+        addTableRows,
         deleteTableRow,
         updateTableData,
         setSelectedTrade,
         ...other
     } = props;
 
+    // Data table column configuration
     const [columns, setColumns] = useState([
         {
             name: "uuid",
@@ -49,6 +49,14 @@ const TableManager = (props) => {
         {
             name: "symbol",
             label: "Symbol",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "name",
+            label: "Name",
             options: {
                 filter: true,
                 sort: true
@@ -98,21 +106,47 @@ const TableManager = (props) => {
         },
     ])
 
+    // Alert dialogue open state
     const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
+
+    // Buffer containing which rows to delete
     const [rowsToDeleteNext, setRowsToDeleteNext] = useState([])
 
+    // Table data buffer used to proxy data table state
     const [proxyTableData, setProxyTableData] = useState([])
-    const [lastProfileActive, setLastProfileActive] = useState('')
 
     /**
-     * Updates the MUI Datatable with data from the state store only when it is available.
+     * Loads in data associated with a profile from the server, occurs whenever a profile
+     * is changed or when a table component is rerender (switching tabs).
      */
     useEffect(() => {
         if (profileActive.length) {
             let profileKey = profileActive[0]
             if (profileKey !== 'noop') {
 
-                // See if corresponding table obect exists
+                (async () => {
+                    const response = await fetch(`http://localhost:2222/app/get/orders/list/${profileKey}/${tableType}`)
+                    let rows = await response.json()
+
+                    // Add rows from database to table
+                    if (rows.length) {
+                        addTableRows(profileKey, tableID, rows)
+                    }
+                })()
+            }
+        }
+    }, [profileActive])
+
+    /**
+     * Provides state proxy to table data from the state manager, updating data in tables when
+     * it changes while verifying that a profile has been loaded.
+     */
+    useEffect(() => {
+        if (profileActive.length) {
+            let profileKey = profileActive[0]
+            if (profileKey !== 'noop') {
+
+                // See if corresponding table object exists
                 let tableDataObj = tableData.filter((tableObj) => {
                     return tableObj.tableProfile === profileKey
                 })
@@ -122,13 +156,13 @@ const TableManager = (props) => {
                     setProxyTableData(tableDataObj[0].tables[tableID])
                 }
 
-                // Otherwise reset a given table instance.
+                // Otherwise, check if data is available in the database that hasn't yet been loaded
                 else {
                     setProxyTableData([])
                 }
             }
         }
-    }, [tableData, profileActive])
+        }, [tableData, profileActive])
 
     /**
      * Receive updates from web socket server.
@@ -153,26 +187,27 @@ const TableManager = (props) => {
 
     /**
      * Register new trade with server.
+     * @todo - This should probably be removed entirely or placed in SymbolSearch
      */
-    useEffect(() => {
-        if (newRegisteredTrades.length) {
-            newRegisteredTrades.forEach((trade) => {
-                fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
-                fetch(`http://localhost:2222/app/register/orders/${profileActive[0]}/${tableType}/${trade.uuid}/${trade.type}/${trade.symbol}`)
-            })
-        }
-    }, [newRegisteredTrades])
+    // useEffect(() => {
+    //     if (newRegisteredTrades.length) {
+    //         newRegisteredTrades.forEach((trade) => {
+    //             fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
+    //             fetch(`http://localhost:2222/app/register/orders/${profileActive[0]}/${tableType}/${trade.uuid}/${trade.type}/${trade.symbol}/Bitcoin`)
+    //         })
+    //     }
+    // }, [newRegisteredTrades])
 
     /**
      * Delete a registered trade on the server.
      */
-    useEffect(() => {
-        if (registeredTradesToDelete.length) {
-            registeredTradesToDelete.forEach((trade) => {
-                fetch(`http://localhost:2222/api/deregister/${trade.uuid}`)
-            })
-        }
-    }, [registeredTradesToDelete])
+    // useEffect(() => {
+    //     if (registeredTradesToDelete.length) {
+    //         registeredTradesToDelete.forEach((trade) => {
+    //             fetch(`http://localhost:2222/api/deregister/${trade.uuid}`)
+    //         })
+    //     }
+    // }, [registeredTradesToDelete])
 
     /**
      * Handles table's row delete event.
@@ -207,9 +242,8 @@ const TableManager = (props) => {
             <Grid item xs={12} className="tablemanager-datatable">
                 <MUIDataTable
                     id={`datatable-${tableID}-wrapper`}
-                    title={<SymbolSearch tableID={tableID}/>}
+                    title={<SymbolSearch tableID={tableID} tableType={tableType}/>}
                     square
-                    // data={tableData[tableID]}
                     data={proxyTableData}
                     columns={columns}
                     options={{
@@ -270,14 +304,13 @@ TableManager.propTypes = {
 const mapStateToProps = (state) => {
     return {
         tableData: state.tableData,
-        profileActive: state.profileActive,
-        newRegisteredTrades: state.newRegisteredTrades,
-        registeredTradesToDelete: state.registeredTradesToDelete
+        profileActive: state.profileActive
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
         deleteTableRow: (tableProfile, tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableProfile, tableID, rows)),
         updateTableData: () => dispatch(ActionTypes.updateTableData()),
         setSelectedTrade: (row) => dispatch(ActionTypes.setSelectedTrade(row))

@@ -118,39 +118,45 @@ class DBManager {
      * Add an entry to the Stock_Orders or Stock_Simulations table.
      */
     add_stock_orders_entry = (options) => {
-        let
-            table = options.simulated ? 'Stock_Simulations' : 'Stock_Orders',
-            uuid = options.uuid,
-            profile = options.profile,
-            market = options.market,
-            order_type = options.order_type || 'waiting',
-            symbol = options.symbol,
-            price = options.price || -1,
-            shares = options.shares || -1,
-            cost_basis = options.cost_basis || -1,
-            limit_buy = options.limit_buy || -1,
-            limit_sell = options.limit_sell || -1,
-            order_date = options.order_date,
-            exec_date = options.exec_date || -1
-        let sql = `INSERT INTO ${table} (uuid, profile, market, order_type, symbol, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
-        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-        this.DB.run(sql, [uuid, profile, market, order_type, symbol, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
-                console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
-            }
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let
+                table = options.simulated ? 'Stock_Simulations' : 'Stock_Orders',
+                uuid = options.uuid,
+                profile = options.profile,
+                market = options.market,
+                order_type = options.order_type || 'waiting',
+                symbol = options.symbol,
+                name = options.name,
+                price = options.price || -1,
+                shares = options.shares || -1,
+                cost_basis = options.cost_basis || -1,
+                limit_buy = options.limit_buy || -1,
+                limit_sell = options.limit_sell || -1,
+                order_date = options.order_date,
+                exec_date = options.exec_date || -1
+            let sql = `INSERT INTO ${table} (uuid, profile, market, order_type, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
+            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            self.DB.run(sql, [uuid, profile, market, order_type, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: ${table}: Last ID: ` + self.lastID)
+                    console.log(`SMDB: ${table}: # of Row Changes: ` + self.changes)
+                    resolve({success: true})
+                }
+            })
         })
     }
 
     /**
      * Add an entry to the Stock_Holdings table.
      */
-    add_stock_holdings_entry = (uuid, profile, market, symbol, shares, price, cost_basis, simulated) => {
-        let sql = "INSERT INTO Stock_Holdings (uuid, profile, market, symbol, shares, price, cost_basis, simulated) "
-        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
-        this.DB.run(sql, [uuid, profile, market, symbol, shares, price, cost_basis, simulated], function (err) {
+    add_stock_holdings_entry = (uuid, profile, market, symbol, name, shares, price, cost_basis, simulated) => {
+        let sql = "INSERT INTO Stock_Holdings (uuid, profile, market, symbol, name, shares, price, cost_basis, simulated) "
+        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+        this.DB.run(sql, [uuid, profile, market, symbol, name, shares, price, cost_basis, simulated], function (err) {
             if (err) {
                 console.log("SMDB: " + err)
             } else {
@@ -269,6 +275,52 @@ class DBManager {
         return new Promise(function (resolve, reject) {
             let sql = `SELECT * FROM ${table} WHERE profile = ?`
             self.DB.all(sql, [profile], function (err, rows) {
+                if (err) {
+                    console.log("SMDB: " + table + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row)
+                })
+                resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
+     * their profile AND symbol association.
+     */
+    get_stock_orders_by_profile_at_symbol = (profile, symbol, simulated) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT * FROM ${table} WHERE profile = ? AND symbol = ?`
+            self.DB.all(sql, [profile, symbol], function (err, rows) {
+                if (err) {
+                    console.log("SMDB: " + table + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row)
+                })
+                resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
+     * their profile AND symbol association.
+     */
+    get_stock_orders_by_profile_at_uuid = (profile, uuid, simulated) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT * FROM ${table} WHERE profile = ? AND uuid = ?`
+            self.DB.all(sql, [profile, uuid], function (err, rows) {
                 if (err) {
                     console.log("SMDB: " + table + err)
                     reject([])

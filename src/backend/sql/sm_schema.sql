@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `market`        TEXT NOT NULL,
     `order_type`    TEXT NOT NULL,
     `symbol`        TEXT NOT NULL,
+    `name`          TEXT NOT NULL,
     `shares`        NUMERIC NOT NULL,
     `price`         NUMERIC NOT NULL,
     `cost_basis`    NUMERIC NOT NULL,
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `market`        TEXT NOT NULL,
     `order_type`    TEXT NOT NULL,
     `symbol`        TEXT NOT NULL,
+    `name`          TEXT NOT NULL,
     `shares`        NUMERIC NOT NULL,
     `price`         NUMERIC NOT NULL,
     `cost_basis`    NUMERIC NOT NULL,
@@ -41,6 +43,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Holdings` (
     `profile`	    TEXT NOT NULL,
     `market`      	TEXT NOT NULL,
     `symbol`	    TEXT NOT NULL UNIQUE,
+    `name`          TEXT NOT NULL UNIQUE,
     `shares`	    NUMERIC NOT NULL,
     `price`         NUMERIC NOT NULL,
     `cost_basis`    NUMERIC NOT NULL,
@@ -51,6 +54,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Records` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
     `market`        TEXT NOT NULL,
     `symbol`        TEXT NOT NULL,
+    `name`          TEXT NOT NULL,
     `quote`         INTEGER NOT NULL,
     `timestamp`     DATE NOT NULL
 );

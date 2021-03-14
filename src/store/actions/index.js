@@ -14,9 +14,9 @@ export const setProfileList = (list) => {
     }
 }
 
-export const addTableRow = (tableProfile, tableID, rows) => {
+export const addTableRows = (tableProfile, tableID, rows) => {
     return {
-        type: ActionTypes.ADD_TABLE_ROW,
+        type: ActionTypes.ADD_TABLE_ROWS,
         tableProfile: tableProfile,
         tableID: tableID,
         rows: rows
