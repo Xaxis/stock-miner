@@ -45,6 +45,9 @@ const SideBarProfilesMenu = ({
     const [deleteProfileName, setDeleteProfileName] = useState("")
     const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
 
+    /**
+     * Component style overrides.
+     */
     const classes = makeStyles(theme => ({
         input: {
             '&:hover': {
@@ -58,13 +61,15 @@ const SideBarProfilesMenu = ({
         }
     }))()
 
-    const handleAccordionPanelChange = (panel) => (event) => {
+    /**
+     * Toggle handler sets state on menu's accordion panel.
+     */
+    const handleAccordionPanelExpand = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
     }
 
     /**
-     * Called when renaming or updating a profile name in the database. When one profile name is passed a new
-     * profile is being added. When two profile names are passed a profile name is being renamed.
+     * Called when renaming or updating a profile name in the database.
      */
     const handleCreateOrRenameProfile = (profile_name, new_profile_name) => {
         (async () => {
@@ -85,17 +90,12 @@ const SideBarProfilesMenu = ({
                 const apl_result = await apl_response.json()
             }
 
-            // Update the state's profile list
+            // Update the profile list
             const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
             const pl_result = await pl_response.json()
             setProfileList(pl_result)
 
-            // Set which profile is active in the database
-            // @todo - This only needs to happen on New Profile
-            const sap_response = await fetch(`http://localhost:2222/app/set/profiles/active/${(new_profile_name || profile_name)}`)
-            const sap_result = await sap_response.json()
-
-            // Update the active profile in state
+            // Update the active profile state
             setProfileActive([(new_profile_name || profile_name)])
         })()
     }
@@ -111,7 +111,7 @@ const SideBarProfilesMenu = ({
             const stat_response = await fetch(`http://localhost:2222/app/set/profiles/status/${activeProfileName}/${status}`)
             const stat_result = await stat_response.json()
 
-            // Update the state's profile list
+            // Update the profile list
             const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
             const pl_result = await pl_response.json()
             setProfileList(pl_result)
@@ -175,7 +175,7 @@ const SideBarProfilesMenu = ({
     return (
         <>
 
-            <Accordion square expanded={expandedPanel1} onChange={handleAccordionPanelChange()}>
+            <Accordion square expanded={expandedPanel1} onChange={handleAccordionPanelExpand()}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                     <Typography>Manage Profiles</Typography>
                 </AccordionSummary>
@@ -322,7 +322,6 @@ const SideBarProfilesMenu = ({
 
                 </AccordionDetails>
             </Accordion>
-
         </>
     )
 }

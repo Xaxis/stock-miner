@@ -288,6 +288,7 @@ class DBManager {
      * Sets a given profiles 'status' flag in the Profiles table.
      */
     set_profile_status = (profile, status) => {
+        const self = this
         let sql = `UPDATE Profiles SET status = ? WHERE profile = ?`
         return new Promise(function (resolve, reject) {
             self.DB.run(sql, [status, profile], function (err) {
