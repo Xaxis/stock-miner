@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import LogoIcon from '@material-ui/icons/FingerPrint'
+import LogoIcon from '@material-ui/icons/Fingerprint'
 import ProfileSelect from '../ProfileSelect/ProfileSelect'
 import './MainMenu.scss'
 
