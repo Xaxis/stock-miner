@@ -185,7 +185,7 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
     })
 })
 
-//@todo - Write an /app/deregister/orders/.... route... handle profile deletion too
+//@todo - Write an /app/deregister/orders/.... route...
 
 
 /**

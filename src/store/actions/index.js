@@ -32,6 +32,13 @@ export const deleteTableRow = (tableProfile, tableID, uuids) => {
     }
 }
 
+export const deleteProfileTables = (tableProfile) => {
+    return {
+        type: ActionTypes.DELETE_PROFILE_TABLES,
+        tableProfile: tableProfile
+    }
+}
+
 export const updateTableData = () => {
     return {
         type: ActionTypes.UPDATE_TABLE_DATA

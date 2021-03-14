@@ -139,6 +139,18 @@ const Reducers = (state = initialState, action) => {
             }
 
         /**
+         * Deletes all table data related to a profile.
+         */
+        case ActionTypes.DELETE_PROFILE_TABLES:
+            let newProfileTables = state.tableData.filter((tableObj) => {
+                return tableObj.tableProfile !== action.tableProfile
+            })
+            return {
+                ...state,
+                tableData: [...newProfileTables]
+            }
+
+        /**
          * Updates data in the table when called.
          */
         case ActionTypes.UPDATE_TABLE_DATA:

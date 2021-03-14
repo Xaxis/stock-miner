@@ -249,6 +249,10 @@ class DBManager {
                 } else {
                     console.log("SMDB: Profiles: Last ID: " + this.lastID)
                     console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+
+                    // Delete corresponding profile rows in other tables
+                    self.delete_stock_orders_by_profile(profile, true)
+                    self.delete_stock_orders_by_profile(profile, false)
                     resolve({success: true})
                 }
             })
@@ -374,7 +378,7 @@ class DBManager {
     }
 
     /**
-     * Returns a promise after updating Stock_orders or Stock_Simulations table rows grouped by
+     * Returns a promise after updating Stock_Orders or Stock_Simulations table rows grouped by
      * profile at a defined field and value.
      */
     update_stock_orders_by_profile_at_field_value = (profile, simulated, field, value) => {
@@ -383,6 +387,28 @@ class DBManager {
         return new Promise(function (resolve, reject) {
             let sql = `UPDATE ${table} SET ${field} = ? WHERE profile = ?`
             self.DB.run(sql, [value, profile], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
+                    console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
+     * Deletes all rows in the Stock_Orders or Stock_Simulations tables that correspond to a
+     * given profile.
+     */
+    delete_stock_orders_by_profile = (profile, simulated) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        return new Promise(function (resolve, reject) {
+            let sql = `DELETE FROM ${table} WHERE profile = ?`
+            self.DB.run(sql, [profile], function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})

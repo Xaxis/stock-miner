@@ -21,7 +21,8 @@ const SideBarProfilesMenu = ({
                                  profileActive,
                                  profileList,
                                  setProfileActive,
-                                 setProfileList
+                                 setProfileList,
+                                 deleteProfileTables
                              }) => {
     const [expandedPanel1, setExpandedPanel1] = useState(true)
     const [newProfileName, setNewProfileName] = useState("")
@@ -121,13 +122,15 @@ const SideBarProfilesMenu = ({
     /**
      * Sends delete profile request to the server, deletes the profile, then attempts to load the most recently
      * used profile, if no more profiles exist prompts user to create a new profile.
-     * @todo - Deleting profiles needs to delete corresponding trades in database as well!
      */
     const handleDeleteProfile = (profile_name) => {
         (async () => {
 
             // Set active profile to noop while updating profile
             setProfileActive(['noop'])
+
+            // Delete profile data from state
+            deleteProfileTables(profile_name)
 
             // Delete the profile in the database. When a profile is deleted the active profile is automatically
             // set to 'noop' in the Config table to keep this field in sync with its deleted counterpart
@@ -337,6 +340,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setProfileActive: (active) => dispatch(ActionTypes.setProfileActive(active)),
         setProfileList: (list) => dispatch(ActionTypes.setProfileList(list)),
+        deleteProfileTables: (tableProfile, tableID, rows) => dispatch(ActionTypes.deleteProfileTables(tableProfile))
     }
 }
 
