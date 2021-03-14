@@ -59,7 +59,8 @@ const SideBarProfilesMenu = ({
     const handleCreateOrRenameProfile = (profile_name, new_profile_name) => {
         (async () => {
 
-            // Check if profile_name already exists
+            // Check if profile already exists
+            // @todo - Provide input/error validation handling on the inputs if profile does already exist
             let existingProfile = profileList.filter((profile) => {
                 return profile.value === (new_profile_name || profile_name)
             })
@@ -87,6 +88,7 @@ const SideBarProfilesMenu = ({
                 setProfileList(pl_result)
 
                 // Set which profile is active in the database
+                // @todo - This only needs to happen on New Profile
                 const sap_response = await fetch(`http://localhost:2222/app/set/profiles/active/${(new_profile_name || profile_name)}`)
                 const sap_result = await sap_response.json()
 

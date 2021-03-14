@@ -62,7 +62,7 @@ app.get('/app/get/profiles/list', (req, res) => {
             let profileList = []
             rows.forEach((row) => {
                 profileList.push({
-                    name: row.profile_name,
+                    name: row.profile,
                     status: row.status
                 })
             })
@@ -86,7 +86,12 @@ app.get('/app/get/profiles/active', (req, res) => {
 
 app.get('/app/add/profiles/:profile', (req, res) => {
     DBM.add_profile_entry(req.params.profile)
-    res.send({success: true})
+        .then((rows) => {
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
 })
 
 app.get('/app/set/profiles/active/:profile', (req, res) => {
@@ -96,13 +101,23 @@ app.get('/app/set/profiles/active/:profile', (req, res) => {
 
 app.get('/app/delete/profiles/:profile', (req, res) => {
     DBM.delete_profile_entry(req.params.profile)
-    DBM.update_config('noop', 'noop')
-    res.send({success: true})
+        .then((rows) => {
+            DBM.update_config('noop', 'noop')
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
 })
 
 app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
     DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
-    res.send({success: true})
+        .then((rows) => {
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
 })
 
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {

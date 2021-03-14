@@ -101,16 +101,24 @@ class DBManager {
     /**
      * Add an entry to the Profiles table.
      */
-    add_profile_entry = (profile_name) => {
-        let sql = "INSERT INTO Profiles (profile_name) "
-        sql += "VALUES (?) "
-        this.DB.run(sql, [profile_name], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Profiles: Last ID: " + this.lastID)
-                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
-            }
+    add_profile_entry = (profile) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = "INSERT INTO Profiles (profile) "
+            sql += "VALUES (?) "
+            self.DB.run(sql, [profile], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                    console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+
+                    // Update config to profile that is active
+                    self.update_config(profile, profile)
+                    resolve({success: true})
+                }
+            })
         })
     }
 
@@ -188,7 +196,7 @@ class DBManager {
     get_profile_list = () => {
         const self = this
         return new Promise(function (resolve, reject) {
-            let sql = `SELECT DISTINCT profile_name, status FROM Profiles`
+            let sql = `SELECT DISTINCT profile, status FROM Profiles`
             self.DB.all(sql, function (err, rows) {
                 if (err) {
                     console.log("SMDB: " + err)
@@ -221,41 +229,59 @@ class DBManager {
     }
 
     /**
-     * Removes a row from the Profile table that matches 'profile_name'
+     * Removes a row from the Profile table that matches 'profile'
      */
-    delete_profile_entry = (profile_name) => {
-        let sql = "DELETE FROM Profiles WHERE profile_name = ? "
-        this.DB.run(sql, [profile_name], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Profiles: Last ID: " + this.lastID)
-                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
-            }
+    delete_profile_entry = (profile) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = "DELETE FROM Profiles WHERE profile = ? "
+            self.DB.run(sql, [profile], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                    console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+                    resolve({success: true})
+                }
+            })
         })
     }
 
     /**
-     * Renames an existing 'profile_name' in the Profiles table.
+     * Renames an existing 'profile' in the Profiles table AND updates
+     * all correlated rows in the Stock_Orders and Stock_Simulations table.
      */
     rename_profile = (old_name, new_name) => {
-        let sql = `UPDATE Profiles SET profile_name = ? WHERE profile_name = ?`
-        this.DB.run(sql, [new_name, old_name], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Profiles: Last ID: " + this.lastID)
-                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
-            }
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `UPDATE Profiles SET profile = ? WHERE profile = ?`
+            self.DB.run(sql, [new_name, old_name], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: true})
+                } else {
+                    console.log("SMDB: Profiles: Last ID: " + self.lastID)
+                    console.log("SMDB: Profiles: # of Row Changes: " + self.changes)
+
+                    // Update the application config to point to the active profile
+                    self.update_config(new_name, new_name)
+
+                    // Update profile field in all matching rows in Stock_Orders & Stock_Simulations
+                    self.update_stock_orders_by_profile_at_field_value(old_name, true, 'profile', new_name)
+                    self.update_stock_orders_by_profile_at_field_value(old_name, false, 'profile', new_name)
+                    resolve({success: true})
+                }
+            })
         })
     }
 
     /**
      * Sets a given profiles 'status' flag in the Profiles table.
      */
-    set_profile_status = (profile_name, status) => {
-        let sql = `UPDATE Profiles SET status = ? WHERE profile_name = ?`
-        this.DB.run(sql, [status, profile_name], function (err) {
+    set_profile_status = (profile, status) => {
+        let sql = `UPDATE Profiles SET status = ? WHERE profile = ?`
+        this.DB.run(sql, [status, profile], function (err) {
             if (err) {
                 console.log("SMDB: " + err)
             } else {
@@ -330,6 +356,28 @@ class DBManager {
                     result.push(row)
                 })
                 resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Returns a promise after updating Stock_orders or Stock_Simulations table rows grouped by
+     * profile at a defined field and value.
+     */
+    update_stock_orders_by_profile_at_field_value = (profile, simulated, field, value) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        return new Promise(function (resolve, reject) {
+            let sql = `UPDATE ${table} SET ${field} = ? WHERE profile = ?`
+            self.DB.run(sql, [value, profile], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
+                    console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
             })
         })
     }

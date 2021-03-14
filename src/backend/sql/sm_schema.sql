@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
-    `profile_name`  TEXT NOT NULL UNIQUE,
+    `profile`       TEXT NOT NULL UNIQUE,
     `status`        TEXT DEFAULT 'active'
 );
 CREATE TABLE IF NOT EXISTS `Stock_Orders` (
@@ -17,8 +17,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `limit_buy`     NUMERIC,
     `limit_sell`    NUMERIC,
     `order_date`    DATE NOT NULL,
-    `exec_date`     DATE,
-    FOREIGN KEY (profile) REFERENCES Profiles(profile_name)
+    `exec_date`     DATE
 );
 CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
@@ -34,8 +33,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `limit_buy`     NUMERIC,
     `limit_sell`    NUMERIC,
     `order_date`    DATE NOT NULL,
-    `exec_date`     DATE,
-    FOREIGN KEY (profile) REFERENCES Profiles(profile_name)
+    `exec_date`     DATE
 );
 CREATE TABLE IF NOT EXISTS `Stock_Holdings` (
     `id`      	    INTEGER NOT NULL PRIMARY KEY,
@@ -47,8 +45,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Holdings` (
     `shares`	    NUMERIC NOT NULL,
     `price`         NUMERIC NOT NULL,
     `cost_basis`    NUMERIC NOT NULL,
-    `simulated`     INTEGER NOT NULL,
-    FOREIGN KEY (profile) REFERENCES Profiles(profile_name)
+    `simulated`     INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `Stock_Records` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
