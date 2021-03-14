@@ -85,16 +85,21 @@ class DBManager {
      * Updates the config parameters in the Config table.
      */
     update_config = (active_profile, default_profile) => {
-        let sql = `
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `
             INSERT OR REPLACE INTO Config (id, active_profile, default_profile)
             VALUES (1, ?, ?) `
-        this.DB.run(sql, [active_profile, default_profile], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Config: Last ID: " + this.lastID)
-                console.log("SMDB: Config: # of Row Changes: " + this.changes)
-            }
+            self.DB.run(sql, [active_profile, default_profile], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log("SMDB: Config: Last ID: " + this.lastID)
+                    console.log("SMDB: Config: # of Row Changes: " + this.changes)
+                    resolve({success: true})
+                }
+            })
         })
     }
 
@@ -150,8 +155,8 @@ class DBManager {
                     console.log("SMDB: " + err)
                     reject({success: false})
                 } else {
-                    console.log(`SMDB: ${table}: Last ID: ` + self.lastID)
-                    console.log(`SMDB: ${table}: # of Row Changes: ` + self.changes)
+                    console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
+                    console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
                     resolve({success: true})
                 }
             })
@@ -160,6 +165,7 @@ class DBManager {
 
     /**
      * Add an entry to the Stock_Holdings table.
+     * @todo - Refactor this to include options argument and return as promise.
      */
     add_stock_holdings_entry = (uuid, profile, market, symbol, name, shares, price, cost_basis, simulated) => {
         let sql = "INSERT INTO Stock_Holdings (uuid, profile, market, symbol, name, shares, price, cost_basis, simulated) "
@@ -176,6 +182,7 @@ class DBManager {
 
     /**
      * Add an entry to the Stock_Records table.
+     * @todo - Refactor this to return as promise.
      */
     add_stock_record_entry = (market, symbol, quote, timestamp) => {
         let sql = "INSERT INTO Stock_Records (market, symbol, quote, timestamp) "
@@ -249,8 +256,9 @@ class DBManager {
     }
 
     /**
-     * Renames an existing 'profile' in the Profiles table AND updates
-     * all correlated rows in the Stock_Orders and Stock_Simulations table.
+     * Renames an existing 'profile' in the Profiles table AND updates all correlated
+     * rows in the Stock_Orders and Stock_Simulations table. Also sets the active table
+     * in the application's Config table.
      */
     rename_profile = (old_name, new_name) => {
         const self = this
@@ -261,8 +269,8 @@ class DBManager {
                     console.log("SMDB: " + err)
                     reject({success: true})
                 } else {
-                    console.log("SMDB: Profiles: Last ID: " + self.lastID)
-                    console.log("SMDB: Profiles: # of Row Changes: " + self.changes)
+                    console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                    console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
 
                     // Update the application config to point to the active profile
                     self.update_config(new_name, new_name)
@@ -281,13 +289,17 @@ class DBManager {
      */
     set_profile_status = (profile, status) => {
         let sql = `UPDATE Profiles SET status = ? WHERE profile = ?`
-        this.DB.run(sql, [status, profile], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Profiles: Last ID: " + this.lastID)
-                console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
-            }
+        return new Promise(function (resolve, reject) {
+            self.DB.run(sql, [status, profile], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log("SMDB: Profiles: Last ID: " + this.lastID)
+                    console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
+                    resolve({success: true})
+                }
+            })
         })
     }
 

@@ -86,7 +86,7 @@ app.get('/app/get/profiles/active', (req, res) => {
 
 app.get('/app/add/profiles/:profile', (req, res) => {
     DBM.add_profile_entry(req.params.profile)
-        .then((rows) => {
+        .then(() => {
             res.send({success: true})
         })
         .catch(() => {
@@ -96,12 +96,17 @@ app.get('/app/add/profiles/:profile', (req, res) => {
 
 app.get('/app/set/profiles/active/:profile', (req, res) => {
     DBM.update_config(req.params.profile, req.params.profile)
-    res.send({success: true})
+        .then(() => {
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
 })
 
 app.get('/app/delete/profiles/:profile', (req, res) => {
     DBM.delete_profile_entry(req.params.profile)
-        .then((rows) => {
+        .then(() => {
             DBM.update_config('noop', 'noop')
             res.send({success: true})
         })
@@ -112,7 +117,7 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
 
 app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
     DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
-        .then((rows) => {
+        .then(() => {
             res.send({success: true})
         })
         .catch(() => {
@@ -122,7 +127,12 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
 
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     DBM.set_profile_status(req.params.profile, req.params.status)
-    res.send({success: true})
+        .then(() => {
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
 })
 
 app.get('/app/get/orders/list/:profile/:type', (req, res) => {
@@ -175,7 +185,7 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
     })
 })
 
-//@todo - Write an /app/deregister/orders/.... route
+//@todo - Write an /app/deregister/orders/.... route... handle profile deletion too
 
 
 /**
