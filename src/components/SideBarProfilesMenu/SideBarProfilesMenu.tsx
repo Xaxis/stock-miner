@@ -25,15 +25,25 @@ const SideBarProfilesMenu = ({
                              }) => {
     const [expandedPanel1, setExpandedPanel1] = useState(true)
     const [newProfileName, setNewProfileName] = useState("")
+    const [newProfileNameError, setNewProfileNameError] = useState(false)
+    const [newProfileNameHelperText, setNewProfileNameHelperText] = useState({
+        default: "Enter/Return creates a new profile.",
+        error: "Profile name already exists or is invalid!"
+    })
     const [renameProfileName, setRenameProfileName] = useState("")
-    const [profileStatus, setProfileStatus] = useState("active")
-    const [deleteProfileName, setDeleteProfileName] = useState("")
-    const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
+    const [renameProfileError, setRenameProfileError] = useState(false)
+    const [renameProfileHelperText, setRenameProfileHelperText] = useState({
+        default: "Enter/Return saves and renames profile.",
+        error: "Profile name already exists or is invalid!"
+    })
     const [deleteProfileError, setDeleteProfileError] = useState(false)
     const [deleteProfileHelperText, setDeleteProfileHelperText] = useState({
         default: "Type the name of the current profile to delete and hit Enter/Return to continue.",
         error: "You can only delete the currently loaded profile!"
     })
+    const [profileStatus, setProfileStatus] = useState("active")
+    const [deleteProfileName, setDeleteProfileName] = useState("")
+    const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
 
     const classes = makeStyles(theme => ({
         input: {
@@ -59,42 +69,34 @@ const SideBarProfilesMenu = ({
     const handleCreateOrRenameProfile = (profile_name, new_profile_name) => {
         (async () => {
 
-            // Check if profile already exists
-            // @todo - Provide input/error validation handling on the inputs if profile does already exist
-            let existingProfile = profileList.filter((profile) => {
-                return profile.value === (new_profile_name || profile_name)
-            })
+            // Set active profile to noop while updating profile
+            setProfileActive(['noop'])
 
-            // When the profile doesn't already exist
-            if (!existingProfile.length) {
+            // Rename new profile in database
+            if (new_profile_name) {
+                const ren_response = await fetch(`http://localhost:2222/app/rename/profiles/${profile_name}/${new_profile_name}`)
+                const ren_result = await ren_response.json()
 
-                // Set active profile to noop while updating profile
-                setProfileActive(['noop'])
-
-                // Rename new profile in database
-                if (new_profile_name) {
-                    const ren_response = await fetch(`http://localhost:2222/app/rename/profiles/${profile_name}/${new_profile_name}`)
-                    const ren_result = await ren_response.json()
-
-                    // Add new profile to database
-                } else {
-                    const apl_response = await fetch(`http://localhost:2222/app/add/profiles/${profile_name}`)
-                    const apl_result = await apl_response.json()
-                }
-
-                // Update the state's profile list
-                const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
-                const pl_result = await pl_response.json()
-                setProfileList(pl_result)
-
-                // Set which profile is active in the database
-                // @todo - This only needs to happen on New Profile
-                const sap_response = await fetch(`http://localhost:2222/app/set/profiles/active/${(new_profile_name || profile_name)}`)
-                const sap_result = await sap_response.json()
-
-                // Update the active profile in state
-                setProfileActive([(new_profile_name || profile_name)])
             }
+
+            // Add new profile to database
+            else {
+                const apl_response = await fetch(`http://localhost:2222/app/add/profiles/${profile_name}`)
+                const apl_result = await apl_response.json()
+            }
+
+            // Update the state's profile list
+            const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
+            const pl_result = await pl_response.json()
+            setProfileList(pl_result)
+
+            // Set which profile is active in the database
+            // @todo - This only needs to happen on New Profile
+            const sap_response = await fetch(`http://localhost:2222/app/set/profiles/active/${(new_profile_name || profile_name)}`)
+            const sap_result = await sap_response.json()
+
+            // Update the active profile in state
+            setProfileActive([(new_profile_name || profile_name)])
         })()
     }
 
@@ -119,6 +121,7 @@ const SideBarProfilesMenu = ({
     /**
      * Sends delete profile request to the server, deletes the profile, then attempts to load the most recently
      * used profile, if no more profiles exist prompts user to create a new profile.
+     * @todo - Deleting profiles needs to delete corresponding trades in database as well!
      */
     const handleDeleteProfile = (profile_name) => {
         (async () => {
@@ -180,12 +183,13 @@ const SideBarProfilesMenu = ({
                     <FormGroup>
                         <TextField
                             className={classes.input}
+                            error={newProfileNameError}
                             label={`New Profile`}
                             variant="outlined"
                             value={newProfileName}
                             InputLabelProps={{shrink: true}}
                             placeholder=""
-                            helperText="Hit Enter/Return to create."
+                            helperText={newProfileNameError ? newProfileNameHelperText.error : newProfileNameHelperText.default}
                             onChange={(event) => {
                                 setNewProfileName(event.target.value)
                             }}
@@ -199,20 +203,28 @@ const SideBarProfilesMenu = ({
                             }}
                             onKeyDown={(event) => {
                                 if (event.key.toUpperCase() === 'ENTER' && newProfileName) {
-                                    handleCreateOrRenameProfile(newProfileName)
-                                    setNewProfileName("")
+                                    let plArr = profileList.map((profile) => profile.name)
+                                    if (plArr.indexOf(newProfileName) !== -1) {
+                                        setNewProfileNameError(true)
+                                    } else {
+                                        handleCreateOrRenameProfile(newProfileName)
+                                        setNewProfileName("")
+                                    }
+                                } else {
+                                    setNewProfileNameError(false)
                                 }
                             }}
                         />
 
                         <TextField
                             className={classes.input}
+                            error={renameProfileError}
                             label={`Rename Profile`}
                             variant="outlined"
                             value={renameProfileName}
                             InputLabelProps={{shrink: true}}
                             placeholder={profileActive.length ? profileActive[0] : ''}
-                            helperText="Enter/Return saves new name."
+                            helperText={renameProfileError ? renameProfileHelperText.error : renameProfileHelperText.default}
                             onChange={(event) => {
                                 setRenameProfileName(event.target.value)
                             }}
@@ -226,8 +238,15 @@ const SideBarProfilesMenu = ({
                             }}
                             onKeyDown={(event) => {
                                 if (event.key.toUpperCase() === 'ENTER' && renameProfileName) {
-                                    handleCreateOrRenameProfile(profileActive[0], renameProfileName)
-                                    setRenameProfileName("")
+                                    let plArr = profileList.map((profile) => profile.name)
+                                    if (plArr.indexOf(renameProfileName) !== -1) {
+                                        setRenameProfileError(true)
+                                    } else {
+                                        handleCreateOrRenameProfile(profileActive[0], renameProfileName)
+                                        setRenameProfileName("")
+                                    }
+                                } else {
+                                    setRenameProfileError(false)
                                 }
                             }}
                         />
