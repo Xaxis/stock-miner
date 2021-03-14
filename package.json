@@ -4,10 +4,9 @@
   "description": "Stock Miner is a predictive analysis and stock market trading application.",
   "main": "index.js",
   "scripts": {
-    "build": "npm run clean && npm run frontend:prod && run-script-os",
+    "build": "npm run clean && npm run frontend:prod",
     "clean": "npm run clean:default",
     "clean:default": "rm -rf dist 2>/dev/null; rm -rf build 2>/dev/null; ",
-    "clean:windows": "if exist dist rd /S /Q dist & if exist build rd /S /Q build",
     "backend:dev": "node src/backend/server.js &",
     "dev": "npm run backend:dev && parcel serve src/index.html",
     "frontend:dev": "parcel build src/index.html --public-url . -d gui",
@@ -29,9 +28,9 @@
   "author": "Wil Neeley & Justin Walker",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/Xaxis/stock-miner-rebuild/issues"
+    "url": "https://github.com/Xaxis/stock-miner/issues"
   },
-  "homepage": "https://github.com/Xaxis/stock-miner-rebuild.git/readme",
+  "homepage": "https://github.com/Xaxis/stock-miner.git/readme",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",

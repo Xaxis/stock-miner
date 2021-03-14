@@ -16,9 +16,29 @@ automation trades while providing loss prevention.
 
 ## Installation
 
+1) Make sure you have Node >= v10 installed
+
+``` bash
+node --version
+```
+
+2) Install all dependencies
+
 ``` bash
 npm run init
 ```
+3) Add the database file `sm.db` to `/src/backend/db`
+
+``` bash
+touch src/backend/db/sm.db
+```
+
+4) Build the database tables
+
+``` bash
+npm run rebuild:db
+```
+
 
 ## Usage
 
