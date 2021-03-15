@@ -165,35 +165,53 @@ const TableManager = (props) => {
     }, [tableData, profileActive])
 
     /**
-     * Initialize websocket to provide access to data provider.
+     * Initialize websocket to provide access to data provider, and handle incomming
+     * stream data.
      */
     useEffect(() => {
-        // if (!webSocket) {
-        //     let socket = new W3CWebSocket('ws://localhost:2223')
-        //     setWebSocket(socket)
-        //     console.log('SM: WebSocket: Client connected.', socket)
-        // }
+        if (!webSocket) {
+            let socket = new W3CWebSocket('ws://localhost:2223')
+            setWebSocket(socket)
+            console.log('SM: WebSocket: Client connected.', socket)
 
-        // socket.onmessage = (payload) => {
-        //     let data = JSON.parse(payload.data)
-        //
-        //     // Iterate over each trade in table
-        //     if (tableData[tableID]) {
-        //         tableData[tableID].forEach((trade) => {
-        //             try {
-        //                 trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
-        //             } catch (error) {
-        //                 console.log('Data Table will update on next iteration.')
-        //             }
-        //         })
-        //         updateTableData()
-        //     }
-        // }
-    })
+            // Initialize data stream handler
+            socket.onmessage = (payload) => {
+                let data = JSON.parse(payload.data)
+
+                // Iterate over each trade in table
+                if (tableData.length) {
+
+                    // tableData[tableID].forEach((trade) => {
+                    //     try {
+                    //         trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
+                    //     } catch (error) {
+                    //         console.log('Data Table will update on next iteration.')
+                    //     }
+                    // })
+                    // updateTableData()
+                }
+            }
+        }
+
+        // Request data for the active profile
+        if (profileActive.length) {
+            let profileKey = profileActive[0]
+            if (profileKey !== 'noop') {
+                if (webSocket) {
+                    webSocket.send(JSON.stringify({
+                        action: 'request-data-for-profile',
+                        data: profileKey
+                    }))
+                }
+            }
+        }
+
+        console.log('Profile', profileActive)
+    }, [webSocket, profileActive])
 
     /**
      * Register new trade with server.
-     * @todo - This should probably be removed entirely or placed in SymbolSearch
+     * @todo - This should be removed entirely
      */
     // useEffect(() => {
     //     if (newRegisteredTrades.length) {

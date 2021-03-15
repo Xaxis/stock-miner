@@ -1,5 +1,7 @@
 /**
- * DataTransducer manages the flow of stream data to and from the database.
+ * DataTransducer manages the flow of stream data to and from the database as well as
+ * data to and from the client and the data provider.
+ * 
  * DataTransducer requires access to DBManager instance and a DataProvider instance
  * in order to access, manipulate, and save streamed data.
  */
@@ -33,7 +35,7 @@ class DataTransducer {
                     }
                 )
             })
-        }, 5000)
+        }, this.WATCHER_INTERVAL)
     }
 
     /**
@@ -88,6 +90,14 @@ class DataTransducer {
                 )
             }
         })
+    }
+
+    /**
+     * Get all data related to a specific profile from data stream and return it.
+     * @todo - Build this!
+     */
+    get_data_stream_for_profile = (profile) => {
+
     }
 }
 

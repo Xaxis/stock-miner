@@ -270,21 +270,41 @@ const wss_clients = {};
 wss.on('connection', (cobj) => {
     let client_id = uuidv4()
     cobj._clientID = client_id
+    cobj._error = false
     wss_clients[client_id] = cobj
     console.log('SM: WebSocket: Connected: New WebSocket connection from client. ID: ', cobj._clientID)
 
-    cobj.on('close', (msg) => {
+    // Handle client disconnects
+    cobj.on('close', () => {
         delete wss_clients[cobj._clientID]
         console.log('SM: WebSocket: Closed: WebSocket client connection closed. ID: ', cobj._clientID)
     })
 
-    // Send message to client
-    cobj.on('message', (message) => {
+    // Handle and redirect action requests from the client
+    cobj.on('message', (msg) => {
+        let msg_obj = JSON.parse(msg)
+        switch (msg_obj.action) {
+            case 'request-data-for-profile':
 
+                //@todo ... Subscribe to data related to profile and send to client
+                let active_profile = msg_obj.data
+                //@todo - Send data to client inside new interval.
+                DT.get_data_stream_for_profile
+
+                break
+        }
     })
 
-    // Main interval loop that sends our updated stream data to client
+
+    // Main interval loop that sends stream data to client
     // setInterval(() => {
-    //     cobj.send(JSON.stringify(DP.STREAM_DATA))
+    //     try {
+    //         if (!cobj._error) {
+    //             cobj.send(JSON.stringify(DP.STREAM_DATA))
+    //         }
+    //     } catch (error) {
+    //         cobj._error = true
+    //         console.log('SM: WebSocket: Error: ', error)
+    //     }
     // }, 1000)
 })
