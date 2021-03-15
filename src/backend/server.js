@@ -145,6 +145,7 @@ app.get('/app/get/orders/list/:profile/:type', (req, res) => {
     DBM.get_stock_orders_by_profile(req.params.profile, simulated)
         .then((rows) => {
             DT.add_data_stream_watchers(rows, simulated)
+            DT.set_active_stream_profile(req.params.profile)
             res.send(rows)
         })
         .catch(() => {
@@ -289,7 +290,7 @@ wss.on('connection', (cobj) => {
                 //@todo ... Subscribe to data related to profile and send to client
                 let active_profile = msg_obj.data
                 //@todo - Send data to client inside new interval.
-                DT.get_data_stream_for_profile
+                DT.get_data_stream_for_profile()
 
                 break
         }

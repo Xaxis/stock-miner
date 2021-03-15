@@ -1,7 +1,7 @@
 /**
  * DataTransducer manages the flow of stream data to and from the database as well as
  * data to and from the client and the data provider.
- * 
+ *
  * DataTransducer requires access to DBManager instance and a DataProvider instance
  * in order to access, manipulate, and save streamed data.
  */
@@ -10,6 +10,7 @@ class DataTransducer {
     constructor(DBManager, DataProvider) {
         this.DB = DBManager
         this.DP = DataProvider
+        this.ACTIVE_PROFILE = 'noop'
         this.WATCHER_TASKS = []
         this.WATCHER_INTERVAL = this.set_watcher_interval()
         this.WATCHER = this.init_watcher_interval()
@@ -43,6 +44,14 @@ class DataTransducer {
      */
     set_watcher_interval = (interval = 5000) => {
         return interval
+    }
+
+    /**
+     * Sets the active stream profile so we know which data the client should receive. Also
+     * lets us deregister un-used streams so as to not waste resources.
+     */
+    set_active_stream_profile = (profile) => {
+        this.ACTIVE_PROFILE = profile
     }
 
     /**
@@ -90,6 +99,17 @@ class DataTransducer {
                 )
             }
         })
+    }
+
+    /**
+     * Remove/deregister a data stream watcher object and unsubscribe from provider
+     * channel.
+     * @todo - Build this!
+     */
+    remove_data_stream_watcher = (market, symbol) => {
+
+        // De-register the data stream
+        this.DP.deregister_trade(market, symbol)
     }
 
     /**

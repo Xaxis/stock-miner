@@ -10,7 +10,6 @@ class DataProvider {
     constructor() {
         this.API_KEY = '_nnkbN3IuzOKDecrdiwKe5eLmU_dAzV1'
         this.WS_URL = 'wss://socket.polygon.io/'
-        this.REGISTERED_TRADES = []
         this.STREAM_DATA = {
             STOCK: {},
             FOREX: {},
@@ -107,78 +106,35 @@ class DataProvider {
     }
 
     /**
-     * Subscribes to a websocket stream channel from Polygon.io
-     */
-    add_trade_to_stream = (tradeToAdd) => {
-        let tradesOfSameType = this.REGISTERED_TRADES.filter((trade) => {
-            return tradeToAdd.type === trade.type && tradeToAdd.symbol === trade.symbol
-        })
-
-        // Don't subscribe if channel subscription already exists
-        if (!tradesOfSameType.length) {
-            let param_str = this.build_param_string(tradeToAdd)
-            this.WS[tradeToAdd.type].send(JSON.stringify({
-                "action": "subscribe",
-                "params": param_str
-            }))
-        }
-    }
-
-    /**
-     * Unsubscribes from a websocket stream channel from Polygon.io
-     */
-    remove_trade_from_stream = (tradeToRemove) => {
-        let tradesOfSameType = this.REGISTERED_TRADES.filter((trade) => {
-            return trade.type === tradeToRemove.type && trade.symbol === tradeToRemove.symbol
-        })
-
-        // Don't unsubscribe stream if there are other active trades of the same type and symbol
-        if (!tradesOfSameType.length) {
-            let param_str = this.build_param_string(tradeToRemove)
-            this.WS[tradeToRemove.type].send(JSON.stringify({
-                "action": "unsubscribe",
-                "params": param_str
-            }))
-        }
-    }
-
-    /**
-     * Registers a trade with the REGISTERED_TRADES object, a single source of truth
-     * containing all active data streams the app is using.
-     *
-     * Secondly, subscribes to another trade channel if one does not already exist.
+     * Subscribes to a data stream channel.
      */
     register_trade = (type, symbol) => {
-        if (type === 'forex' || type === 'FOREX') {
-            symbol += '/USD'
+        if (type === 'forex' || type === 'FOREX') symbol += '/USD'
+        let trade = {
+            type: type.toUpperCase(),
+            symbol: symbol.toUpperCase()
         }
-        let trade = {type: type.toUpperCase(), symbol: symbol.toUpperCase()}
-        this.add_trade_to_stream(trade)
-        this.REGISTERED_TRADES.push(trade)
+        let param_str = this.build_param_string(trade)
+        this.WS[trade.type].send(JSON.stringify({
+            "action": "subscribe",
+            "params": param_str
+        }))
     }
 
     /**
-     * Deregisters and removes a trade from the REGISTERED_TRADES object.
-     *
-     * Secondly, unsubscribes from channel subscription if there aren't any other trades
-     * actively using the same channel.
-     * @todo - Refactor away from using UUIDs
+     * Unsubscribe from a data stream channel.
      */
-    deregister_trade = (uuid) => {
-        let newRegisteredTradesArray = this.REGISTERED_TRADES.filter((trade) => {
-            return trade.uuid !== uuid
-        })
-        let tradeBeingDeregistered = this.REGISTERED_TRADES.filter((trade) => {
-            return trade.uuid === uuid
-        })
-        if (!tradeBeingDeregistered.length) {
-            console.log(`SM API: UUID (${uuid}) provided not found in registered trades.`)
-            return false
-        } else {
-            this.REGISTERED_TRADES = newRegisteredTradesArray
-            this.remove_trade_from_stream(tradeBeingDeregistered[0])
-            return true
+    deregister_trade = (type, symbol) => {
+        if (type === 'forex' || type === 'FOREX') symbol += '/USD'
+        let trade = {
+            type: type.toUpperCase(),
+            symbol: symbol.toUpperCase()
         }
+        let param_str = this.build_param_string(trade)
+        this.WS[trade.type].send(JSON.stringify({
+            "action": "unsubscribe",
+            "params": param_str
+        }))
     }
 }
 
