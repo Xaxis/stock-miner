@@ -11,8 +11,6 @@ import SymbolSearch from "../SymbolSearch/SymbolSearch"
 import AlertDialog from '../AlertDialog/AlertDialog'
 import './TableManager.scss'
 
-// const socket = new W3CWebSocket('ws://localhost:2223')
-
 const TableManager = (props) => {
     const {
         tableID,
@@ -115,6 +113,9 @@ const TableManager = (props) => {
     // Table data buffer used to proxy data table state
     const [proxyTableData, setProxyTableData] = useState([])
 
+    // Web socket used to access data stream
+    const [webSocket, setWebSocket] = useState(null)
+
     /**
      * Loads in data associated with a profile from the server, occurs whenever a profile
      * is changed or when a table component is rerender (switching tabs).
@@ -164,9 +165,15 @@ const TableManager = (props) => {
     }, [tableData, profileActive])
 
     /**
-     * Receive updates from web socket server.
+     * Initialize websocket to provide access to data provider.
      */
     useEffect(() => {
+        // if (!webSocket) {
+        //     let socket = new W3CWebSocket('ws://localhost:2223')
+        //     setWebSocket(socket)
+        //     console.log('SM: WebSocket: Client connected.', socket)
+        // }
+
         // socket.onmessage = (payload) => {
         //     let data = JSON.parse(payload.data)
         //
@@ -199,6 +206,7 @@ const TableManager = (props) => {
 
     /**
      * Delete a registered trade on the server.
+     * @todo - This can be removed once individual trade deletion is reimplemented
      */
     // useEffect(() => {
     //     if (registeredTradesToDelete.length) {

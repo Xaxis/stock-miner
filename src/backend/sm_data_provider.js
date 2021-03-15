@@ -18,7 +18,7 @@ class DataProvider {
         }
         this.WS = {
             // STOCK: this.build_websocket(this.WS_URL+'stocks', this.API_KEY),
-            // CRYPTO: this.build_websocket(this.WS_URL + 'crypto', this.API_KEY),
+            CRYPTO: this.build_websocket(this.WS_URL + 'crypto', this.API_KEY),
             // FOREX: this.build_websocket(this.WS_URL+'forex', this.API_KEY)
         }
     }
@@ -144,16 +144,15 @@ class DataProvider {
 
     /**
      * Registers a trade with the REGISTERED_TRADES object, a single source of truth
-     * containing all active trade instances the app is using. Each trade object contains
-     * a unique id, trade type, and corresponding symbol.
+     * containing all active data streams the app is using.
      *
      * Secondly, subscribes to another trade channel if one does not already exist.
      */
-    register_trade = (uuid, type, symbol) => {
+    register_trade = (type, symbol) => {
         if (type === 'forex' || type === 'FOREX') {
             symbol += '/USD'
         }
-        let trade = {uuid: uuid, type: type, symbol: symbol}
+        let trade = {type: type.toUpperCase(), symbol: symbol.toUpperCase()}
         this.add_trade_to_stream(trade)
         this.REGISTERED_TRADES.push(trade)
     }
@@ -163,6 +162,7 @@ class DataProvider {
      *
      * Secondly, unsubscribes from channel subscription if there aren't any other trades
      * actively using the same channel.
+     * @todo - Refactor away from using UUIDs
      */
     deregister_trade = (uuid) => {
         let newRegisteredTradesArray = this.REGISTERED_TRADES.filter((trade) => {

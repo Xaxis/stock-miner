@@ -400,6 +400,40 @@ class DBManager {
     }
 
     /**
+     * Returns a promise after updating Stock_Orders or Stock_Simulations table rows grouped by
+     * profile at multiple defined fields and values.
+     */
+    update_stock_orders_by_uuid_with_multi_field_values = (uuid, simulated, field_values) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        let sql = `UPDATE ${table} SET `
+        let end_idx = 0
+        let fv_length = Object.keys(field_values).length
+        for (const [field, value] of Object.entries(field_values)) {
+            sql += `${field} = "${value}"`
+            end_idx += 1
+            if (end_idx < fv_length) {
+                sql += ", "
+            } else {
+                sql += " "
+            }
+        }
+        sql += `WHERE uuid = "${uuid}"`
+        return new Promise(function (resolve, reject) {
+            self.DB.run(sql, function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
+                    console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
      * Deletes all rows in the Stock_Orders or Stock_Simulations tables that correspond to a
      * given profile.
      */

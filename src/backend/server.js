@@ -6,6 +6,7 @@ const BodyParser = require('body-parser')
 const {DBManager} = require('./sm_db_manager.js')
 const {SymbolProvider} = require('./sm_symbol_provider.js')
 const {DataProvider} = require('./sm_data_provider.js')
+const {DataTransducer} = require('./sm_data_transducer.js')
 const {v4: uuidv4} = require('node-uuid')
 const app = Express()
 const server_name = 'Stock Miner API Server'
@@ -40,15 +41,19 @@ SP.get_all_finra_symbols()
 
 
 /**
- * Initialize the Stock Miner Data Base Manager.
+ * Initialize the Data Base Manager.
  */
 let DBM = new DBManager()
 
-
 /**
- * Initialize the Stock Miner Data Provider.
+ * Initialize the Data Provider.
  */
 let DP = new DataProvider()
+
+/**
+ * Initialize the Data Transducer.
+ */
+let DT = new DataTransducer(DBM, DP)
 
 
 /**
@@ -136,8 +141,10 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
 })
 
 app.get('/app/get/orders/list/:profile/:type', (req, res) => {
-    DBM.get_stock_orders_by_profile(req.params.profile, (req.params.type === 'simulated'))
+    let simulated = (req.params.type === 'simulated')
+    DBM.get_stock_orders_by_profile(req.params.profile, simulated)
         .then((rows) => {
+            DT.add_data_stream_watchers(rows, simulated)
             res.send(rows)
         })
         .catch(() => {
@@ -166,16 +173,22 @@ app.get('/app/get/orders/:profile/:uuid/:type', (req, res) => {
 })
 
 app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req, res) => {
+    let profile, type, uuid, market, symbol, name;
+    ({profile, type, uuid, market, symbol, name} = req.params)
+    let simulated = (type === 'simulated')
+
+    // Add trade to database and return new trade to client
     DBM.add_stock_orders_entry({
-        profile: req.params.profile,
-        simulated: (req.params.type === 'simulated'),
-        uuid: req.params.uuid,
-        market: req.params.market,
-        symbol: req.params.symbol,
-        name: req.params.name,
+        profile: profile,
+        simulated: simulated,
+        uuid: uuid,
+        market: market,
+        symbol: symbol,
+        name: name,
         order_date: Date.now()
     }).then(() => {
-        DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.type === 'simulated'))
+        console.log(profile, uuid, simulated)
+        DBM.get_stock_orders_by_profile_at_uuid(profile, uuid, simulated)
             .then((rows) => {
                 res.send(rows)
             })
@@ -183,6 +196,9 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
                 res.send([])
             })
     })
+
+    // Register with DataTransducer watcher
+    DT.add_data_stream_watcher(profile, uuid, market, symbol, simulated)
 })
 
 //@todo - Write an /app/deregister/orders/.... route...
@@ -197,12 +213,12 @@ app.get('/api/get/symbols', (req, res) => {
     res.send(all_symbols)
 })
 
-app.get('/api/get/crypto/symbols', (req, res) => {
-    res.send(SP.get_all_crypto_symbols())
+app.get('/api/get/data/all', (req, res) => {
+    res.send(DP.STREAM_DATA)
 })
 
-app.get('/api/get/all', (req, res) => {
-    res.send(DP.STREAM_DATA)
+app.get('/api/get/crypto/symbols', (req, res) => {
+    res.send(SP.get_all_crypto_symbols())
 })
 
 app.get('/api/quote/:type/:symbol', (req, res) => {
@@ -224,12 +240,13 @@ app.get('/api/get/symbols/:chars/:limit', (req, res) => {
     res.send(symbols)
 })
 
-app.get('/api/register/:uuid/:type/:symbol', (req, res) => {
+app.get('/api/register/symbol/:uuid/:type/:symbol', (req, res) => {
     DP.register_trade(req.params.uuid, req.params.type.toUpperCase(), req.params.symbol.toUpperCase())
     res.send({success: true})
 })
 
-app.get('/api/deregister/:uuid', (req, res) => {
+// @todo - Refactor away from using UUID as de-registration method
+app.get('/api/deregister/symbol/:uuid', (req, res) => {
     if (!DP.deregister_trade(req.params.uuid)) {
         res.send({success: false})
     } else {
@@ -249,10 +266,17 @@ const server = app.listen(server_port, () => console.log(`${server_name} -  List
  */
 const wss = new WebSocket.Server({port: 2223})
 const wss_clients = {};
+
 wss.on('connection', (cobj) => {
     let client_id = uuidv4()
+    cobj._clientID = client_id
     wss_clients[client_id] = cobj
-    console.log('SM: MESSAGE: New WebSocket connection from client.')
+    console.log('SM: WebSocket: Connected: New WebSocket connection from client. ID: ', cobj._clientID)
+
+    cobj.on('close', (msg) => {
+        delete wss_clients[cobj._clientID]
+        console.log('SM: WebSocket: Closed: WebSocket client connection closed. ID: ', cobj._clientID)
+    })
 
     // Send message to client
     cobj.on('message', (message) => {
@@ -260,7 +284,7 @@ wss.on('connection', (cobj) => {
     })
 
     // Main interval loop that sends our updated stream data to client
-    setInterval(() => {
-        cobj.send(JSON.stringify(DP.STREAM_DATA))
-    }, 1000)
+    // setInterval(() => {
+    //     cobj.send(JSON.stringify(DP.STREAM_DATA))
+    // }, 1000)
 })
