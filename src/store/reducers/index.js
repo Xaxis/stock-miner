@@ -153,6 +153,34 @@ const Reducers = (state = initialState, action) => {
         /**
          * Updates data in the table when called.
          */
+        case ActionTypes.UPDATE_TABLE_ROWS:
+            let profile = state.tableData.filter((profile) => {
+                return profile.tableProfile === action.tableProfile
+            })
+            if (profile.length) {
+                let table = profile[0].tables[action.tableID]
+
+                // Iterate over table rows and update data
+                if (table) {
+                    table.forEach((row) => {
+                        action.rows.forEach((data) => {
+                            if (data.uuid === row.uuid) {
+                                row.price = data.price
+                                row.status = data.status
+                            }
+                        })
+                    })
+                }
+            }
+
+            return {
+                ...state,
+                tableData: [...state.tableData]
+            }
+
+        /**
+         * Updates data in the table when called.
+         */
         case ActionTypes.UPDATE_TABLE_DATA:
             return {
                 ...state,

@@ -144,8 +144,8 @@ app.get('/app/get/orders/list/:profile/:type', (req, res) => {
     let simulated = (req.params.type === 'simulated')
     DBM.get_stock_orders_by_profile(req.params.profile, simulated)
         .then((rows) => {
-            DT.add_data_stream_watchers(rows, simulated)
             DT.set_active_stream_profile(req.params.profile)
+            DT.add_data_stream_watchers(rows, simulated)
             res.send(rows)
         })
         .catch(() => {
@@ -241,14 +241,13 @@ app.get('/api/get/symbols/:chars/:limit', (req, res) => {
     res.send(symbols)
 })
 
-app.get('/api/register/symbol/:uuid/:type/:symbol', (req, res) => {
-    DP.register_trade(req.params.uuid, req.params.type.toUpperCase(), req.params.symbol.toUpperCase())
+app.get('/api/register/symbol/:uuid/:market/:symbol', (req, res) => {
+    DP.register_trade(req.params.uuid, req.params.market.toUpperCase(), req.params.symbol.toUpperCase())
     res.send({success: true})
 })
 
-// @todo - Refactor away from using UUID as de-registration method
-app.get('/api/deregister/symbol/:uuid', (req, res) => {
-    if (!DP.deregister_trade(req.params.uuid)) {
+app.get('/api/deregister/symbol/:market/:symbol', (req, res) => {
+    if (!DP.deregister_trade(req.params.market, req.params.symbol)) {
         res.send({success: false})
     } else {
         res.send({success: true})
@@ -269,7 +268,10 @@ const wss = new WebSocket.Server({port: 2223})
 const wss_clients = {};
 
 wss.on('connection', (cobj) => {
+    let profile = null
+    let tableid = null
     let client_id = uuidv4()
+    let interval_paused = true
     cobj._clientID = client_id
     cobj._error = false
     wss_clients[client_id] = cobj
@@ -278,6 +280,7 @@ wss.on('connection', (cobj) => {
     // Handle client disconnects
     cobj.on('close', () => {
         delete wss_clients[cobj._clientID]
+        interval_paused = true
         console.log('SM: WebSocket: Closed: WebSocket client connection closed. ID: ', cobj._clientID)
     })
 
@@ -285,27 +288,31 @@ wss.on('connection', (cobj) => {
     cobj.on('message', (msg) => {
         let msg_obj = JSON.parse(msg)
         switch (msg_obj.action) {
-            case 'request-data-for-profile':
 
-                //@todo ... Subscribe to data related to profile and send to client
-                let active_profile = msg_obj.data
-                //@todo - Send data to client inside new interval.
-                DT.get_data_stream_for_profile()
-
+            // Set active profile/unpause interval
+            case 'get-data-for-profile':
+                tableid = msg_obj.data.tableid
+                profile = msg_obj.data.profile
+                interval_paused = false
                 break
         }
     })
 
 
     // Main interval loop that sends stream data to client
-    // setInterval(() => {
-    //     try {
-    //         if (!cobj._error) {
-    //             cobj.send(JSON.stringify(DP.STREAM_DATA))
-    //         }
-    //     } catch (error) {
-    //         cobj._error = true
-    //         console.log('SM: WebSocket: Error: ', error)
-    //     }
-    // }, 1000)
+    setInterval(() => {
+        if (!interval_paused) {
+            try {
+                if (!cobj._error) {
+                    if (profile && cobj.readyState === 1) {
+                        let stream_data = DT.get_data_stream_for_profile(tableid, profile)
+                        cobj.send(JSON.stringify(stream_data))
+                    }
+                }
+            } catch (error) {
+                cobj._error = true
+                console.log('SM: WebSocket: Error: ', error)
+            }
+        }
+    }, 2500)
 })

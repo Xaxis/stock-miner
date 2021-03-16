@@ -18,6 +18,7 @@ const TableManager = (props) => {
         tableData,
         profileActive,
         addTableRows,
+        updateTableRows,
         deleteTableRow,
         updateTableData,
         setSelectedTrade,
@@ -114,7 +115,7 @@ const TableManager = (props) => {
     const [proxyTableData, setProxyTableData] = useState([])
 
     // Web socket used to access data stream
-    const [webSocket, setWebSocket] = useState(null)
+    const wsocket = useRef(null)
 
     /**
      * Loads in data associated with a profile from the server, occurs whenever a profile
@@ -135,6 +136,7 @@ const TableManager = (props) => {
                 })()
             }
         }
+
     }, [profileActive])
 
     /**
@@ -164,75 +166,39 @@ const TableManager = (props) => {
         }
     }, [tableData, profileActive])
 
+
     /**
-     * Initialize websocket to provide access to data provider, and handle incomming
-     * stream data.
+     * Initialize the websocket and request socket data for profile.
      */
     useEffect(() => {
-        if (!webSocket) {
-            let socket = new W3CWebSocket('ws://localhost:2223')
-            setWebSocket(socket)
-            console.log('SM: WebSocket: Client connected.', socket)
-
-            // Initialize data stream handler
-            socket.onmessage = (payload) => {
-                let data = JSON.parse(payload.data)
-
-                // Iterate over each trade in table
-                if (tableData.length) {
-
-                    // tableData[tableID].forEach((trade) => {
-                    //     try {
-                    //         trade.price = data[trade.type.toUpperCase()][trade.symbol].bp
-                    //     } catch (error) {
-                    //         console.log('Data Table will update on next iteration.')
-                    //     }
-                    // })
-                    // updateTableData()
-                }
+        if (profileActive.length && profileActive.indexOf('noop') == -1) {
+            wsocket.current = new W3CWebSocket('ws://localhost:2223')
+            wsocket.current.onopen = () => {
+                console.log('SM: WebSocket: Client socked OPENED.')
+                wsocket.current.send(JSON.stringify({
+                    action: 'get-data-for-profile',
+                    data: {tableid: tableID, profile: profileActive[0]}
+                }))
+            }
+            wsocket.current.onclose = () => {
+                console.log('SM: WebSocket: Client socked CLOSED.')
+            }
+            return () => {
+                wsocket.current.close()
             }
         }
+    }, [profileActive])
 
-        // Request data for the active profile
-        if (profileActive.length) {
-            let profileKey = profileActive[0]
-            if (profileKey !== 'noop') {
-                if (webSocket) {
-                    webSocket.send(JSON.stringify({
-                        action: 'request-data-for-profile',
-                        data: profileKey
-                    }))
-                }
-            }
+    /**
+     * Handle messages from websocket server.
+     */
+    useEffect(() => {
+        if (!wsocket.current) return
+        wsocket.current.onmessage = (payload) => {
+            let data_obj = JSON.parse(payload.data)
+            updateTableRows(data_obj._profile, data_obj._tableid, data_obj.rows)
         }
-
-        console.log('Profile', profileActive)
-    }, [webSocket, profileActive])
-
-    /**
-     * Register new trade with server.
-     * @todo - This should be removed entirely
-     */
-    // useEffect(() => {
-    //     if (newRegisteredTrades.length) {
-    //         newRegisteredTrades.forEach((trade) => {
-    //             fetch(`http://localhost:2222/api/register/${trade.uuid}/${trade.type}/${trade.symbol}`)
-    //             fetch(`http://localhost:2222/app/register/orders/${profileActive[0]}/${tableType}/${trade.uuid}/${trade.type}/${trade.symbol}/Bitcoin`)
-    //         })
-    //     }
-    // }, [newRegisteredTrades])
-
-    /**
-     * Delete a registered trade on the server.
-     * @todo - This can be removed once individual trade deletion is reimplemented
-     */
-    // useEffect(() => {
-    //     if (registeredTradesToDelete.length) {
-    //         registeredTradesToDelete.forEach((trade) => {
-    //             fetch(`http://localhost:2222/api/deregister/${trade.uuid}`)
-    //         })
-    //     }
-    // }, [registeredTradesToDelete])
+    }, [wsocket.current])
 
     /**
      * Handles table's row delete event.
@@ -340,6 +306,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
+        updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
         deleteTableRow: (tableProfile, tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableProfile, tableID, rows)),
         updateTableData: () => dispatch(ActionTypes.updateTableData()),
         setSelectedTrade: (row) => dispatch(ActionTypes.setSelectedTrade(row))

@@ -90,7 +90,7 @@ class DataProvider {
      */
     build_param_string = (trade) => {
         let param_str = ''
-        switch (trade.type) {
+        switch (trade.market) {
             case 'STOCK':
                 param_str += 'Q.' + trade.symbol.toUpperCase() + '-USD'
                 break
@@ -108,14 +108,14 @@ class DataProvider {
     /**
      * Subscribes to a data stream channel.
      */
-    register_trade = (type, symbol) => {
-        if (type === 'forex' || type === 'FOREX') symbol += '/USD'
+    register_trade = (market, symbol) => {
+        if (market === 'forex' || market === 'FOREX') symbol += '/USD'
         let trade = {
-            type: type.toUpperCase(),
+            market: market.toUpperCase(),
             symbol: symbol.toUpperCase()
         }
         let param_str = this.build_param_string(trade)
-        this.WS[trade.type].send(JSON.stringify({
+        this.WS[trade.market].send(JSON.stringify({
             "action": "subscribe",
             "params": param_str
         }))
@@ -124,14 +124,14 @@ class DataProvider {
     /**
      * Unsubscribe from a data stream channel.
      */
-    deregister_trade = (type, symbol) => {
-        if (type === 'forex' || type === 'FOREX') symbol += '/USD'
+    deregister_trade = (market, symbol) => {
+        if (market === 'forex' || market === 'FOREX') symbol += '/USD'
         let trade = {
-            type: type.toUpperCase(),
+            market: market.toUpperCase(),
             symbol: symbol.toUpperCase()
         }
         let param_str = this.build_param_string(trade)
-        this.WS[trade.type].send(JSON.stringify({
+        this.WS[trade.market].send(JSON.stringify({
             "action": "unsubscribe",
             "params": param_str
         }))
