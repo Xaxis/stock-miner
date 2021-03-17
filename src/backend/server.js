@@ -188,7 +188,6 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
         name: name,
         order_date: Date.now()
     }).then(() => {
-        console.log(profile, uuid, simulated)
         DBM.get_stock_orders_by_profile_at_uuid(profile, uuid, simulated)
             .then((rows) => {
                 res.send(rows)
@@ -202,8 +201,17 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
     DT.add_data_stream_watcher(profile, uuid, market, symbol, simulated)
 })
 
-//@todo - Write an /app/deregister/orders/.... route...
-
+app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
+    DT.remove_data_stream_watcher(req.params.uuid)
+    let simulated = (req.params.simulated === 'simulated')
+    DBM.delete_stock_orders_by_uuid(simulated, req.params.uuid)
+        .then(() => {
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
 
 /**
  * API Routes - Routes that can be used outside of the application as standalone
@@ -314,5 +322,5 @@ wss.on('connection', (cobj) => {
                 console.log('SM: WebSocket: Error: ', error)
             }
         }
-    }, 2500)
+    }, 3000)
 })

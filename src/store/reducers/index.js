@@ -56,10 +56,6 @@ const Reducers = (state = initialState, action) => {
 
         /**
          * Adds new row(s) of data to a data table.
-         *
-         * @todo - !!! This should be broken into TWO functions.
-         *  - One that handles adding a new symbol from the Symbol Search
-         *  - One that handles adding rows that are being loaded from the database
          */
         case ActionTypes.ADD_TABLE_ROWS:
 
@@ -121,18 +117,21 @@ const Reducers = (state = initialState, action) => {
         /**
          * Deletes row(s) of data from a data table.
          */
-        case ActionTypes.DELETE_TABLE_ROW:
-            let tableDataObj = state.tableData.filter((tableObj) => {
-                return tableObj.tableProfile === action.tableProfile
-            })[0]
-
-            // What the new table will look like
-            let newTableData = tableDataObj.tables[action.tableID].filter((row) => {
-                return action.uuids.indexOf(row.uuid) <= -1
+        case ActionTypes.DELETE_TABLE_ROWS:
+            let deleteProfileObj = state.tableData.filter((profile) => {
+                return profile.tableProfile === action.tableProfile
             })
+            if (deleteProfileObj.length) {
+                let table = deleteProfileObj[0].tables[action.tableID]
 
-            // Update table data on specified table
-            tableDataObj.tables[action.tableID] = newTableData
+                // Iterate over table and delete matching rows
+                if (table) {
+                    let newTableData = table.filter((row) => {
+                        return action.uuids.indexOf(row.uuid) <= -1
+                    })
+                    deleteProfileObj[0].tables[action.tableID] = newTableData
+                }
+            }
             return {
                 ...state,
                 tableData: [...state.tableData]
@@ -154,34 +153,24 @@ const Reducers = (state = initialState, action) => {
          * Updates data in the table when called.
          */
         case ActionTypes.UPDATE_TABLE_ROWS:
-            let profile = state.tableData.filter((profile) => {
+            let updateProfileObj = state.tableData.filter((profile) => {
                 return profile.tableProfile === action.tableProfile
             })
-            if (profile.length) {
-                let table = profile[0].tables[action.tableID]
+            if (updateProfileObj.length) {
+                let table = updateProfileObj[0].tables[action.tableID]
 
                 // Iterate over table rows and update data
                 if (table) {
                     table.forEach((row) => {
                         action.rows.forEach((data) => {
                             if (data.uuid === row.uuid) {
-                                row.price = data.price
-                                row.status = data.status
+                                row = Object.assign(row, data)
                             }
                         })
                     })
                 }
             }
 
-            return {
-                ...state,
-                tableData: [...state.tableData]
-            }
-
-        /**
-         * Updates data in the table when called.
-         */
-        case ActionTypes.UPDATE_TABLE_DATA:
             return {
                 ...state,
                 tableData: [...state.tableData]

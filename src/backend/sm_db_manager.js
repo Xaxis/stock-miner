@@ -455,6 +455,28 @@ class DBManager {
         })
     }
 
+    /**
+     * Deletes a row in the Stock_Orders or Stock_Simulations tables that correspond to a
+     * given uuid.
+     */
+    delete_stock_orders_by_uuid = (simulated, uuid) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        return new Promise(function (resolve, reject) {
+            let sql = `DELETE FROM ${table} WHERE uuid = ?`
+            self.DB.run(sql, [uuid], function (err) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
+                    console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
 }
 
 module.exports = {

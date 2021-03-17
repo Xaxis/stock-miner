@@ -19,8 +19,7 @@ const TableManager = (props) => {
         profileActive,
         addTableRows,
         updateTableRows,
-        deleteTableRow,
-        updateTableData,
+        deleteTableRows,
         setSelectedTrade,
         ...other
     } = props;
@@ -201,7 +200,27 @@ const TableManager = (props) => {
     }, [wsocket.current])
 
     /**
-     * Handles table's row delete event.
+     * Sends request to server to delete rows.
+     * @todo - Implement alert dialog before deleting rows.
+     */
+    useEffect(() => {
+        if (rowsToDeleteNext.length) {
+            deleteTableRows(profileActive[0], tableID, rowsToDeleteNext)
+            rowsToDeleteNext.forEach((uuid) => {
+                (async () => {
+                    const response = await fetch(`http://localhost:2222/app/deregister/orders/${tableType}/${uuid}`)
+                    let result = await response.json()
+                    setRowsToDeleteNext([])
+                })()
+            })
+        }
+    }, [rowsToDeleteNext])
+
+    /**
+     * Handles table's row delete event. Adding UUIDs to the rowsToDeleteNext array
+     * triggers the corresponding useEffect action and sends the UUIDs to delete to the
+     * server.
+     * @todo - Implement alert dialog before deleting rows.
      */
     const handleRowsDelete = (rowsDeleted) => {
         const profileKey = profileActive[0]
@@ -210,7 +229,6 @@ const TableManager = (props) => {
         })[0]
         const uuidsToDelete = rowsDeleted.data.map(d => tableDataObj.tables[tableID][d.dataIndex].uuid)
         setRowsToDeleteNext(uuidsToDelete)
-        deleteTableRow(profileActive[0], tableID, uuidsToDelete)
         // setDeleteAlertDialogOpen(true)
         // return false
     }
@@ -307,8 +325,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
         updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
-        deleteTableRow: (tableProfile, tableID, rows) => dispatch(ActionTypes.deleteTableRow(tableProfile, tableID, rows)),
-        updateTableData: () => dispatch(ActionTypes.updateTableData()),
+        deleteTableRows: (tableProfile, tableID, uuids) => dispatch(ActionTypes.deleteTableRows(tableProfile, tableID, uuids)),
         setSelectedTrade: (row) => dispatch(ActionTypes.setSelectedTrade(row))
     }
 }

@@ -118,14 +118,34 @@ class DataTransducer {
     }
 
     /**
-     * Remove/deregister a data stream watcher object and unsubscribe from provider
-     * channel.
-     * @todo - Build this!
+     * Remove/deregister a data stream watcher object and unsubscribe from data stream provider
+     * channel when no other tasks are using the subscription.
      */
-    remove_data_stream_watcher = (market, symbol) => {
+    remove_data_stream_watcher = (uuid) => {
 
-        // De-register the data stream
-        this.DP.deregister_trade(market, symbol)
+        // Reference the uuid to delete
+        let target_watcher = this.WATCHER_TASKS.filter((task) => {
+            return task.uuid === uuid
+        })
+
+        // Proceed when the target task is found
+        if (target_watcher.length) {
+
+            // Create new watcher task array
+            this.WATCHER_TASKS = this.WATCHER_TASKS.filter((task) => {
+                return task.uuid !== uuid
+            })
+
+            // Are there any other tasks using the same data provider subscription?
+            let task_symbol_to_unsubscribe = this.WATCHER_TASKS.filter((task) => {
+                return task.market === target_watcher[0].market && task.symbol === target_watcher[0].symbol
+            })
+
+            // De-register/unsubscribe from data provider stream
+            if (!task_symbol_to_unsubscribe.length) {
+                this.DP.deregister_trade(target_watcher[0].market, target_watcher[0].symbol)
+            }
+        }
     }
 
     /**
