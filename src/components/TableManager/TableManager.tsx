@@ -290,12 +290,12 @@ const TableManager = (props) => {
                 <AlertDialog
                     isOpen={deleteAlertDialogOpen}
                     onDisagree={() => {
-                        setRowsToDeleteNext([])
-                        setDeleteAlertDialogOpen(false)
+                        // setRowsToDeleteNext([])
+                        // setDeleteAlertDialogOpen(false)
                     }}
                     onAgree={() => {
-                        deleteTableRow(tableID, rowsToDeleteNext)
-                        setDeleteAlertDialogOpen(false)
+                        // deleteTableRows(tableID, rowsToDeleteNext)
+                        // setDeleteAlertDialogOpen(false)
                     }}
                     title='Delete trades in table?'
                     subtitle='Are you sure you want to attempt to delete the selected trades?

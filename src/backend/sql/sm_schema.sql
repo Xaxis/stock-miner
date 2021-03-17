@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
     `profile`       TEXT NOT NULL UNIQUE,
-    `status`        TEXT DEFAULT 'active'
+    `status`        TEXT DEFAULT 'paused'
 );
 CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `id`            INTEGER NOT NULL PRIMARY KEY,

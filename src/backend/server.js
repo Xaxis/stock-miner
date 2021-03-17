@@ -134,6 +134,7 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     DBM.set_profile_status(req.params.profile, req.params.status)
         .then(() => {
             res.send({success: true})
+            DT.build_all_active_tasks_from_db()
         })
         .catch(() => {
             res.send({success: false})
@@ -145,7 +146,7 @@ app.get('/app/get/orders/list/:profile/:type', (req, res) => {
     DBM.get_stock_orders_by_profile(req.params.profile, simulated)
         .then((rows) => {
             DT.set_active_stream_profile(req.params.profile)
-            DT.add_data_stream_watchers(rows, simulated)
+            DT.add_active_tasks(rows)
             res.send(rows)
         })
         .catch(() => {
@@ -198,15 +199,16 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
     })
 
     // Register with DataTransducer watcher
-    DT.add_data_stream_watcher(profile, uuid, market, symbol, simulated)
+    DT.add_active_task(profile, uuid, market, symbol)
 })
 
 app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
-    DT.remove_data_stream_watcher(req.params.uuid)
+    DT.remove_active_task(req.params.uuid)
     let simulated = (req.params.simulated === 'simulated')
     DBM.delete_stock_orders_by_uuid(simulated, req.params.uuid)
         .then(() => {
             res.send({success: true})
+            DT.build_all_active_tasks_from_db()
         })
         .catch(() => {
             res.send({success: false})

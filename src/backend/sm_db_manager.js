@@ -332,6 +332,35 @@ class DBManager {
     }
 
     /**
+     * Returns a list of stock orders from the Stock_Orders and Stock_Simulations tables by
+     * their profile status ('active' or 'paused').
+     */
+    get_stock_orders_by_profile_status = (status) => {
+        const self = this
+        let profile_sql = `SELECT profile FROM Profiles WHERE status = "${status}"`
+        return new Promise(function (resolve, reject) {
+            self.DB.all(profile_sql, function (err, profiles) {
+                if (err) {
+                    console.log("SMDB: Profiles" + err)
+                    reject([])
+                }
+                let result = []
+                profiles.forEach((profile) => {
+                    self.get_stock_orders_by_profile(profile.profile, true)
+                        .then((rows) => {
+                            result = result.concat(rows)
+                            self.get_stock_orders_by_profile(profile.profile, false)
+                                .then((rows) => {
+                                    result = result.concat(rows)
+                                    resolve(result)
+                                })
+                        })
+                })
+            })
+        })
+    }
+
+    /**
      * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
      * their profile AND symbol association.
      */

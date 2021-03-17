@@ -12,56 +12,82 @@ class DataTransducer {
         this.DP = DataProvider
         this.ACTIVE_PROFILE = 'noop'
         this.ACTIVE_PROFILE_LAST = 'noop'
-        this.WATCHER_TASKS = []
-        this.WATCHER_INTERVAL = this.set_watcher_interval()
-        this.WATCHER = this.init_watcher_interval()
+        this.ACTIVE_PROFILE_TASKS = []
+        this.ALL_TASKS = []
+        this.TASK_INTERVAL = this.set_task_interval()
+        this.WATCHER = this.init_task_interval()
     }
 
     /**
-     * The interval watcher is the main loop in which all transducer watcher tasks are executed
-     * at an interval.
+     * The task interval is the main loop in which all active profile's orders are operated on. Even
+     * if a profile isn't active in the app, if it has been set to 'active' all of its orders/trades
+     * will continue to operate in the background.
      */
-    init_watcher_interval = () => {
+    init_task_interval = () => {
         return setInterval(() => {
-            // let profile_changed = this.is_active_stream_profile_changed(this.ACTIVE_PROFILE, this.ACTIVE_PROFILE_LAST)
 
             // Update the database with the most recent stream data
-            if (this.WATCHER_TASKS.length) console.log('SM: Data Transducer: Updating trades with new data.')
-            this.WATCHER_TASKS.forEach((task) => {
+            if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
+            this.ALL_TASKS.forEach((task) => {
                 let data = this.DP.STREAM_DATA[task.market][task.symbol]
-                this.DB.update_stock_orders_by_uuid_with_multi_field_values(
-                    task.uuid,
-                    task.simulated,
-                    {
+                let set_data = {
 
-                        // Set the Ask price
-                        price: (data) ? data.ap : -1
-                    }
-                )
+                    // Set the Ask price
+                    price: (data) ? data.ap : -1
+                }
+
+                // Attempt to update rows in Stock_Simulations and Stock_Orders tables with new data. We attempt
+                // to update in both because we don't know in which type of order table the order/row exists.
+                this.DB.update_stock_orders_by_uuid_with_multi_field_values(task.uuid, true, set_data)
+                this.DB.update_stock_orders_by_uuid_with_multi_field_values(task.uuid, false, set_data)
             })
-        }, this.WATCHER_INTERVAL)
+        }, this.TASK_INTERVAL)
     }
 
     /**
      * Sets the watcher's interval. Exposes setting this property to the class instance.
+     * Default to every 10 seconds.
      */
-    set_watcher_interval = (interval = 10000) => {
+    set_task_interval = (interval = 10000) => {
         return interval
     }
 
     /**
-     * Sets the active stream profile so we know which data the client should receive and
-     * removes all watcher tasks.
+     * Builds task objects for all orders (simulated or otherwise) that are associated w/
+     * profiles that have their status set to active.
+     */
+    build_all_active_tasks_from_db = () => {
+        this.ALL_TASKS = []
+        this.DB.get_stock_orders_by_profile_status('active')
+            .then((rows) => {
+                rows.forEach((row) => {
+                    this.ALL_TASKS.push({
+                        uuid: row.uuid,
+                        profile: row.profile,
+                        market: row.market.toUpperCase(),
+                        symbol: row.symbol.toUpperCase()
+                    })
+                })
+            })
+    }
+
+    /**
+     * Sets the active stream profile so we know which data the client should receive
      */
     set_active_stream_profile = (profile) => {
-        this.WATCHER_TASKS = []
+
+        // Set ALL_TASKS array with task objects from DB
+        this.build_all_active_tasks_from_db()
+
+        // Reset active profile list and flag
+        this.ACTIVE_PROFILE_TASKS = []
         this.ACTIVE_PROFILE = profile
     }
 
     /**
      * Returns true if the profile has changed and updates the active profile flags.
      */
-    is_active_stream_profile_changed = (profile) => {
+    has_active_stream_profile_changed = (profile) => {
         if (profile !== this.ACTIVE_PROFILE_LAST && profile !== 'noop') {
             this.ACTIVE_PROFILE_LAST = profile
             return true
@@ -71,60 +97,57 @@ class DataTransducer {
     }
 
     /**
-     * Returns true if a watcher task has not already been added to the WATCHER_TASKS
-     * object list.
+     * Returns true if a watcher task has not already been added to the ACTIVE_PROFILE_TASKS
+     * array.
      */
-    is_watcher_task_unique = (uuid) => {
-        return !this.WATCHER_TASKS.filter((task) => {
+    is_active_task_unique = (uuid) => {
+        return !this.ACTIVE_PROFILE_TASKS.filter((task) => {
             return task.uuid === uuid
         }).length
     }
 
     /**
-     * Adds/registers a data stream with the DataProvider and adds/registers a "watcher"
-     * that updates pertinent data with associated trades in the database.
+     * Adds/registers a data stream with the DataProvider and adds/registers a task object w/
+     * ACTIVE_PROFILE_TASKS so we know which data to send to the frontend.
      */
-    add_data_stream_watcher = (profile, uuid, market, symbol, simulated = true) => {
+    add_active_task = (profile, uuid, market, symbol) => {
 
         // Register the data stream
         this.DP.register_trade(market, symbol)
 
-        // Add a watcher
-        let watcher = {
+        // Add a watcher task
+        this.ACTIVE_PROFILE_TASKS.push({
             uuid: uuid,
             profile: profile,
             market: market.toUpperCase(),
-            symbol: symbol.toUpperCase(),
-            simulated: simulated
-        }
-        this.WATCHER_TASKS.push(watcher)
+            symbol: symbol.toUpperCase()
+        })
     }
 
     /**
-     * Adds/registers multiple data stream watcher tasks.
+     * Adds/registers multiple task objects w/ ACTIVE_PROFILE_TASKS.
      */
-    add_data_stream_watchers = (rows, simulated) => {
+    add_active_tasks = (rows) => {
         rows.forEach((row) => {
-            if (this.is_watcher_task_unique(row.uuid)) {
-                this.add_data_stream_watcher(
+            if (this.is_active_task_unique(row.uuid)) {
+                this.add_active_task(
                     row.profile,
                     row.uuid,
                     row.market,
-                    row.symbol,
-                    simulated
+                    row.symbol
                 )
             }
         })
     }
 
     /**
-     * Remove/deregister a data stream watcher object and unsubscribe from data stream provider
-     * channel when no other tasks are using the subscription.
+     * Remove/deregister a data stream with the DataProvider and removes/deregisters a task object
+     * from ACTIVE_PROFILE_TASKS.
      */
-    remove_data_stream_watcher = (uuid) => {
+    remove_active_task = (uuid) => {
 
         // Reference the uuid to delete
-        let target_watcher = this.WATCHER_TASKS.filter((task) => {
+        let target_watcher = this.ACTIVE_PROFILE_TASKS.filter((task) => {
             return task.uuid === uuid
         })
 
@@ -132,12 +155,12 @@ class DataTransducer {
         if (target_watcher.length) {
 
             // Create new watcher task array
-            this.WATCHER_TASKS = this.WATCHER_TASKS.filter((task) => {
+            this.ACTIVE_PROFILE_TASKS = this.ACTIVE_PROFILE_TASKS.filter((task) => {
                 return task.uuid !== uuid
             })
 
             // Are there any other tasks using the same data provider subscription?
-            let task_symbol_to_unsubscribe = this.WATCHER_TASKS.filter((task) => {
+            let task_symbol_to_unsubscribe = this.ACTIVE_PROFILE_TASKS.filter((task) => {
                 return task.market === target_watcher[0].market && task.symbol === target_watcher[0].symbol
             })
 
@@ -149,7 +172,7 @@ class DataTransducer {
     }
 
     /**
-     * Return a referenced to the realtime stream data related to a given profile.
+     * Return a reference to the realtime stream data related to a given profile.
      */
     get_data_stream_for_profile = (tableid, profile = this.ACTIVE_PROFILE) => {
         let stream_data = {
@@ -157,10 +180,12 @@ class DataTransducer {
             _tableid: tableid,
             rows: []
         }
-        console.log(`SM: Data Transducer: Sending data for profile (${profile}). ${this.WATCHER_TASKS.length} rows.`)
+        console.log(`SMDT: Sending data for profile (${profile}). ${this.ACTIVE_PROFILE_TASKS.length} rows.`)
         if (profile !== 'noop') {
-            this.WATCHER_TASKS.forEach((task) => {
+            this.ACTIVE_PROFILE_TASKS.forEach((task) => {
                 if (task.profile === profile) {
+
+                    // @todo - Create wrapper function to return data stream values that checks if they exists to prevent errors
                     stream_data.rows.push({
                         uuid: task.uuid,
                         price: this.DP.STREAM_DATA[task.market][task.symbol].bp,
