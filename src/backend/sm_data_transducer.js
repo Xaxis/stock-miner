@@ -2,8 +2,7 @@
  * DataTransducer manages the flow of stream data to and from the database as well as
  * data to and from the client and the data provider.
  *
- * DataTransducer requires access to DBManager instance and a DataProvider instance
- * in order to access, manipulate, and save streamed data.
+ * DataTransducer requires access to DBManager and DataProvider instances.
  */
 class DataTransducer {
 
@@ -11,12 +10,12 @@ class DataTransducer {
         this.DB = DBManager
         this.DP = DataProvider
         this.ACTIVE_PROFILE = 'noop'
-        this.ACTIVE_PROFILE_LAST = 'noop'
         this.ACTIVE_PROFILE_TASKS = []
         this.ALL_TASKS = []
         this.TASK_INTERVAL = null
         this.DB.get_config()
             .then((config) => {
+                this.ACTIVE_PROFILE = config.active_profile
                 this.init_task_interval(config.task_frequency)
             })
     }
@@ -28,8 +27,6 @@ class DataTransducer {
      */
     init_task_interval = (period) => {
         this.TASK_INTERVAL =  setInterval(() => {
-
-            console.log(this.ALL_TASKS)
 
             // Update the database with the most recent stream data
             if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
@@ -84,18 +81,6 @@ class DataTransducer {
         // Reset active profile list and flag
         this.ACTIVE_PROFILE_TASKS = []
         this.ACTIVE_PROFILE = profile
-    }
-
-    /**
-     * Returns true if the profile has changed and updates the active profile flags.
-     */
-    has_active_stream_profile_changed = (profile) => {
-        if (profile !== this.ACTIVE_PROFILE_LAST && profile !== 'noop') {
-            this.ACTIVE_PROFILE_LAST = profile
-            return true
-        } else {
-            return false
-        }
     }
 
     /**

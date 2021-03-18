@@ -1,13 +1,12 @@
 const Lodash = require('lodash')
 const Express = require('express')
-const WebSocket = require('ws')
 const Cors = require('cors')
 const BodyParser = require('body-parser')
 const {DBManager} = require('./sm_db_manager.js')
 const {SymbolProvider} = require('./sm_symbol_provider.js')
 const {DataProvider} = require('./sm_data_provider.js')
 const {DataTransducer} = require('./sm_data_transducer.js')
-const {v4: uuidv4} = require('node-uuid')
+const {WebSocketServer} = require('./sm_websocket_server.js')
 const app = Express()
 const server_name = 'Stock Miner API Server'
 const server_port = 2222;
@@ -23,7 +22,8 @@ app.use(BodyParser.urlencoded({extended: true}))
 
 
 /**
- * Pre-load all symbols so as to be rapidly available for consumption.
+ * Initialize Symbol Provider and pre-load all symbols so as to
+ * be rapidly available for consumption by the application.
  */
 let all_symbols = []
 let SP = new SymbolProvider()
@@ -45,15 +45,23 @@ SP.get_all_finra_symbols()
  */
 let DBM = new DBManager()
 
+
 /**
  * Initialize the Data Provider.
  */
 let DP = new DataProvider()
 
+
 /**
  * Initialize the Data Transducer.
  */
 let DT = new DataTransducer(DBM, DP)
+
+
+/**
+ * Initialize Web Socket Server
+ */
+let WSS = new WebSocketServer(DBM, DP, DT)
 
 
 /**
@@ -239,14 +247,14 @@ app.get('/app/set/taskfrequency/:ms', (req, res) => {
 app.get('/app/set/pollingfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
         .then(() => {
-            // @todo - Come up with websocket interval reset function, the below will not work to change the interval
-            wss_polling_frequency = req.params.ms
+            WSS.reset_task_interval(req.params.ms)
             res.send({success: true})
         })
         .catch(() => {
             res.send({success: false})
         })
 })
+
 
 /**
  * API Routes - Routes that can be used outside of the application as standalone
@@ -299,62 +307,6 @@ app.get('/api/deregister/symbol/:market/:symbol', (req, res) => {
 
 
 /**
- * Initialize the API HTTP server.
+ * Initialize the APP/API HTTP server.
  */
-const server = app.listen(server_port, () => console.log(`${server_name} -  Listening on port ${server_port}`))
-
-
-/**
- * Initialize the WebSocket server.
- */
-const wss = new WebSocket.Server({port: 2223})
-const wss_clients = {}
-let wss_polling_frequency = 3000
-wss.on('connection', (cobj) => {
-    let profile = null
-    let tableid = null
-    let client_id = uuidv4()
-    let interval_paused = true
-    cobj._clientID = client_id
-    cobj._error = false
-    wss_clients[client_id] = cobj
-    console.log('SM: WebSocket: Connected: New WebSocket connection from client. ID: ', cobj._clientID)
-
-    // Handle client disconnects
-    cobj.on('close', () => {
-        delete wss_clients[cobj._clientID]
-        interval_paused = true
-        console.log('SM: WebSocket: Closed: WebSocket client connection closed. ID: ', cobj._clientID)
-    })
-
-    // Handle and redirect action requests from the client
-    cobj.on('message', (msg) => {
-        let msg_obj = JSON.parse(msg)
-        switch (msg_obj.action) {
-
-            // Set active profile/unpause interval
-            case 'get-data-for-profile':
-                tableid = msg_obj.data.tableid
-                profile = msg_obj.data.profile
-                interval_paused = false
-                break
-        }
-    })
-
-    // Main interval loop that sends stream data to client
-    setInterval(() => {
-        if (!interval_paused) {
-            try {
-                if (!cobj._error) {
-                    if (profile && cobj.readyState === 1) {
-                        let stream_data = DT.get_data_stream_for_profile(tableid, profile)
-                        cobj.send(JSON.stringify(stream_data))
-                    }
-                }
-            } catch (error) {
-                cobj._error = true
-                console.log('SM: WebSocket: Error: ', error)
-            }
-        }
-    }, wss_polling_frequency)
-})
+app.listen(server_port, () => console.log(`${server_name} -  Listening on port ${server_port}`))
