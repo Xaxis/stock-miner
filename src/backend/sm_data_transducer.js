@@ -15,8 +15,11 @@ class DataTransducer {
         this.TASK_INTERVAL = null
         this.DB.get_config()
             .then((config) => {
-                this.ACTIVE_PROFILE = config.active_profile
-                this.init_task_interval(config.task_frequency)
+                if (config) {
+                    this.init_task_interval(config.task_frequency)
+                } else {
+                    this.init_task_interval(10000)
+                }
             })
     }
 
@@ -26,7 +29,7 @@ class DataTransducer {
      * will continue to operate in the background.
      */
     init_task_interval = (period) => {
-        this.TASK_INTERVAL =  setInterval(() => {
+        this.TASK_INTERVAL = setInterval(() => {
 
             // Update the database with the most recent stream data
             if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
@@ -121,9 +124,9 @@ class DataTransducer {
         }
         this.ACTIVE_PROFILE_TASKS.push(task)
 
-        // Add to the all tasks array
+        // Update the ALL_TASKS array with tasks from profiles that are active
         if (this.is_task_unique(uuid)) {
-            this.ALL_TASKS.push(task)
+            this.build_all_active_tasks_from_db()
         }
     }
 
@@ -175,6 +178,34 @@ class DataTransducer {
     }
 
     /**
+     * Returns true when a particular data stream object is ready.
+     */
+    is_data_stream_ready = (market, symbol) => {
+        if (!this.DP.STREAM_DATA) {
+            return false
+        }
+        if (!(market in this.DP.STREAM_DATA)) {
+            return false
+        }
+        if (!(symbol in this.DP.STREAM_DATA[market])) {
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Retrieves sanity checks on the availability of streamed data and assists in
+     * building the expected object for consumption by the frontend.
+     */
+    get_parsed_stream_data = (market, symbol) => {
+        let stream_data = {}
+        if (this.is_data_stream_ready(market, symbol)) {
+            stream_data.price = this.DP.STREAM_DATA[market][symbol].ap
+        }
+        return stream_data
+    }
+
+    /**
      * Return a reference to the realtime stream data related to a given profile.
      */
     get_data_stream_for_profile = (tableid, profile = this.ACTIVE_PROFILE) => {
@@ -187,13 +218,10 @@ class DataTransducer {
         if (profile !== 'noop') {
             this.ACTIVE_PROFILE_TASKS.forEach((task) => {
                 if (task.profile === profile) {
-
-                    // @todo - Check if each data stream object exists before assigning to object
-                    stream_data.rows.push({
+                    stream_data.rows.push(Object.assign({
                         uuid: task.uuid,
-                        price: this.DP.STREAM_DATA[task.market][task.symbol].bp,
-                        status: 'Active'
-                    })
+                        price: 0
+                    }, this.get_parsed_stream_data(task.market, task.symbol)))
                 }
             })
         }

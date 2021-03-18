@@ -24,7 +24,11 @@ class WebSocketServer {
         this.TABLEID = null
         this.DB.get_config()
             .then((config) => {
-                this.init_wss(config.polling_frequency)
+                if (config) {
+                    this.init_wss(config.polling_frequency)
+                } else {
+                    this.init_wss(3000)
+                }
             })
     }
 
