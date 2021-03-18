@@ -14,7 +14,11 @@ class DataTransducer {
         this.ACTIVE_PROFILE_LAST = 'noop'
         this.ACTIVE_PROFILE_TASKS = []
         this.ALL_TASKS = []
-        this.TASK_INTERVAL = this.init_task_interval(10000)
+        this.TASK_INTERVAL = null
+        this.DB.get_config()
+            .then((config) => {
+                this.init_task_interval(config.task_frequency)
+            })
     }
 
     /**
@@ -22,8 +26,8 @@ class DataTransducer {
      * if a profile isn't active in the app, if it has been set to 'active' all of its orders/trades
      * will continue to operate in the background.
      */
-    init_task_interval = (period, load = false) => {
-        return setInterval(() => {
+    init_task_interval = (period) => {
+        this.TASK_INTERVAL =  setInterval(() => {
 
             console.log(this.ALL_TASKS)
 
@@ -50,7 +54,7 @@ class DataTransducer {
      */
     reset_task_interval = (interval = 10000) => {
         clearInterval(this.TASK_INTERVAL)
-        this.TASK_INTERVAL = this.init_task_interval(interval, true)
+        this.init_task_interval(interval)
     }
 
     /**
