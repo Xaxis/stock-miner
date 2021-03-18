@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Records` (
 );
 CREATE TABLE IF NOT EXISTS `Config` (
     `id`                INTEGER NOT NULL PRIMARY KEY,
-    `active_profile`    TEXT DEFAULT 'Profile 1',
-    `default_profile`   TEXT DEFAULT 'Profile 1'
+    `active_profile`    TEXT DEFAULT 'noop',
+    `task_frequency`    TEXT DEFAULT '10000',
+    `polling_frequency` TEXT DEFAULT '3000'
 );

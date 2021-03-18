@@ -1,4 +1,6 @@
 import * as React from 'react'
+import {useState, useEffect} from 'react'
+import fetch from 'cross-fetch'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
@@ -9,69 +11,99 @@ import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 export default function SideBarControlsMenu() {
-    const [expandedPanel1, setExpandedPanel1] = React.useState(true)
-    const [frequencyValue, setFrequencyValue] = React.useState('live')
-    const [timespanValue, setTimespanValue] = React.useState('1d')
-    const frequencyOptions = [
+    const [expandedPanel1, setExpandedPanel1] = useState(true)
+    const [taskFrequencyValue, setTaskFrequencyValue] = useState('10000')
+    const [pollingFrequencyValue, setPollingFrequencyValue] = useState('3000')
+    const taskFrequencyOptions = [
         {
-            value: 'live',
+            value: '1000',
             label: 'Live'
         },
         {
-            value: '5s',
+            value: '3000',
+            label: '3 seconds'
+        },
+        {
+            value: '5000',
             label: '5 seconds'
         },
         {
-            value: '15s',
-            label: '15 seconds'
+            value: '10000',
+            label: '10 seconds'
         },
         {
-            value: '30s',
+            value: '30000',
             label: '30 seconds'
         },
         {
-            value: '1m',
+            value: '60000',
             label: '1 minute'
         }
     ]
-    const timespanOptions = [
+    const pollingFrequencyOptions = [
         {
-            value: 'live',
+            value: '1000',
             label: 'Live'
         },
         {
-            value: '1d',
-            label: '1 day'
+            value: '3000',
+            label: '3 seconds'
         },
         {
-            value: '1w',
-            label: '1 week'
+            value: '5000',
+            label: '5 seconds'
         },
         {
-            value: '1m',
-            label: '1 month'
+            value: '10000',
+            label: '10 seconds'
         },
         {
-            value: '3m',
-            label: '3 months'
+            value: '30000',
+            label: '30 seconds'
         },
         {
-            value: '6m',
-            label: '6 months'
-        },
-        {
-            value: '1y',
-            label: '1 year'
-        },
-        {
-            value: '5y',
-            label: '5 years'
-        },
+            value: '60000',
+            label: '1 minute'
+        }
     ]
 
     const handleChange = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
     }
+
+    /**
+     * Update the task frequency value.
+     */
+    const handleTaskFrequencyUpdate = (e) => {
+        (async () => {
+            let value = e.target.value
+            const response = await fetch(`http://localhost:2222/app/set/taskfrequency/${value}`)
+            setTaskFrequencyValue(value)
+        })()
+    }
+
+    /**
+     * Update the polling frequency value.
+     */
+    const handlePollingFrequencyUpdate = (e) => {
+        (async () => {
+            let value = e.target.value
+            const response = await fetch(`http://localhost:2222/app/set/pollingfrequency/${value}`)
+            setPollingFrequencyValue(value)
+        })()
+    }
+
+    /**
+     * Handle setting controls based on app config in the database.
+     */
+    useEffect(() => {
+        (async () => {
+            const response = await fetch(`http://localhost:2222/app/get/config`)
+            let config = await response.json()
+            setTaskFrequencyValue(config.task_frequency)
+            setPollingFrequencyValue(config.polling_frequency)
+        })()
+    })
 
     return (
         <div>
@@ -79,21 +111,20 @@ export default function SideBarControlsMenu() {
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
                     aria-controls="sidebar-controls-panel1"
-                    id="sidebar-controls-panel1"
                 >
                     <Typography>Controls</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <FormGroup>
                         <TextField
-                            id="sidebar-controls-frequency"
                             select
-                            label="Polling Frequency"
-                            value={frequencyValue}
-                            helperText="Select polling frequency"
+                            label="Task Frequency"
+                            value={taskFrequencyValue}
+                            helperText="How frequently server side tasks are executed."
                             variant="outlined"
+                            onChange={handleTaskFrequencyUpdate}
                         >
-                            {frequencyOptions.map((option) => (
+                            {taskFrequencyOptions.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                     {option.label}
                                 </MenuItem>
@@ -101,19 +132,20 @@ export default function SideBarControlsMenu() {
                         </TextField>
 
                         <TextField
-                            id="sidebar-controls-timespan"
                             select
-                            label="Time Span"
-                            value={timespanValue}
-                            helperText="Select time span value"
+                            label="Polling Frequency"
+                            value={pollingFrequencyValue}
+                            helperText="How frequently data is updated on the frontend."
                             variant="outlined"
+                            onChange={handlePollingFrequencyUpdate}
                         >
-                            {timespanOptions.map((option) => (
+                            {pollingFrequencyOptions.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                     {option.label}
                                 </MenuItem>
                             ))}
                         </TextField>
+
                     </FormGroup>
 
                 </AccordionDetails>

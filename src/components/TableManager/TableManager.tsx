@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState, useEffect, useRef, useMemo, useCallback} from "react"
+import {useState, useEffect, useRef} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'

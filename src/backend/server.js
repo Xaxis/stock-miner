@@ -61,6 +61,16 @@ let DT = new DataTransducer(DBM, DP)
  * interact with the database in some way.
  */
 
+app.get('/app/get/config', (req, res) => {
+    DBM.get_config()
+        .then((row) => {
+            res.send(row)
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
+
 app.get('/app/get/profiles/list', (req, res) => {
     DBM.get_profile_list()
         .then((rows) => {
@@ -100,7 +110,7 @@ app.get('/app/add/profiles/:profile', (req, res) => {
 })
 
 app.get('/app/set/profiles/active/:profile', (req, res) => {
-    DBM.update_config(req.params.profile, req.params.profile)
+    DBM.update_config_multi_field_values({active_profile: req.params.profile})
         .then(() => {
             res.send({success: true})
         })
@@ -112,7 +122,7 @@ app.get('/app/set/profiles/active/:profile', (req, res) => {
 app.get('/app/delete/profiles/:profile', (req, res) => {
     DBM.delete_profile_entry(req.params.profile)
         .then(() => {
-            DBM.update_config('noop', 'noop')
+            DBM.update_config_multi_field_values({active_profile: 'noop'})
             res.send({success: true})
         })
         .catch(() => {
@@ -196,10 +206,10 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
             .catch(() => {
                 res.send([])
             })
-    })
 
-    // Register with DataTransducer watcher
-    DT.add_active_task(profile, uuid, market, symbol)
+        // Register with DataTransducer watcher
+        DT.add_active_task(profile, uuid, market, symbol)
+    })
 })
 
 app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
@@ -209,6 +219,29 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
         .then(() => {
             res.send({success: true})
             DT.build_all_active_tasks_from_db()
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
+
+app.get('/app/set/taskfrequency/:ms', (req, res) => {
+    DBM.update_config_multi_field_values({task_frequency: req.params.ms})
+        .then(() => {
+            DT.reset_task_interval(req.params.ms)
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
+
+app.get('/app/set/pollingfrequency/:ms', (req, res) => {
+    DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
+        .then(() => {
+            // @todo - Come up with websocket interval reset function, the below will not work to change the interval
+            wss_polling_frequency = req.params.ms
+            res.send({success: true})
         })
         .catch(() => {
             res.send({success: false})
@@ -275,8 +308,8 @@ const server = app.listen(server_port, () => console.log(`${server_name} -  List
  * Initialize the WebSocket server.
  */
 const wss = new WebSocket.Server({port: 2223})
-const wss_clients = {};
-
+const wss_clients = {}
+let wss_polling_frequency = 3000
 wss.on('connection', (cobj) => {
     let profile = null
     let tableid = null
@@ -308,7 +341,6 @@ wss.on('connection', (cobj) => {
         }
     })
 
-
     // Main interval loop that sends stream data to client
     setInterval(() => {
         if (!interval_paused) {
@@ -324,5 +356,5 @@ wss.on('connection', (cobj) => {
                 console.log('SM: WebSocket: Error: ', error)
             }
         }
-    }, 3000)
+    }, wss_polling_frequency)
 })

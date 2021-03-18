@@ -82,23 +82,61 @@ class DBManager {
     }
 
     /**
-     * Updates the config parameters in the Config table.
+     * Updates the config parameters in the Config table. Merges passed
+     * field/value pairs into return database config object and updates the
+     * config.
      */
-    update_config = (active_profile, default_profile) => {
+    update_config_multi_field_values = (field_values) => {
         const self = this
         return new Promise(function (resolve, reject) {
-            let sql = `
-            INSERT OR REPLACE INTO Config (id, active_profile, default_profile)
-            VALUES (1, ?, ?) `
-            self.DB.run(sql, [active_profile, default_profile], function (err) {
+            self.get_config()
+                .then((config) => {
+                    field_values = Object.assign(config || {}, field_values)
+                    let sql = `INSERT OR REPLACE INTO Config `
+                    let end_idx = 0
+                    let fv_length = Object.keys(field_values).length
+                    let key_string = '('
+                    let val_string = '('
+                    for (const [field, value] of Object.entries(field_values)) {
+                        key_string += `${field}`
+                        val_string += `"${value}"`
+                        end_idx += 1
+                        if (end_idx < fv_length) {
+                            key_string += ", "
+                            val_string += ", "
+                        } else {
+                            key_string += ")"
+                            val_string += ")"
+                        }
+                    }
+                    sql += key_string + " VALUES " + val_string
+                    self.DB.run(sql, function (err) {
+                        if (err) {
+                            console.log("SMDB: " + err)
+                            reject({success: false})
+                        } else {
+                            console.log(`SMDB: Config: Last ID: ` + this.lastID)
+                            console.log(`SMDB: Config: # of Row Changes: ` + this.changes)
+                            resolve({success: true})
+                        }
+                    })
+                })
+        })
+    }
+
+    /**
+     * Returns a Promise containing the app's configuration values.
+     */
+    get_config = () => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT * FROM Config WHERE id = "1"`
+            self.DB.get(sql, function (err, row) {
                 if (err) {
-                    console.log("SMDB: " + err)
-                    reject({success: false})
-                } else {
-                    console.log("SMDB: Config: Last ID: " + this.lastID)
-                    console.log("SMDB: Config: # of Row Changes: " + this.changes)
-                    resolve({success: true})
+                    console.log("SMDB: Config" + err)
+                    reject([])
                 }
+                resolve(row)
             })
         })
     }
@@ -120,7 +158,7 @@ class DBManager {
                     console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
 
                     // Update config to profile that is active
-                    self.update_config(profile, profile)
+                    self.update_config_multi_field_values({active_profile: profile})
                     resolve({success: true})
                 }
             })
@@ -277,7 +315,7 @@ class DBManager {
                     console.log("SMDB: Profiles: # of Row Changes: " + this.changes)
 
                     // Update the application config to point to the active profile
-                    self.update_config(new_name, new_name)
+                    self.update_config_multi_field_values({active_profile: new_name})
 
                     // Update profile field in all matching rows in Stock_Orders & Stock_Simulations
                     self.update_stock_orders_by_profile_at_field_value(old_name, true, 'profile', new_name)
