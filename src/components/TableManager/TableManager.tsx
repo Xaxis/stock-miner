@@ -20,7 +20,7 @@ const TableManager = (props) => {
         addTableRows,
         updateTableRows,
         deleteTableRows,
-        setSelectedTrade,
+        setSelectedRow,
         ...other
     } = props;
 
@@ -234,15 +234,20 @@ const TableManager = (props) => {
     }
 
     /**
-     * Handles when row selection changes.
+     * Sets the selected row object in the store/state. This is used by all other
+     * parts of the app that need a rows data.
      */
     const handleRowSelectionChange = (currentRowArr, allRowsArr) => {
+        const profileKey = profileActive[0]
+        const tableDataObj = tableData.filter((tableObj) => {
+            return tableObj.tableProfile === profileKey
+        })[0]
         if (allRowsArr.length) {
             let rowIndex = allRowsArr[allRowsArr.length - 1].dataIndex
-            let selectedRow = tableData[tableID][rowIndex]
-            setSelectedTrade(selectedRow)
+            let selectedRow = tableDataObj.tables[tableID][rowIndex]
+            setSelectedRow(selectedRow)
         } else {
-            setSelectedTrade(null)
+            setSelectedRow(null)
         }
     }
 
@@ -326,7 +331,7 @@ const mapDispatchToProps = (dispatch) => {
         addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
         updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
         deleteTableRows: (tableProfile, tableID, uuids) => dispatch(ActionTypes.deleteTableRows(tableProfile, tableID, uuids)),
-        setSelectedTrade: (row) => dispatch(ActionTypes.setSelectedTrade(row))
+        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row))
     }
 }
 

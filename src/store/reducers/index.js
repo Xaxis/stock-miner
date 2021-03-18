@@ -27,10 +27,8 @@ const initialState = {
     // [Profile:{tables:[tableID:[]]}]
     tableData: [],
 
-    // Contains a list of unique registered UUIDs
-
-    // Contains which trade has been most recently selected
-    currentSelectedTrade: null
+    // Holds the current selected row object
+    currentSelectedRow: null
 }
 
 const Reducers = (state = initialState, action) => {
@@ -177,12 +175,12 @@ const Reducers = (state = initialState, action) => {
             }
 
         /**
-         * Set the most recently selected trade object.
+         * Set the most recently selected row object.
          */
-        case ActionTypes.SET_SELECTED_TRADE:
+        case ActionTypes.SET_SELECTED_ROW:
             return {
                 ...state,
-                currentSelectedTrade: action.row
+                currentSelectedRow: action.row
             }
 
         /**

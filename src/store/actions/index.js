@@ -48,9 +48,9 @@ export const deleteProfileTables = (tableProfile) => {
     }
 }
 
-export const setSelectedTrade = (row) => {
+export const setSelectedRow = (row) => {
     return {
-        type: ActionTypes.SET_SELECTED_TRADE,
+        type: ActionTypes.SET_SELECTED_ROW,
         row: row
     }
 }
