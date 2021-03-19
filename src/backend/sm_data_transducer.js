@@ -38,7 +38,7 @@ class DataTransducer {
                 let set_data = {
 
                     // Set the Ask price
-                    price: (data) ? data.ap : -1
+                    price: (data) ? data.ap : 0
                 }
 
                 // Attempt to update rows in Stock_Simulations and Stock_Orders tables with new data. We attempt
@@ -66,12 +66,14 @@ class DataTransducer {
         this.DB.get_stock_orders_by_profile_status('active')
             .then((rows) => {
                 rows.forEach((row) => {
-                    this.ALL_TASKS.push({
-                        uuid: row.uuid,
-                        profile: row.profile,
-                        market: row.market.toUpperCase(),
-                        symbol: row.symbol.toUpperCase()
-                    })
+                    this.ALL_TASKS.push(
+                        Object.assign(row,{
+                            uuid: row.uuid,
+                            profile: row.profile,
+                            market: row.market.toUpperCase(),
+                            symbol: row.symbol.toUpperCase()
+                        })
+                    )
                 })
             })
     }
@@ -123,11 +125,6 @@ class DataTransducer {
             symbol: symbol.toUpperCase()
         }
         this.ACTIVE_PROFILE_TASKS.push(task)
-
-        // Update the ALL_TASKS array with tasks from profiles that are active
-        if (this.is_task_unique(uuid)) {
-            this.build_all_active_tasks_from_db()
-        }
     }
 
     /**

@@ -42,7 +42,7 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
     useEffect(() => {
         let updater = null
         if (currentSelectedRow) {
-            setCurrentSymbol(currentSelectedRow.symbol)
+            setCurrentSymbol('$' + currentSelectedRow.symbol)
             setCurrentEstimatedPrice('$' + currentSelectedRow.price)
             setLimitBuyAmount('$' + currentSelectedRow.price.toString())
             setLimitSellAmount('$' + currentSelectedRow.price.toString())
