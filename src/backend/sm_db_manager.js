@@ -382,17 +382,20 @@ class DBManager {
                     console.log("SMDB: Profiles" + err)
                     reject([])
                 }
-                let result = []
+
+                // Build promises for results spanning both types of order table (Stock_Orders and Stock_Simulations)
+                let promises = []
                 profiles.forEach((profile) => {
-                    self.get_stock_orders_by_profile(profile.profile, true)
-                        .then((rows) => {
-                            result = result.concat(rows)
-                            self.get_stock_orders_by_profile(profile.profile, false)
-                                .then((rows) => {
-                                    result = result.concat(rows)
-                                    resolve(result)
-                                })
-                        })
+                    promises.push(self.get_stock_orders_by_profile(profile.profile, true))
+                    promises.push(self.get_stock_orders_by_profile(profile.profile, false))
+                })
+
+                // Execute all promises concurrently and resolve the parsed result
+                Promise.all(promises).then((results) => {
+                    let filtered_results = results.filter((res_arr) => {
+                        return res_arr.length
+                    })
+                    resolve(filtered_results.flat())
                 })
             })
         })

@@ -120,6 +120,7 @@ app.get('/app/add/profiles/:profile', (req, res) => {
 app.get('/app/set/profiles/active/:profile', (req, res) => {
     DBM.update_config_multi_field_values({active_profile: req.params.profile})
         .then(() => {
+            DT.build_all_active_tasks_from_db()
             res.send({success: true})
         })
         .catch(() => {
@@ -165,6 +166,7 @@ app.get('/app/get/orders/list/:profile/:type', (req, res) => {
         .then((rows) => {
             DT.set_active_stream_profile(req.params.profile)
             DT.add_active_tasks(rows)
+            DT.build_all_active_tasks_from_db()
             res.send(rows)
         })
         .catch(() => {
@@ -215,8 +217,11 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
                 res.send([])
             })
 
-        // Register with DataTransducer watcher
+        // Register active task with the Data Transducer
         DT.add_active_task(profile, uuid, market, symbol)
+
+        // Re-build all profile tasks
+        DT.build_all_active_tasks_from_db()
     })
 })
 
