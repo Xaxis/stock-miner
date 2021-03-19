@@ -18,10 +18,15 @@ cp = robin.get_crypto_positions()
 for i in cp:
     if i['currency']['code'] == trading:
         quantity = float(i['quantity_available'])
+avail = float(robin.load_account_profile(info='buying_power'))
 
 # if shares available to sell we're selling
-if quantity > 0:
+if quantity > 0.0:
     buying = False
+    print(quantity, ' shares available to sell')
+else:
+    buying = True
+    print("$", avail, ' buying power available')
 
 # Main loop
 while 1:
@@ -39,9 +44,10 @@ while 1:
 
     # Trailing limit buy
     if buying:
+        print('We are buying.')
         askPrice = float(robin.get_crypto_quote(trading, info='ask_price'))
         initialPrice = askPrice
-        limitPrice = (askPrice*limitPercent)
+        limitPrice = askPrice+(askPrice*(limitPercent/100))
 
         # Place initial limit buy order
         # robin.order_buy_crypto_limit(trading, avail, limitPrice, timeInForce='gtc')
@@ -53,8 +59,8 @@ while 1:
             print('Current Price: ', askPrice, ', Buy Limit: ', limitPrice)
 
             # If price is below moving limit percentage, we'll update our buy order
-            if askPrice <= limitPrice*movingPercent:
-                limitPrice = limitPrice*movingPercent
+            if askPrice < limitPrice-(limitPrice*(movingPercent/100)):
+                limitPrice = limitPrice-(limitPrice*(movingPercent/100))
                 print('Price down, adjusting limit to ', limitPrice)
 
                 # Cancel all open crypto orders for simplicity's sake. We can add logic for specific order by id later.
@@ -70,9 +76,9 @@ while 1:
 
             sleep(10)
 
-
     # Trailing limit sell
     else:
+        print('We are selling')
         # Update shares available to sell
         cp = robin.get_crypto_positions()
         for i in cp:
@@ -82,19 +88,19 @@ while 1:
         # Update prices
         bidPrice = float(robin.get_crypto_quote(trading, info='bid_price'))
         initialPrice = bidPrice
-        limitPrice = bidPrice*limitPercent
+        limitPrice = bidPrice*(bidPrice*(limitPercent/100))
 
         # Place initial limit sell order
         # robin.order_sell_crypto_by_quantity(trading, quantity, limitPrice, timeInForce='gtc')
-        print('Placing initial limit sell order for ', quantity, ' at ', limitPrice)
+        print('Placing initial limit sell order for ', format (quantity, '.10f',), '~ at ', limitPrice)
 
         # A polling loop for simplicity's sake
         while 1:
             bidPrice = float(robin.get_crypto_quote(trading, info='bid_price'))
             sleep(10)
 
-            if bidPrice > limitPrice+(limitPrice*(limitPrice/100)):
-                limitPrice = limitPrice+(limitPrice*(limitPrice/100))
+            if bidPrice > limitPrice+(limitPrice*(movingPercent/100)):
+                limitPrice = limitPrice+(limitPrice*(movingPercent/100))
 
                 # Cancel all open crypto orders for simplicity's sake. We can add logic for specific order by id later.
                 # robin.cancel_all_crypto_orders()
@@ -105,7 +111,7 @@ while 1:
                     if i['currency']['code'] == trading:
                         quantity = float(i['quantity_available'])
                 # robin.order_sell_crypto_by_quantity(trading, quantity, limitPrice, timeInForce='gtc')
-                print('Placing updated limit sell order for ', quantity, ' at ', limitPrice)
+                print('Placing updated limit sell order for ', format (quantity, '.10f'), '~ at ', limitPrice)
                 # Update side
                 buying = True
                 break
