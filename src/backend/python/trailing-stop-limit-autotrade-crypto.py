@@ -64,12 +64,12 @@ while 1:
                 avail = float(robin.load_account_profile(info='buying_power'))
                 # robin.order_buy_crypto_limit(trading, avail, limitPrice, timeInForce='gtc')
                 print('Placing updated limit buy order for ', avail, ' at ', limitPrice)
+                # Update side
+                buying = False
                 break
 
             sleep(10)
 
-        # Update side
-        buying = False
 
     # Trailing limit sell
     else:
@@ -106,9 +106,9 @@ while 1:
                         quantity = float(i['quantity_available'])
                 # robin.order_sell_crypto_by_quantity(trading, quantity, limitPrice, timeInForce='gtc')
                 print('Placing updated limit sell order for ', quantity, ' at ', limitPrice)
+                # Update side
+                buying = True
                 break
 
-        # Update side
-        buying = True
         sleep(10)
     sleep(60)
