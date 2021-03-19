@@ -17,11 +17,5 @@
     overflow-y: auto;
     overflow-x: hidden;
     background-color: #151515;
-
-    .MuiFormControl-root {
-      & + * {
-        margin-top: 16px !important;
-      }
-    }
   }
 }

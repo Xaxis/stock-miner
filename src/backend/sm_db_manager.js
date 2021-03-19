@@ -176,16 +176,16 @@ class DBManager {
                 uuid = options.uuid,
                 profile = options.profile,
                 market = options.market,
-                order_type = options.order_type || 'waiting',
+                order_type = options.order_type || 'Watching',
                 symbol = options.symbol,
                 name = options.name,
-                price = options.price || -1,
-                shares = options.shares || -1,
-                cost_basis = options.cost_basis || -1,
-                limit_buy = options.limit_buy || -1,
-                limit_sell = options.limit_sell || -1,
+                price = options.price || 0,
+                shares = options.shares || 0,
+                cost_basis = options.cost_basis || 0,
+                limit_buy = options.limit_buy || 0,
+                limit_sell = options.limit_sell || 0,
                 order_date = options.order_date,
-                exec_date = options.exec_date || -1
+                exec_date = options.exec_date || 0
             let sql = `INSERT INTO ${table} (uuid, profile, market, order_type, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
             sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             self.DB.run(sql, [uuid, profile, market, order_type, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {

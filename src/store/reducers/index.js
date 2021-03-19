@@ -1,5 +1,4 @@
 import * as ActionTypes from '../actions/action_types'
-import {default as UUID} from 'node-uuid'
 
 const templateObjects = {
     tableRow: {
@@ -9,9 +8,9 @@ const templateObjects = {
         name: '-',
         price: '-',
         status: '-',
-        shares: '-',
-        equity: '-',
-        change: '-'
+        shares: 0,
+        equity: 0,
+        change: 0
     }
 }
 

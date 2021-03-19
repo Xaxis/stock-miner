@@ -119,7 +119,14 @@ const Layout = ({
             MuiFormControl: {
                 root: {
                     marginTop: '6px !important',
-                    marginBottom: '6px !important'
+                    marginBottom: '6px !important',
+                    '& + *': {
+                        marginTop: '16px !important'
+                    },
+                    '& + .MuiDivider-root': {
+                        marginTop: '16px !important',
+                        marginBottom: '16px !important'
+                    }
                 }
             },
             MuiPaper: {
