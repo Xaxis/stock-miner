@@ -1,8 +1,6 @@
 from time import sleep
 import robin_stocks as robin
 
-user = 'walkrjp79@gmail.com'
-passw = 'Rfr3tn0gH!'
 rob = robin.login(user, passw)
 
 trading = 'BTC'
@@ -91,7 +89,7 @@ while 1:
         limitPrice = bidPrice+(bidPrice*movingPercent/100)
 
         # Place initial limit sell order
-        robin.order_sell_crypto_by_quantity(trading, quantity, limitPrice, timeInForce='gtc')
+        robin.order_sell_crypto_limit(trading, quantity, limitPrice)
         print('Placing initial limit sell order for ', format(quantity, '.10f',), '~ at ', limitPrice,
               '. Stop-loss at ', initialPrice-(initialPrice*(limitPercent/100)))
 
@@ -119,7 +117,7 @@ while 1:
                 for i in cp:
                     if i['currency']['code'] == trading:
                         quantity = float(i['quantity_available'])
-                robin.order_sell_crypto_limit_by_quantity(trading, quantity, limitPrice, timeInForce='gtc')
+                robin.order_sell_crypto_limit(trading, quantity, limitPrice)
                 print('Placing updated limit sell order for ', format(quantity, '.10f'), '~ at ', limitPrice,
                     '. Stop-loss at ', initialPrice-(initialPrice*limitPercent))
                 # Update side
