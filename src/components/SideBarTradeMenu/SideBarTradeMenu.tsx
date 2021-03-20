@@ -29,12 +29,16 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
 
     const [currentSymbol, setCurrentSymbol] = useState("")
     const [currentEstimatedPrice, setCurrentEstimatedPrice] = useState("$0.00")
-    const [orderAmount, setOrderAmount] = useState("0.00")
+    const [orderAmount, setOrderAmount] = useState("")
     const [limitType, setLimitType] = useState("price")
-    const [limitBuyAmount, setLimitBuyAmount] = useState("$0.00")
-    const [limitSellAmount, setLimitSellAmount] = useState("$0.00")
-    const [limitBuyPercent, setLimitBuyPercent] = useState("0.00%")
-    const [limitSellPercent, setLimitSellPercent] = useState("0.00%")
+    const [limitBuyAmount, setLimitBuyAmount] = useState("")
+    const [limitBuyAmountPlaceholder, setLimitBuyAmountPlaceholder] = useState("$0.00")
+    const [limitSellAmount, setLimitSellAmount] = useState("")
+    const [limitSellAmountPlaceholder, setLimitSellAmountPlaceholder] = useState("$0.00")
+    const [limitBuyPercent, setLimitBuyPercent] = useState("")
+    const [limitBuyPercentPlaceholder, setLimitBuyPercentPlaceholder] = useState("0.00")
+    const [limitSellPercent, setLimitSellPercent] = useState("")
+    const [limitSellPercentPlaceholder, setLimitSellPercentPlaceholder] = useState("0.00")
 
     /**
      * Updates values in the trade/order menu when a row is selected.
@@ -44,40 +48,63 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
         if (currentSelectedRow) {
             setCurrentSymbol('$' + currentSelectedRow.symbol)
             setCurrentEstimatedPrice('$' + currentSelectedRow.price)
-            setLimitBuyAmount('$' + currentSelectedRow.price.toString())
-            setLimitSellAmount('$' + currentSelectedRow.price.toString())
+            setLimitBuyAmountPlaceholder('$' + currentSelectedRow.price.toString())
+            setLimitSellAmountPlaceholder('$' + currentSelectedRow.price.toString())
             updater = setInterval(() => {
-                setCurrentEstimatedPrice(currentSelectedRow.price)
+                setCurrentEstimatedPrice('$' + currentSelectedRow.price)
             }, 1000)
         } else {
             setCurrentSymbol("")
             setCurrentEstimatedPrice("$0.00")
-            setLimitBuyAmount('$0.00')
-            setLimitSellAmount('$0.00')
-            setLimitBuyPercent('0.00%')
-            setLimitSellPercent('0.00%')
+            setLimitBuyAmount('')
+            setLimitBuyAmountPlaceholder('$0.00')
+            setLimitSellAmount('')
+            setLimitSellAmountPlaceholder('$0.00')
+            setLimitBuyPercent('')
+            setLimitBuyPercentPlaceholder('0.00')
+            setLimitSellPercent('')
+            setLimitSellPercentPlaceholder('0.00')
         }
 
         return () => clearInterval(updater)
     }, [currentSelectedRow])
 
+    /**
+     * Conditionally renders Limit fields based on the 'Limit Type' value selected.
+     */
     const renderLimitFields = () => {
         if (limitType === 'price') {
             return (
                 <>
                     <TextField
                         label="Buy Limit $"
-                        placeholder={limitBuyAmount}
+                        placeholder={limitBuyAmountPlaceholder}
                         helperText="Will attempt to buy at specified price."
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
+                        value={limitBuyAmount}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                setLimitBuyAmount(handlePriceInput(e.target.value))
+                            } else {
+                                setLimitBuyAmount('')
+                            }
+                        }}
                     />
                     <TextField
                         label="Sell Limit $"
-                        placeholder={limitSellAmount}
+                        placeholder={limitSellAmountPlaceholder}
                         helperText="Will attempt to sell at specified price."
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
+                        value={limitSellAmount}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                setLimitSellAmount(handlePriceInput(e.target.value))
+                            } else {
+                                setLimitSellAmount('')
+                            }
+                        }}
                     />
                 </>
             )
@@ -86,21 +113,43 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                 <>
                     <TextField
                         label="Buy Limit %"
-                        placeholder={limitBuyPercent}
+                        placeholder={limitBuyPercentPlaceholder}
                         helperText="Will attempt to buy at specified % change."
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
+                        value={limitBuyPercent}
+                        onChange={(e) => {
+                            setLimitBuyPercent(handlePercentInput(e.target.value))
+                        }}
                     />
                     <TextField
                         label="Sell Limit %"
-                        placeholder={limitSellPercent}
+                        placeholder={limitSellPercentPlaceholder}
                         helperText="Will attempt to sell at specified % change."
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
+                        value={limitSellPercent}
+                        onChange={(e) => {
+                            setLimitSellPercent(handlePercentInput(e.target.value))
+                        }}
                     />
                 </>
             )
         }
+    }
+
+    /**
+     * Limited input sanitation on fields that accept price/amount values.
+     */
+    const handlePriceInput = (str_value) => {
+        return '$' + str_value.replace(/[^0-9.]/g, '')
+    }
+
+    /**
+     * Limited input sanitation on fields that accept percentage values.
+     */
+    const handlePercentInput = (str_value) => {
+        return str_value.replace(/[^0-9.]/g, '')
     }
 
     return (
@@ -126,18 +175,19 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         />
                         <TextField
                             label="Amount in USD"
-                            placeholder="0.00"
+                            placeholder="$0.00"
                             variant="outlined"
                             value={orderAmount}
                             onChange={(e) => {
-                                setOrderAmount(e.target.value)
+                                if (e.target.value) {
+                                    setOrderAmount(handlePriceInput(e.target.value))
+                                } else {
+                                    setOrderAmount('')
+                                }
                             }}
                             InputLabelProps={{shrink: true}}
                             required
                         />
-
-                        <Divider/>
-
                         <TextField
                             select
                             label="Limit Type"
