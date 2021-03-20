@@ -1,0 +1,71 @@
+crypto currency pair:
+{
+    'asset_currency': {
+        'brand_color': 'EA963D',
+        'code': 'BTC',
+        'id': 'd674efea-e623-4396-9026-39574b92b093',
+        'increment': '0.000000010000000000',
+        'name': 'Bitcoin', 'type': 'cryptocurrency'
+    },
+    'display_only': False,
+    'id': '3d961844-d360-45fc-989b-f6fca761d511',
+    'max_order_size': '15.0000000000000000',
+    'min_order_price_increment': '0.010000000000000000',
+    'min_order_quantity_increment': '0.000000010000000000',
+    'min_order_size': '0.000010000000000000',
+    'name': 'Bitcoin to US Dollar',
+    'quote_currency': {
+        'brand_color': '',
+        'code': 'USD',
+        'id': '1072fc76-1862-41ab-82c2-485837590762',
+        'increment': '0.010000000000000000',
+         'name': 'US Dollar',
+         'type': 'fiat'
+    },
+    'symbol': 'BTC-USD',
+    'tradability': 'tradable'
+}
+
+open orders:
+[
+    {
+        'account_id': '0e6e8d8e-ece3-4aea-b0e0-d91fb19c1c39',
+        'average_price': None,
+        'cancel_url': 'https://nummus.robinhood.com/orders/6055442e-8dfc-4744-9d65-a50a4ccfd507/cancel/',
+        'created_at': '2021-03-19T20:39:10.871605-04:00',
+        'cumulative_quantity': '0.000000000000000000',
+        'currency_pair_id': '3d961844-d360-45fc-989b-f6fca761d511',
+        'executions': [],
+        'id': '6055442e-8dfc-4744-9d65-a50a4ccfd507',
+        'last_transaction_at': '2021-03-19T20:39:11.136000-04:00',
+        'price': '55000.000000000000000000',
+        'quantity': '0.010563640000000000',
+        'ref_id': '497a8f40-a125-447c-8cb3-7da16993bf0c',
+        'rounded_executed_notional': '0.00',
+        'side': 'buy',
+        'state': 'confirmed',
+        'time_in_force': 'gtc',
+        'type': 'limit',
+        'updated_at': '2021-03-19T20:39:12.485337-04:00'
+    }
+]
+
+return of successful limit buy order:
+{
+    'account_id': '0e6e8d8e-ece3-4aea-b0e0-d91fb19c1c39',
+    'average_price': None,
+    'cancel_url': 'https://nummus.robinhood.com/orders/60566093-f369-4256-8485-e739a4143c5e/cancel/',
+    'created_at': '2021-03-20T16:52:35.109572-04:00',
+    'cumulative_quantity': '0.000000000000000000',
+    'currency_pair_id': '3d961844-d360-45fc-989b-f6fca761d511',
+    'executions': [], 'id': '60566093-f369-4256-8485-e739a4143c5e',
+    'last_transaction_at': None, 'price': '60000.000000000000000000',
+    'quantity': '0.000017000000000000',
+    'ref_id': 'd8eb3dff-3776-4910-a2af-43b35be8fd97',
+    'rounded_executed_notional': '0.00',
+    'side': 'buy',
+    'state': 'unconfirmed',
+    'time_in_force': 'gtc',
+    'type': 'limit',
+    'updated_at': '2021-03-20T16:52:35.281866-04:00'
+}

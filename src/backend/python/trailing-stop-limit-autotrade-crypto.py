@@ -1,12 +1,16 @@
 from time import sleep
 import robin_stocks as robin
 
+user = 'walkrjp79@gmail.com'
+passw = 'Rfr3tn0gH!'
 rob = robin.login(user, passw)
 
 trading = 'BTC'
 quantity = 0.0
 limitPercent = 1.0
 movingPercent = 0.5
+cInfo = robin.get_crypto_info('BTC')
+cpId = cInfo['id']
 askPrice = float(robin.get_crypto_quote(trading, info='ask_price'))
 bidPrice = float(robin.get_crypto_quote(trading, info='bid_price'))
 buying = False
@@ -48,11 +52,18 @@ while 1:
         limitPrice = askPrice+(askPrice*(limitPercent/100))
 
         # Place initial limit buy order
-        robin.order_buy_crypto_limit(trading, avail, limitPrice, timeInForce='gtc')
+        order = robin.order_buy_crypto_limit_by_price(trading, avail, limitPrice, timeInForce='gtc')
         print('Placing initial limit buy order for ', avail, ' at ', limitPrice)
 
         # a polling loop for simplicity's sake
         while 1:
+
+            orders = robin.get_all_open_crypto_orders()
+            sOrders = [item for item in orders if item['currency_pair_id'] == cpId and item['side'] == 'sell']
+            print('sells outstanding: ', sOrders)
+            bOrders = [item for item in orders if item['currency_pair_id'] == cpId and item['side'] == 'buy']
+            print('buys outstanding: ', bOrders)
+
             askPrice = float(robin.get_crypto_quote(trading, info='ask_price'))
             print('Current Price: ', askPrice, ', Buy Limit: ', limitPrice)
 
@@ -66,7 +77,7 @@ while 1:
 
                 # Update available buying power, place new order then exit loop
                 avail = float(robin.load_account_profile(info='crypto_buying_power'))
-                robin.order_buy_crypto_limit(trading, avail, limitPrice, timeInForce='gtc')
+                order = robin.order_buy_crypto_limit_by_price(trading, avail, limitPrice, timeInForce='gtc')
                 print('Placing updated limit buy order for ', avail, ' at ', limitPrice)
                 # Update side
                 buying = False
