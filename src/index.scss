@@ -1,5 +1,6 @@
 @import './styles/fonts.scss';
 
+/* Core Style Overrides */
 body, html {
   width: 100%;
   height: 100%;
@@ -20,4 +21,126 @@ body {
 #app {
   width: 100%;
   height: 100%;
+}
+
+
+/* Layout Component */
+.layout-page-grid {
+  height: calc(100% - 83px);
+}
+
+
+/* MainMenu Component */
+.mainmenu {
+  height: 48px;
+
+  .mainmenu-wrapper {
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding-left: 0;
+    padding-right: 0;
+    background-color: #121212;
+    border-bottom: 1px solid #242424;
+  }
+
+  .mainmenu-grid-col1 {
+    max-width: 68px;
+    min-width: 68px;
+    text-align: center;
+  }
+
+  .mainmenu-grid-col2 {
+    button + button {
+      margin-left: 8px;
+    }
+    button:first-child {
+      margin-left: 4px;
+    }
+  }
+
+  .mainmenu-grid-col3 {
+    text-align: right;
+    padding-right: 16px;
+    & > * {
+      display: inline-block;
+    }
+  }
+}
+
+
+/* ProfileSelect Component */
+.sm-profile-selector {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+
+  & > * {
+    border: 0 !important
+  }
+
+  .MuiSelect-root {
+    padding-right: 38px !important;
+    padding-left: 9px !important;
+
+    &:focus {
+      background-color: inherit !important;
+    }
+
+    &:hover {
+      background-color: #242424 !important;
+    }
+  }
+
+  .MuiSelect-icon {
+    margin-top: 1px;
+  }
+}
+
+
+/* SideBarMenu Component */
+.sidebarmenu {
+  height: calc(100vh - 68px);
+  $sidebar-controls-width: 68px;
+  background-color: #151515;
+  border-right: 1px solid #242424;
+
+  .sidebarmenu-controls {
+    max-width: $sidebar-controls-width;
+    min-width: $sidebar-controls-width;
+    height: 100%;
+    background-color: #121212;
+    border-right: 1px solid #242424;
+  }
+
+  .sidebarmenu-panels {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #151515;
+  }
+}
+
+
+/* TableManager Component */
+.tablemanager-datatable {
+
+  .MuiToolbar-root {
+    min-height: 68px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .MuiPaper-root:first-child {
+    .MuiPaper-root {
+      min-height: 68px !important;
+      background-color: #151515 !important;
+    }
+  }
+
+  button {
+    color: #999999 !important;
+
+    &:hover {
+      color: #ffffff !important;
+    }
+  }
 }

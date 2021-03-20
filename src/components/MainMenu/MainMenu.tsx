@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Box from '@material-ui/core/Box'
+import {useTheme} from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -7,9 +7,10 @@ import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import LogoIcon from '@material-ui/icons/Fingerprint'
 import ProfileSelect from '../ProfileSelect/ProfileSelect'
-import './MainMenu.scss'
 
 export default function MainMenu() {
+    const theme = useTheme()
+
     return (
         <AppBar position="static" className="mainmenu">
             <Toolbar className="mainmenu-wrapper">

@@ -11,7 +11,6 @@ import AddIcon from '@material-ui/icons/Add'
 import AlertDialog from '../AlertDialog/AlertDialog'
 import TextField from '@material-ui/core/TextField'
 import fetch from 'cross-fetch'
-import './ProfileSelect.scss'
 
 const ProfileSelect = (props) => {
     const {

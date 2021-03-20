@@ -9,7 +9,6 @@ import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch"
 import AlertDialog from '../AlertDialog/AlertDialog'
-import './TableManager.scss'
 
 const TableManager = (props) => {
     const {
