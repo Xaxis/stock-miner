@@ -46,7 +46,7 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
     useEffect(() => {
         let updater = null
         if (currentSelectedRow) {
-            setCurrentSymbol('$' + currentSelectedRow.symbol)
+            setCurrentSymbol(currentSelectedRow.symbol)
             setCurrentEstimatedPrice('$' + currentSelectedRow.price)
             setLimitBuyAmountPlaceholder('$' + currentSelectedRow.price.toString())
             setLimitSellAmountPlaceholder('$' + currentSelectedRow.price.toString())
@@ -205,10 +205,17 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         {renderLimitFields()}
 
                         <Button
-                            className="StockMinerBigButton"
+                            className="StockMiner-BigButton"
                             size="large"
                         >
                             Review Order
+                        </Button>
+                        <Button
+                            className="StockMiner-BigButton"
+                            variant="outlined"
+                            size="large"
+                        >
+                            Edit
                         </Button>
                     </FormGroup>
                 </AccordionDetails>

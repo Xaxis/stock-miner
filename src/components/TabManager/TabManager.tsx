@@ -40,24 +40,26 @@ function a11yProps(index) {
     };
 }
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#151515',
-        overflow: 'hidden',
-        '& [role="tabpanel"]': {
-            height: 'calc(100vh - 117px)',
-            overflowY: 'auto',
-            overflowX: 'hidden'
-        }
-    },
-}));
-
 export default function TabManager() {
-    const classes = useStyles();
     const [value, setValue] = React.useState(0);
+
+    /**
+     * Component style overrides.
+     */
+    const classes = makeStyles(theme => ({
+        root: {
+            flexGrow: 1,
+            width: '100%',
+            height: '100%',
+            backgroundColor: theme.palette.secondary.darkAlt,
+            overflow: 'hidden',
+            '& [role="tabpanel"]': {
+                height: 'calc(100vh - 117px)',
+                overflowY: 'auto',
+                overflowX: 'hidden'
+            }
+        }
+    }))()
 
     const handleChange = (event, newValue) => {
         setValue(newValue);

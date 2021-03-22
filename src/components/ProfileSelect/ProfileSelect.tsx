@@ -1,4 +1,5 @@
 import * as React from 'react'
+import {makeStyles} from '@material-ui/core/styles'
 import {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
@@ -11,7 +12,6 @@ import AddIcon from '@material-ui/icons/Add'
 import AlertDialog from '../AlertDialog/AlertDialog'
 import TextField from '@material-ui/core/TextField'
 import fetch from 'cross-fetch'
-import './ProfileSelect.scss'
 
 const ProfileSelect = (props) => {
     const {
@@ -28,6 +28,35 @@ const ProfileSelect = (props) => {
     const [defaultActiveProfile, setDefaultActiveProfile] = useState('No Profile')
     const [alertDialogOpen, setAlertDialogOpen] = useState(false)
     const [newProfileName, setNewProfileName] = useState("")
+
+    /**
+     * Component style overrides.
+     */
+    const classes = makeStyles(theme => ({
+        root: {
+            display: 'inline-block',
+            '& > .MuiInputBase-root': {
+                marginTop: '0',
+                marginBottom: '0',
+                '& > *': {
+                    border: '0'
+                }
+            },
+            '& .MuiSelect-root': {
+                paddingRight: '38px',
+                paddingLeft: '9px',
+                '&:focus': {
+                    backgroundColor: 'inherit'
+                },
+                '&:hover': {
+                    backgroundColor: theme.palette.secondary.main
+                }
+            },
+            '& .MuiSelect-icon': {
+                marginTop: '1px'
+            }
+        }
+    }))()
 
     /**
      * Handles creating a new profile and updating which profile is active.
@@ -142,9 +171,8 @@ const ProfileSelect = (props) => {
                 </FormGroup>
             </AlertDialog>
 
-            <FormGroup>
+            <FormGroup className={classes.root}>
                 <Select
-                    className="sm-profile-selector"
                     value={profileList.length ? (profileActive.length ? profileActive[0] : 'noop') : defaultActiveProfile}
                     variant="outlined"
                     onChange={(event) => {
