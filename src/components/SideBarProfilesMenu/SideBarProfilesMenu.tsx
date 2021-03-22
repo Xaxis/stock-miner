@@ -50,16 +50,7 @@ const SideBarProfilesMenu = ({
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
-        // input: {
-        //     '&:hover': {
-        //         '& .MuiSvgIcon-root': {
-        //             color: '#999999'
-        //         }
-        //     },
-        //     '& .MuiSvgIcon-root': {
-        //         color: '#242424'
-        //     }
-        // }
+        root: {}
     }))()
 
     /**

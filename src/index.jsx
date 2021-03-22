@@ -43,7 +43,7 @@ const App = function () {
             default: '#121212',
             paper: '#242424'
         },
-        divider: 'rgba(255,255,255,0.12)'
+        divider: '#242424'
     }
 
     /**
@@ -93,6 +93,7 @@ const App = function () {
                 default: palette.background.default,
                 paper: palette.background.paper
             },
+            divider: palette.divider
             // contrastThreshold: 0.5,
             // tonalOffset: 0.7
         },
