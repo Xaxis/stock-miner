@@ -67,7 +67,7 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
     const [currentEstimatedPrice, setCurrentEstimatedPrice] = useState("$0.00")
     const [orderAmount, setOrderAmount] = useState("")
     const [orderQuantity, setOrderQuantity] = useState(0.00)
-    const [limitType, setLimitType] = useState("percent")
+    const [limitType, setLimitType] = useState("price")
     const [limitBuyAmount, setLimitBuyAmount] = useState("")
     const [limitBuyAmountPlaceholder, setLimitBuyAmountPlaceholder] = useState("$0.00")
     const [limitSellAmount, setLimitSellAmount] = useState("")
@@ -123,6 +123,8 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                 setCurrentEstimatedPrice('$' + currentSelectedRow.price)
             }, 1000)
         } else {
+
+            // Reset input values
             setCurrentSymbol("")
             setOrderAmount("")
             setCurrentEstimatedPrice("$0.00")
@@ -135,6 +137,15 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
             setLimitSellPercent('')
             setLimitSellPercentPlaceholder('+0.00')
             setOrderQuantity(0)
+            setLimitBuyPercentLabel('Buy Limit % ($0.00)')
+            setLimitSellPercentLabel('Sell Limit % ($0.00)')
+
+            // Reset error flags
+            setOrderAmountError(false)
+            setLimitBuyAmountError(false)
+            setLimitSellAmountError(false)
+            setLimitBuyPercentError(false)
+            setLimitSellPercentError(false)
         }
 
         return () => clearInterval(updater)
@@ -198,7 +209,13 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         onChange={(e) => {
                             let semi_cleaned_value = handlePercentInput(e.target.value)
                             setLimitBuyPercent(semi_cleaned_value)
-                            let new_label = `Buy Limit % ($${calcUpdatLimitPercentLabel(semi_cleaned_value)})`
+                            let new_label_value = calcUpdatLimitPercentLabel(semi_cleaned_value)
+                            let new_label = ''
+                            if (!new_label_value) {
+                                new_label = `Buy Limit % ($0.00)`
+                            } else {
+                                new_label = `Buy Limit % ($${new_label_value})`
+                            }
                             setLimitBuyPercentLabel(new_label)
                         }}
                     />
@@ -214,7 +231,14 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         onChange={(e) => {
                             let semi_cleaned_value = handlePercentInput(e.target.value)
                             setLimitSellPercent(semi_cleaned_value)
-                            setLimitSellPercentLabel(calcUpdatLimitPercentLabel(semi_cleaned_value))
+                            let new_label_value = calcUpdatLimitPercentLabel(semi_cleaned_value)
+                            let new_label = ''
+                            if (!new_label_value) {
+                                new_label = `Sell Limit % ($0.00)`
+                            } else {
+                                new_label = `Sell Limit % ($${new_label_value})`
+                            }
+                            setLimitSellPercentLabel(new_label)
                         }}
                     />
                 </>
@@ -318,7 +342,6 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
 
     /**
      * Creates the Limit Percent inputs' labels.
-     * @todo - ... build this
      */
     const calcUpdatLimitPercentLabel = (percent) => {
         let cleaned_percent = percent.replace('+', '')
