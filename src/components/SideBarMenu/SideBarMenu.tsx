@@ -1,5 +1,6 @@
 import * as React from 'react'
-import {useState} from "react"
+import {useState} from 'react'
+import {makeStyles} from '@material-ui/core/styles'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Box from '@material-ui/core/Box'
@@ -17,9 +18,10 @@ import SideBarProfilesMenu from '../SideBarProfilesMenu/SideBarProfilesMenu'
 import SideBarExtensionsMenu from '../SideBarExtensionsMenu/SideBarExtensionsMenu'
 import SideBarSettingsMenu from '../SideBarSettingsMenu/SideBarSettingsMenu'
 import SideBarHistoryMenu from '../SideBarHistoryMenu/SideBarHistoryMenu'
+import {makeStyles} from '@material-ui/core/styles'
 
 function TabPanel(props) {
-    const {children, value, index, ...other} = props;
+    const {children, value, index, ...other} = props
 
     return (
         <div
@@ -50,15 +52,43 @@ export default function SideBarMenu() {
         setValue(newValue)
     }
 
+    /**
+     * Component style overrides.
+     */
+    const classes = makeStyles(theme => ({
+        root: {
+            height: 'calc(100vh - 68px)',
+            backgroundColor: theme.palette.secondary.dark,
+            borderRight: `1px solid ${theme.palette.secondary.main}`
+        },
+        controls: {
+            maxWidth: '68px',
+            minWidth: '68px',
+            height: '100%',
+            backgroundColor: theme.palette.secondary.dark,
+            borderRight: `1px solid ${theme.palette.secondary.main}`
+        },
+        panels: {
+            height: '100%',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            backgroundColor: theme.palette.secondary.dark
+        },
+        tabs: {
+            backgroundColor: `${theme.palette.secondary.dark} !important`
+        }
+    }))()
+
     return (
         <Grid
             container
             spacing={0}
             justify='flex-start'
-            className="sidebarmenu"
+            className={classes.root}
         >
-            <Grid item xs={3} className="sidebarmenu-controls">
+            <Grid item xs={3} className={classes.controls}>
                 <Tabs
+                    className={classes.tabs}
                     orientation="vertical"
                     variant="scrollable"
                     value={value}
@@ -72,7 +102,7 @@ export default function SideBarMenu() {
                     <Tab icon={<HistoryIcon/>} aria-label="History"></Tab>
                 </Tabs>
             </Grid>
-            <Grid item xs className="sidebarmenu-panels">
+            <Grid item xs className={classes.panels}>
                 <TabPanel value={value} index={0}>
                     <SideBarTradeMenu/>
                 </TabPanel>

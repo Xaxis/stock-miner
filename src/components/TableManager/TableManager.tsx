@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {useState, useEffect, useRef} from 'react'
+import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
@@ -22,6 +23,29 @@ const TableManager = (props) => {
         setSelectedRow,
         ...other
     } = props;
+
+    /**
+     * Component style overrides.
+     */
+    const classes = makeStyles(theme => ({
+        tablemanager: {
+
+            // DataTable main toolbar
+            '& .MuiToolbar-root[role="toolbar"]': {
+                minHeight: '68px',
+                paddingLeft: '16px',
+                paddingRight: '16px'
+            },
+
+            // Selected delete menu style overrides
+            '& .MuiPaper-root:first-child': {
+                '& > .MuiPaper-root': {
+                    minHeight: '68px !important',
+                    backgroundColor: theme.palette.secondary.dark
+                }
+            }
+        }
+    }))()
 
     // Data table column configuration
     const [columns, setColumns] = useState([
@@ -252,7 +276,7 @@ const TableManager = (props) => {
 
     return (
         <Grid container spacing={0} id={`datatable-${tableID}-wrapper`}>
-            <Grid item xs={12} className="tablemanager-datatable">
+            <Grid item xs={12} className={classes.tablemanager}>
                 <MUIDataTable
                     id={`datatable-${tableID}-wrapper`}
                     title={<SymbolSearch tableID={tableID} tableType={tableType}/>}
@@ -271,7 +295,7 @@ const TableManager = (props) => {
                             enabled: false
                         },
                         fixedSelectColumn: true,
-                        tableBodyHeight: 'calc(100vh - 254px)',
+                        tableBodyHeight: 'calc(100vh - 237px)',
                         // serverSide: true,
                         // onTableChange: (action, tableState) => {
                         //     console.log(action, tableState)

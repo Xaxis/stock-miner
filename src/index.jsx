@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {useState} from 'react'
 import Layout from './components/Layout/Layout'
 import {Provider} from 'react-redux'
 import reducer from './store/reducers/index'
@@ -8,6 +9,42 @@ import {createMuiTheme, MuiThemeProvider} from '@material-ui/core'
 import './index.scss'
 
 const App = function () {
+    const palette = {
+        primary: {
+            main: '#7b1fa2',
+            light: '#A835D8',
+            lightAlt: '#C475E4',
+            dark: '#4A1362',
+            darkAlt: '#2A0B37'
+        },
+        secondary: {
+            main: '#242424',
+            light: '#4A4A4A',
+            dark: '#121212',
+            darkAlt: '#151515'
+        },
+        error: {},
+        warning: {},
+        info: {},
+        success: {},
+        text: {
+            primary: '#ffffff',
+            secondary: 'rgba(255,255,255,0.7)',
+            disabled: 'rgba(255,255,255,0.5)'
+        },
+        action: {
+            active: '#ffffff',
+            hover: 'rgba(255,255,255,0.08)',
+            selected: 'rgba(255,255,255,0.16)',
+            disabled: 'rgba(255,255,255,0.3)',
+            disabledBackground: 'rgba(255,255,255,0.12)'
+        },
+        background: {
+            default: '#121212',
+            paper: '#242424'
+        },
+        divider: 'rgba(255,255,255,0.12)'
+    }
 
     /**
      * Create redux state store.
@@ -24,13 +61,40 @@ const App = function () {
         palette: {
             type: "dark",
             primary: {
-                main: '#7b1fa2'
+                main: palette.primary.main,
+                light: palette.primary.light,
+                lightAlt: palette.primary.lightAlt,
+                dark: palette.primary.dark,
+                darkAlt: palette.primary.darkAlt
             },
             secondary: {
-                main: '#242424'
+                main: palette.secondary.main,
+                light: palette.secondary.light,
+                dark: palette.secondary.dark,
+                darkAlt: palette.secondary.darkAlt
             },
-            contrastThreshold: 0.5,
-            tonalOffset: 0.7
+            // error: {},
+            // warning: {},
+            // info: {},
+            // success: {},
+            text: {
+                primary: palette.text.primary,
+                secondary: palette.text.secondary,
+                disabled: palette.text.disabled,
+            },
+            action: {
+                active: '#ffffff',
+                hover: palette.action.hover,
+                selected: palette.action.selected,
+                disabled: palette.action.disabled,
+                disabledBackground: palette.action.disabledBackground
+            },
+            background: {
+                default: palette.background.default,
+                paper: palette.background.paper
+            },
+            // contrastThreshold: 0.5,
+            // tonalOffset: 0.7
         },
         props: {
             MuiTextField: {
@@ -49,41 +113,37 @@ const App = function () {
         overrides: {
             MuiAppBar: {
                 root: {
-                    backgroundColor: '#121212 !important',
-                    borderBottom: '1px solid #242424',
                     boxShadow: 'none'
                 },
             },
             MuiButton: {
                 root: {
-                    color: '#999999 !important',
+                    color: palette.text.secondary,
                     minWidth: 'auto',
                     padding: '4px 12px !important',
                     borderRadius: '2px',
                     textTransform: 'none',
+
+                    // Big Button styles
                     '&.StockMiner-BigButton': {
-                        color: '#ffffff',
-                        backgroundColor: '#7b1fa2',
+                        color: palette.secondary.dark,
+                        backgroundColor: palette.primary.light,
                         padding: '12px !important',
                         borderRadius: '4px !important'
                     },
                     '&.StockMiner-BigButton.MuiButton-outlined': {
                         backgroundColor: 'transparent !important',
-                        borderColor: '#7b1fa2',
-                        color: '#7b1fa2'
+                        borderColor: palette.primary.light,
+                        color: `${palette.primary.light} !important`
                     },
                     '&.StockMiner-BigButton:hover': {
-                        backgroundColor: '#5A1777 !important'
+                        backgroundColor: `${palette.primary.lightAlt} !important`
+                    },
+                    '&.StockMiner-BigButton.MuiButton-outlined:hover': {
+                        backgroundColor: `${palette.primary.darkAlt} !important`
                     },
                     '&.StockMiner-BigButton + .StockMiner-BigButton': {
                         marginTop: '12px'
-                    }
-                }
-            },
-            MuiIconButton: {
-                root: {
-                    '&.Mui-disabled': {
-                        color: '#242424 !important'
                     }
                 }
             },
@@ -91,9 +151,9 @@ const App = function () {
                 root: {
                     height: '26px',
                     maxWidth: '125px !important',
-                    backgroundColor: '#242424',
+                    backgroundColor: palette.primary.dark,
                     '& .MuiChip-deleteIcon': {
-                        backgroundColor: '#242424'
+                        backgroundColor: palette.primary.dark,
                     }
                 }
             },
@@ -117,8 +177,7 @@ const App = function () {
             },
             MuiOutlinedInput: {
                 notchedOutline: {
-                    borderColor: '#424242',
-                    borderWidth: '1px',
+                    borderWidth: '1px'
                 }
             },
             MuiFormControl: {
@@ -136,14 +195,14 @@ const App = function () {
             },
             MuiPaper: {
                 root: {
-                    backgroundColor: '#151515',
+                    backgroundColor: palette.secondary.darkAlt,
                     borderRadius: '0 !important',
                 }
             },
             MuiTableHead: {
                 root: {
                     '& .MuiTableCell-root': {
-                        backgroundColor: '#242424'
+                        backgroundColor: palette.secondary.main
                     }
                 }
             },
@@ -157,38 +216,38 @@ const App = function () {
             MuiTableRow: {
                 root: {
                     '&:hover': {
-                        backgroundColor: '#242424 !important'
+                        backgroundColor: `${palette.secondary.main} !important`
                     },
                     '&$selected': {
-                        backgroundColor: '#242424 !important'
+                        backgroundColor: `${palette.secondary.main} !important`
                     },
                     '&:last-child': {}
                 }
             },
             MuiTableCell: {
                 root: {
-                    borderBottom: '1px solid #242424',
+                    borderBottom: `1px solid ${palette.secondary.main}`,
                 }
             },
             MuiTabs: {
                 root: {
-                    backgroundColor: '#121212'
+                    backgroundColor: palette.secondary.darkAlt
                 },
                 indicator: {
-                    backgroundColor: '#7b1fa2'
+                    backgroundColor: palette.primary.main
                 }
             },
             MuiTab: {
                 root: {
                     minWidth: 'auto !important',
-                    color: '#999999 !important',
+                    color: `${palette.text.secondary} !important`,
                     textTransform: 'none',
                     '&$selected': {
-                        backgroundColor: '#242424',
-                        color: '#ffffff !important'
+                        backgroundColor: palette.secondary.main,
+                        color: `${palette.text.primary} !important`
                     },
                     '&:hover': {
-                        backgroundColor: '#242424',
+                        backgroundColor: palette.secondary.main,
                     },
                     '&.MuiButtonBase-root': {
                         padding: '6px 16px'
@@ -198,13 +257,13 @@ const App = function () {
             MuiAccordion: {
                 root: {
                     boxShadow: 'none',
-                    backgroundColor: '#151515',
-                    color: '#999999 !important',
+                    backgroundColor: palette.secondary.darkAlt,
+                    color: `${palette.text.secondary} !important`,
                     '&:last-child': {
-                        borderBottom: '1px solid #242424',
+                        borderBottom: `1px solid ${palette.secondary.main}`,
                     },
                     '&:not(:first-child)': {
-                        borderTop: '1px solid #242424',
+                        borderTop: `1px solid ${palette.secondary.main}`,
                     },
                     '&:before': {
                         display: 'none'
@@ -214,9 +273,9 @@ const App = function () {
                     },
                     '&$expanded': {
                         margin: 'auto',
-                        color: '#ffffff !important',
+                        color: `${palette.text.primary} !important`,
                         '& > :first-child': {
-                            borderBottom: '1px solid #242424'
+                            borderBottom: `1px solid ${palette.secondary.main}`
                         }
                     }
                 }
@@ -224,20 +283,20 @@ const App = function () {
             MuiAccordionSummary: {
                 root: {
                     '&:hover': {
-                        backgroundColor: '#242424',
+                        backgroundColor: palette.secondary.main,
                     },
                     '&$expanded': {
-                        backgroundColor: '#242424',
+                        backgroundColor: palette.secondary.main,
                         minHeight: '48px',
                         '& > :first-child': {
                             margin: '0 0 !important',
                         },
                         '& .MuiIconButton-label': {
-                            color: '#ffffff !important'
+                            color: `${palette.text.primary} !important`
                         }
                     },
                     '& .MuiIconButton-label': {
-                        color: '#999999 !important'
+                        color: `${palette.text.secondary} !important`
                     }
                 }
             },
@@ -255,19 +314,19 @@ const App = function () {
                         width: '8px'
                     },
                     '*::-webkit-scrollbar-track': {
-                        backgroundColor: '#151515',
-                        boxShadow: 'inset 0 0 6px rgba(21,21,21,1)',
-                        webkitBoxShadow: 'inset 0 0 6px rgba(21,21,21,1)'
+                        backgroundColor: palette.secondary.darkAlt,
+                        boxShadow: `inset 0 0 6px ${palette.secondary.dark}`,
+                        webkitBoxShadow: `inset 0 0 6px ${palette.secondary.dark}`
                     },
                     '*::-webkit-scrollbar-thumb': {
-                        backgroundColor: '#242424',
+                        backgroundColor: palette.secondary.main,
                         outline: 'none'
                     },
                     '.MuiAutocomplete-option': {
-                        color: '#999999'
+                        color: palette.text.secondary
                     },
                     '.MuiAutocomplete-option[data-focus="true"]': {
-                        backgroundColor: '#242424 !important'
+                        backgroundColor: `${palette.secondary.main} !important`
                     }
                 }
             },

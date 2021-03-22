@@ -24,8 +24,6 @@ const AlertDialog = (props) => {
         <>
             <Dialog
                 open={isOpen}
-                // onClose={onClose}
-                // onSubmit={onSubmit}
                 disableBackdropClick
             >
                 <DialogTitle>{title}</DialogTitle>

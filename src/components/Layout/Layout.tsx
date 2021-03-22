@@ -1,5 +1,6 @@
 import * as React from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import {makeStyles} from '@material-ui/core/styles'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import Grid from '@material-ui/core/Grid'
@@ -14,6 +15,15 @@ const Layout = ({
                     setProfileActive,
                     setProfileList
                 }) => {
+
+    /**
+     * Component style overrides.
+     */
+    const classes = makeStyles(theme => ({
+        root: {
+            height: 'calc(100% - 83px)'
+        }
+    }))()
 
     /**
      * Load initial profile values from the server.
@@ -37,7 +47,7 @@ const Layout = ({
         <>
             <CssBaseline/>
             <MainMenu/>
-            <Grid container spacing={0} className="layout-page-grid">
+            <Grid container spacing={0} className={classes.root}>
                 <Grid item xs={3}>
                     <SideBarMenu/>
                 </Grid>
