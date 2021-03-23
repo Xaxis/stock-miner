@@ -1,24 +1,28 @@
 import * as React from 'react'
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import {connect} from 'react-redux'
-import Accordion from '@material-ui/core/Accordion'
-import AccordionSummary from '@material-ui/core/AccordionSummary'
-import AccordionDetails from '@material-ui/core/AccordionDetails'
+import * as ActionTypes from '../../store/actions'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
 import Divider from '@material-ui/core/Divider'
 import MenuItem from '@material-ui/core/MenuItem'
 import Grid from '@material-ui/core/Grid'
-import {makeStyles} from "@material-ui/core/styles";
+import fetch from 'cross-fetch'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
-const SideBarTradeMenu = ({currentSelectedRow}) => {
+const SideBarOrderMenuBuy = (props) => {
+    const {
+        profileActive,
+        tableIDActive,
+        tableTypeActive,
+        currentSelectedRow,
+        setSelectedRow,
+        updateTableRows
+        ...other
+    } = props;
 
     /**
      * Component style overrides.
@@ -39,26 +43,17 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
             '& + *': {
                 marginTop: '16px'
             }
+        },
+        button_progress: {
+            color: theme.palette.text.primary,
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            marginTop: '-12px',
+            marginLeft: '-12px',
+            zIndex: 1
         }
     }))()
-
-    /**
-     * Handle toggling the Buy accordion.
-     */
-    const [expandedPanel1, setExpandedPanel1] = useState(true)
-    const handleTogglePanel1 = (panel) => (event) => {
-        setExpandedPanel1(!expandedPanel1)
-        setExpandedPanel2(false)
-    }
-
-    /**
-     * Handle toggling the Sell accordion.
-     */
-    const [expandedPanel2, setExpandedPanel2] = useState(false)
-    const handleTogglePanel2 = (panel) => (event) => {
-        setExpandedPanel2(!expandedPanel2)
-        setExpandedPanel1(false)
-    }
 
     /**
      * Order field values.
@@ -82,6 +77,7 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
     /**
      * Input validation, error handling flags and condition state values.
      */
+    const [orderProcessing, setOrderProcessing] = useState(false)
     const [reviewOrderClicked, setReviewOrderClicked] = useState(false)
     const [orderAmountError, setOrderAmountError] = useState(false)
     const [orderAmountHelperText, setOrderAmountHelperText] = useState({
@@ -120,36 +116,83 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
             setCurrentEstimatedPrice('$' + currentSelectedRow.price)
             setOrderQuantity(calcEstimatedShareQuantity(currentEstimatedPrice, orderAmount))
             updater = setInterval(() => {
+
+                // Update the estimated price
                 setCurrentEstimatedPrice('$' + currentSelectedRow.price)
+
+                // Update amount values in real time when percent limits are active
+                if (limitType === 'percent') {
+                    if (limitBuyPercent) {
+                        let buy_percent = handlePercentInput(limitBuyPercent)
+                        calcUpdatLimitPercentLabelTranslation(
+                            buy_percent,
+                            setLimitBuyPercentLabel,
+                            'Buy Limit %',
+                            setLimitBuyAmount,
+                            currentSelectedRow.price
+                        )
+                    }
+                    if (limitSellPercent) {
+                        let sell_percent = handlePercentInput(limitSellPercent)
+                        calcUpdatLimitPercentLabelTranslation(
+                            sell_percent,
+                            setLimitSellPercentLabel,
+                            'Sell Limit %',
+                            setLimitSellAmount,
+                            currentSelectedRow.price
+                        )
+                    }
+                }
             }, 1000)
         } else {
-
-            // Reset input values
-            setCurrentSymbol("")
-            setOrderAmount("")
-            setCurrentEstimatedPrice("$0.00")
-            setLimitBuyAmount('')
-            setLimitBuyAmountPlaceholder('$0.00')
-            setLimitSellAmount('')
-            setLimitSellAmountPlaceholder('$0.00')
-            setLimitBuyPercent('')
-            setLimitBuyPercentPlaceholder('-0.00')
-            setLimitSellPercent('')
-            setLimitSellPercentPlaceholder('+0.00')
-            setOrderQuantity(0)
-            setLimitBuyPercentLabel('Buy Limit % ($0.00)')
-            setLimitSellPercentLabel('Sell Limit % ($0.00)')
-
-            // Reset error flags
-            setOrderAmountError(false)
-            setLimitBuyAmountError(false)
-            setLimitSellAmountError(false)
-            setLimitBuyPercentError(false)
-            setLimitSellPercentError(false)
+            resetBuyInputs()
         }
 
         return () => clearInterval(updater)
-    }, [currentSelectedRow])
+    }, [currentSelectedRow, limitType, limitBuyPercent, limitSellPercent])
+
+    /**
+     * Reset the inputs when the table ID active changes.
+     */
+    useEffect(() => {
+        resetBuyInputs()
+    }, [tableIDActive])
+
+    /**
+     * Resets the Buy Inputs with their initial values.
+     * @todo - Make sure this works.
+     */
+    const resetBuyInputs = () => {
+        setSelectedRow(null)
+
+        // Reset input values
+        setCurrentSymbol("")
+        setOrderAmount("")
+        setCurrentEstimatedPrice("$0.00")
+        setLimitBuyAmount('')
+        setLimitBuyAmountPlaceholder('$0.00')
+        setLimitSellAmount('')
+        setLimitSellAmountPlaceholder('$0.00')
+        setLimitBuyPercent('')
+        setLimitBuyPercentPlaceholder('-0.00')
+        setLimitSellPercent('')
+        setLimitSellPercentPlaceholder('+0.00')
+        setOrderQuantity(0)
+        setLimitBuyPercentLabel('Buy Limit % ($0.00)')
+        setLimitSellPercentLabel('Sell Limit % ($0.00)')
+
+        // Reset error flags
+        setOrderAmountError(false)
+        setLimitBuyAmountError(false)
+        setLimitSellAmountError(false)
+        setLimitBuyPercentError(false)
+        setLimitSellPercentError(false)
+
+        // Reset buttons and states
+        setReviewOrderClicked(false)
+        setOrderProcessing(false)
+
+    }
 
     /**
      * Conditionally renders Limit fields based on the 'Limit Type' value selected.
@@ -209,14 +252,13 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         onChange={(e) => {
                             let semi_cleaned_value = handlePercentInput(e.target.value)
                             setLimitBuyPercent(semi_cleaned_value)
-                            let new_label_value = calcUpdatLimitPercentLabel(semi_cleaned_value)
-                            let new_label = ''
-                            if (!new_label_value) {
-                                new_label = `Buy Limit % ($0.00)`
-                            } else {
-                                new_label = `Buy Limit % ($${new_label_value})`
-                            }
-                            setLimitBuyPercentLabel(new_label)
+                            calcUpdatLimitPercentLabelTranslation(
+                                semi_cleaned_value,
+                                setLimitBuyPercentLabel,
+                                'Buy Limit %',
+                                setLimitBuyAmount,
+                                false
+                            )
                         }}
                     />
                     <TextField
@@ -231,14 +273,13 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         onChange={(e) => {
                             let semi_cleaned_value = handlePercentInput(e.target.value)
                             setLimitSellPercent(semi_cleaned_value)
-                            let new_label_value = calcUpdatLimitPercentLabel(semi_cleaned_value)
-                            let new_label = ''
-                            if (!new_label_value) {
-                                new_label = `Sell Limit % ($0.00)`
-                            } else {
-                                new_label = `Sell Limit % ($${new_label_value})`
-                            }
-                            setLimitSellPercentLabel(new_label)
+                            calcUpdatLimitPercentLabelTranslation(
+                                semi_cleaned_value,
+                                setLimitSellPercentLabel,
+                                'Sell Limit %',
+                                setLimitSellAmount,
+                                false
+                            )
                         }}
                     />
                 </>
@@ -274,13 +315,20 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                         <Button
                             className="StockMiner-BigButton"
                             size="large"
+                            disabled={orderProcessing}
+                            onClick={() => {
+                                setOrderProcessing(true)
+                                handleOrderBuySubmit()
+                            }}
                         >
-                            Submit Order
+                            <span>Submit Order</span>
+                            {orderProcessing && <CircularProgress size={24} className={classes.button_progress}/>}
                         </Button>
                         <Button
                             className="StockMiner-BigButton"
                             variant="outlined"
                             size="large"
+                            disabled={orderProcessing}
                             onClick={() => {
                                 setReviewOrderClicked(false)
                             }}
@@ -306,6 +354,8 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
         } else {
             setOrderAmountError(false)
         }
+
+        // @todo - If Sell Limit exists, a Buy Limit must also be given
 
         return true
     }
@@ -343,9 +393,9 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
     /**
      * Creates the Limit Percent inputs' labels.
      */
-    const calcUpdatLimitPercentLabel = (percent) => {
+    const calcUpdatLimitPercentLabelTranslation = (percent, labelUpdater, labelStr, amountUpdater, currentPrice) => {
         let cleaned_percent = percent.replace('+', '')
-        let cleaned_price = currentEstimatedPrice.replace('$', '')
+        let cleaned_price = currentPrice || currentEstimatedPrice.replace('$', '')
         let p = parseFloat(cleaned_percent)
         let x = parseFloat(cleaned_price)
         let y = (x * p) / 100
@@ -356,122 +406,138 @@ const SideBarTradeMenu = ({currentSelectedRow}) => {
                 target_amount = parseFloat(target_amount + decimal_parts[1]).toFixed(7)
             }
         }
-        return target_amount
+
+        // Update the label string
+        let new_label = ''
+        if (!target_amount) {
+            new_label = `${labelStr} ($0.00)`
+        } else {
+            new_label = `${labelStr} ($${target_amount})`
+            amountUpdater('$' + target_amount)
+        }
+        labelUpdater(new_label)
+    }
+
+    /**
+     * Send the Buy Order to the server.
+     */
+    const handleOrderBuySubmit = () => {
+        (async () => {
+
+            // Process order
+            let uuid = currentSelectedRow.uuid
+            let cost_basis = orderAmount.replace('$', '')
+            let limit_buy = limitBuyAmount.replace('$', '') || 0
+            let limit_sell = limitSellAmount.replace('$', '') || 0
+            const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${limit_buy}/${limit_sell}`)
+            let order_result = await order_response.json()
+
+            // Retrieve update row from DB
+            const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}/${tableTypeActive}`)
+            let row_result = await row_response.json()
+            if (row_result.length) {
+                console.log('params: ', row_result.profile, tableIDActive, row_result[0])
+                updateTableRows(profileActive[0], tableIDActive, row_result)
+            }
+
+            // Reset order processing flag and input fields
+            // @todo - Eventually this should only reset if the above was sucessful
+            setOrderProcessing(false)
+            resetBuyInputs()
+        })()
     }
 
     return (
-        <div>
-            <Accordion square expanded={expandedPanel1} onChange={handleTogglePanel1()}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                >
+        <FormGroup className={classes.buy}>
+            <TextField
+                label="Amount in USD"
+                placeholder="$0.00"
+                variant="outlined"
+                value={orderAmount}
+                disabled={!currentSelectedRow}
+                helperText={orderAmountError ? orderAmountHelperText.error : orderAmountHelperText.default}
+                error={orderAmountError}
+                onChange={(e) => {
+                    if (e.target.value) {
+                        let cleaned_amount = handlePriceInput(e.target.value)
+                        setOrderAmount('$' + cleaned_amount)
+                        setOrderQuantity(calcEstimatedShareQuantity(currentEstimatedPrice, cleaned_amount))
+                    } else {
+                        setOrderAmount('')
+                    }
+                }}
+                InputLabelProps={{shrink: true}}
+                required
+            />
+
+            <TextField
+                select
+                label="Limit Type"
+                variant="outlined"
+                value={limitType}
+                InputLabelProps={{shrink: true}}
+                disabled={!currentSelectedRow}
+                onChange={(e) => {
+                    setLimitType(e.target.value)
+                    if (e.target.value === 'percent') {
+                        setLimitBuyAmount('')
+                        setLimitSellAmount('')
+                    }
+                }}
+            >
+                <MenuItem key="price" value="price">Price Based</MenuItem>
+                <MenuItem key="percent" value="percent">Percentage Based</MenuItem>
+            </TextField>
+
+            {renderLimitFields()}
+
+            <Divider/>
+
+            <Grid container spacing={0} className={classes.grid_box}>
+                <Grid item xs={6}>
                     <Typography>
-                        Buy&nbsp;
-                        <span>{currentSymbol}</span>
+                        Estimated Price
                     </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <FormGroup className={classes.buy}>
-                        <TextField
-                            label="Amount in USD"
-                            placeholder="$0.00"
-                            variant="outlined"
-                            value={orderAmount}
-                            disabled={!currentSelectedRow}
-                            helperText={orderAmountError ? orderAmountHelperText.error : orderAmountHelperText.default}
-                            error={orderAmountError}
-                            onChange={(e) => {
-                                if (e.target.value) {
-                                    let cleaned_amount = handlePriceInput(e.target.value)
-                                    setOrderAmount('$' + cleaned_amount)
-                                    setOrderQuantity(calcEstimatedShareQuantity(currentEstimatedPrice, cleaned_amount))
-                                } else {
-                                    setOrderAmount('')
-                                }
-                            }}
-                            InputLabelProps={{shrink: true}}
-                            required
-                        />
-
-                        <TextField
-                            select
-                            label="Limit Type"
-                            variant="outlined"
-                            value={limitType}
-                            InputLabelProps={{shrink: true}}
-                            disabled={!currentSelectedRow}
-                            onChange={(e) => {
-                                setLimitType(e.target.value)
-                            }}
-                        >
-                            <MenuItem key="price" value="price">Price Based</MenuItem>
-                            <MenuItem key="percent" value="percent">Percentage Based</MenuItem>
-                        </TextField>
-
-                        {renderLimitFields()}
-
-                        <Divider/>
-
-                        <Grid container spacing={0} className={classes.grid_box}>
-                            <Grid item xs={6}>
-                                <Typography>
-                                    Estimated Price
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography>
-                                    {currentEstimatedPrice}
-                                </Typography>
-                            </Grid>
-                        </Grid>
-
-                        <Grid container spacing={0} className={classes.grid_box}>
-                            <Grid item xs={6}>
-                                <Typography>
-                                    Estimated {currentSymbol}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography>
-                                    {orderQuantity}
-                                </Typography>
-                            </Grid>
-                        </Grid>
-
-                        {renderOrderButtons()}
-                    </FormGroup>
-                </AccordionDetails>
-            </Accordion>
-
-            <Accordion square expanded={expandedPanel2} onChange={handleTogglePanel2()}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="sidebar-trade-panel2"
-                >
+                </Grid>
+                <Grid item xs={6}>
                     <Typography>
-                        Sell&nbsp;
-                        <span className="current-selected-trade-symbol">{currentSymbol}</span>
+                        {currentEstimatedPrice}
                     </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        ...
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
+                </Grid>
+            </Grid>
 
-        </div>
+            <Grid container spacing={0} className={classes.grid_box}>
+                <Grid item xs={6}>
+                    <Typography>
+                        Estimated {currentSymbol}
+                    </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                    <Typography>
+                        {orderQuantity}
+                    </Typography>
+                </Grid>
+            </Grid>
+
+            {renderOrderButtons()}
+        </FormGroup>
     )
 }
 
 const mapStateToProps = (state) => {
     return {
-        currentSelectedRow: state.currentSelectedRow
+        profileActive: state.profileActive,
+        currentSelectedRow: state.currentSelectedRow,
+        tableIDActive: state.tableIDActive,
+        tableTypeActive: state.tableTypeActive
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return {}
+    return {
+        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row)),
+        updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows))
+    }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SideBarTradeMenu)
+export default connect(mapStateToProps, mapDispatchToProps)(SideBarOrderMenuBuy)

@@ -21,6 +21,8 @@ const TableManager = (props) => {
         updateTableRows,
         deleteTableRows,
         setSelectedRow,
+        setTableIDActive,
+        setTableTypeActive,
         ...other
     } = props;
 
@@ -144,6 +146,12 @@ const TableManager = (props) => {
      * is changed or when a table component is rerender (switching tabs).
      */
     useEffect(() => {
+
+        // Set the active table ID and table type
+        setTableIDActive(tableID)
+        setTableTypeActive(tableType)
+
+        // Load rows from database
         if (profileActive.length) {
             let profileKey = profileActive[0]
             if (profileKey !== 'noop') {
@@ -354,7 +362,9 @@ const mapDispatchToProps = (dispatch) => {
         addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
         updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
         deleteTableRows: (tableProfile, tableID, uuids) => dispatch(ActionTypes.deleteTableRows(tableProfile, tableID, uuids)),
-        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row))
+        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row)),
+        setTableIDActive: (id) => dispatch(ActionTypes.setTableIDActive(id)),
+        setTableTypeActive: (tableType) => dispatch(ActionTypes.setTableTypeActive(tableType))
     }
 }
 

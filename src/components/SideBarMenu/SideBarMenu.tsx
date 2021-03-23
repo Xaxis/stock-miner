@@ -12,7 +12,7 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import ExtensionIcon from '@material-ui/icons/Extension'
 import SettingsIcon from '@material-ui/icons/Settings'
 import HistoryIcon from '@material-ui/icons/History'
-import SideBarTradeMenu from '../SideBarTradeMenu/SideBarTradeMenu'
+import SideBarOrderMenu from '../SideBarOrderMenu/SideBarOrderMenu'
 import SideBarControlsMenu from '../SideBarControlsMenu/SideBarControlsMenu'
 import SideBarProfilesMenu from '../SideBarProfilesMenu/SideBarProfilesMenu'
 import SideBarExtensionsMenu from '../SideBarExtensionsMenu/SideBarExtensionsMenu'
@@ -94,7 +94,7 @@ export default function SideBarMenu() {
                     value={value}
                     onChange={handleChange}
                 >
-                    <Tab label={<AttachMoneyIcon/>} aria-label="Trade"></Tab>
+                    <Tab label={<AttachMoneyIcon/>} aria-label="Order"></Tab>
                     <Tab icon={<TuneIcon/>} aria-label="Controls"></Tab>
                     <Tab icon={<RecentActorsIcon/>} aria-label="Profiles"></Tab>
                     <Tab icon={<ExtensionIcon/>} aria-label="Extensions"></Tab>
@@ -104,7 +104,7 @@ export default function SideBarMenu() {
             </Grid>
             <Grid item xs className={classes.panels}>
                 <TabPanel value={value} index={0}>
-                    <SideBarTradeMenu/>
+                    <SideBarOrderMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
                     <SideBarControlsMenu/>

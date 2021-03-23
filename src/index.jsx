@@ -130,7 +130,10 @@ const App = function () {
                         color: palette.secondary.dark,
                         backgroundColor: palette.primary.light,
                         padding: '12px !important',
-                        borderRadius: '4px !important'
+                        borderRadius: '4px !important',
+                        '&.Mui-disabled': {
+                            opacity: '0.5'
+                        }
                     },
                     '&.StockMiner-BigButton.MuiButton-outlined': {
                         backgroundColor: 'transparent !important',
