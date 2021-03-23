@@ -53,9 +53,15 @@ let DP = new DataProvider()
 
 
 /**
+ * Initialize the Order Processor.
+ */
+let OP = new OrderProcessor(DBM)
+
+
+/**
  * Initialize the Data Transducer.
  */
-let DT = new DataTransducer(DBM, DP)
+let DT = new DataTransducer(DBM, DP, OP)
 
 
 /**
@@ -73,6 +79,28 @@ app.get('/app/get/config', (req, res) => {
     DBM.get_config()
         .then((row) => {
             res.send(row)
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
+
+app.get('/app/set/taskfrequency/:ms', (req, res) => {
+    DBM.update_config_multi_field_values({task_frequency: req.params.ms})
+        .then(() => {
+            DT.reset_task_interval(req.params.ms)
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
+
+app.get('/app/set/pollingfrequency/:ms', (req, res) => {
+    DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
+        .then(() => {
+            WSS.reset_task_interval(req.params.ms)
+            res.send({success: true})
         })
         .catch(() => {
             res.send({success: false})
@@ -160,8 +188,8 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
         })
 })
 
-app.get('/app/get/orders/list/:profile/:type', (req, res) => {
-    let simulated = (req.params.type === 'simulated')
+app.get('/app/get/orders/list/:profile/:simulated', (req, res) => {
+    let simulated = (req.params.simulated === 'simulated')
     DBM.get_stock_orders_by_profile(req.params.profile, simulated)
         .then((rows) => {
             DT.set_active_stream_profile(req.params.profile)
@@ -174,7 +202,7 @@ app.get('/app/get/orders/list/:profile/:type', (req, res) => {
         })
 })
 
-app.get('/app/get/orders/:profile/:symbol/:type', (req, res) => {
+app.get('/app/get/orders/symbol/:profile/:symbol/:type', (req, res) => {
     DBM.get_stock_orders_by_profile_at_symbol(req.params.profile, req.params.symbol, (req.params.type === 'simulated'))
         .then((rows) => {
             res.send(rows)
@@ -184,8 +212,8 @@ app.get('/app/get/orders/:profile/:symbol/:type', (req, res) => {
         })
 })
 
-app.get('/app/get/orders/:profile/:uuid/:type', (req, res) => {
-    DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.type === 'simulated'))
+app.get('/app/get/orders/uuid/:profile/:uuid/:simulated', (req, res) => {
+    DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.simulated === 'simulated'))
         .then((rows) => {
             res.send(rows)
         })
@@ -238,25 +266,23 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
         })
 })
 
-app.get('/app/set/taskfrequency/:ms', (req, res) => {
-    DBM.update_config_multi_field_values({task_frequency: req.params.ms})
-        .then(() => {
-            DT.reset_task_interval(req.params.ms)
-            res.send({success: true})
-        })
-        .catch(() => {
-            res.send({success: false})
-        })
-})
+app.get('/app/order/buy/:uuid/:cost_basis/:limit_buy/:limit_sell', (req, res) => {
+    let uuid, cost_basis, limit_buy, limit_sell;
+    ({uuid, cost_basis, limit_buy, limit_sell} = req.params)
 
-app.get('/app/set/pollingfrequency/:ms', (req, res) => {
-    DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
+    // Build field/value object to put into database
+    let set_data = {
+        cost_basis: cost_basis,
+        limit_buy: limit_buy || 0,
+        limit_sell: limit_sell || 0,
+        status: 'Running'
+    }
+
+    // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
+    DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
         .then(() => {
-            WSS.reset_task_interval(req.params.ms)
             res.send({success: true})
-        })
-        .catch(() => {
-            res.send({success: false})
+            DT.build_all_active_tasks_from_db()
         })
 })
 

@@ -22,6 +22,12 @@ const initialState = {
     // Contains a list of all the available profiles
     profileList: [],
 
+    // Active table ID
+    tableIDActive: 0,
+
+    // Active table type
+    tableTypeActive: 'simulated',
+
     // Main data store for all trade data across all profiles
     // [Profile:{tables:[tableID:[]]}]
     tableData: [],
@@ -33,6 +39,7 @@ const initialState = {
 const Reducers = (state = initialState, action) => {
     switch (action.type) {
 
+
         /**
          * Set active profile.
          */
@@ -42,6 +49,7 @@ const Reducers = (state = initialState, action) => {
                 profileActive: action.active
             }
 
+
         /**
          * Set profile list.
          */
@@ -50,6 +58,7 @@ const Reducers = (state = initialState, action) => {
                 ...state,
                 profileList: action.list
             }
+
 
         /**
          * Adds new row(s) of data to a data table.
@@ -97,7 +106,7 @@ const Reducers = (state = initialState, action) => {
                     newRowObject.type = row.market
                     newRowObject.price = row.price
                     newRowObject.shares = row.shares
-                    newRowObject.status = row.order_type
+                    newRowObject.status = row.status
 
                     // Add new row object to new rows array
                     newRows.push(newRowObject)
@@ -110,6 +119,7 @@ const Reducers = (state = initialState, action) => {
                 ...state,
                 tableData: [...state.tableData]
             }
+
 
         /**
          * Deletes row(s) of data from a data table.
@@ -134,6 +144,7 @@ const Reducers = (state = initialState, action) => {
                 tableData: [...state.tableData]
             }
 
+
         /**
          * Deletes all table data related to a profile.
          */
@@ -145,6 +156,7 @@ const Reducers = (state = initialState, action) => {
                 ...state,
                 tableData: [...newProfileTables]
             }
+
 
         /**
          * Updates data in the table when called.
@@ -173,6 +185,27 @@ const Reducers = (state = initialState, action) => {
                 tableData: [...state.tableData]
             }
 
+
+        /**
+         * Updates/sets the active table ID.
+         */
+        case ActionTypes.SET_TABLEID_ACTIVE:
+            return {
+                ...state,
+                tableIDActive: action.id
+            }
+
+
+        /**
+         * Updates/sets the active table type.
+         */
+        case ActionTypes.SET_TABLETYPE_ACTIVE:
+            return {
+                ...state,
+                tableTypeActive: action.tableType
+            }
+
+
         /**
          * Set the most recently selected row object.
          */
@@ -181,6 +214,7 @@ const Reducers = (state = initialState, action) => {
                 ...state,
                 currentSelectedRow: action.row
             }
+
 
         /**
          * Returns default state upon no action call.

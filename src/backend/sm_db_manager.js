@@ -176,7 +176,7 @@ class DBManager {
                 uuid = options.uuid,
                 profile = options.profile,
                 market = options.market,
-                order_type = options.order_type || 'Watching',
+                status = options.status || 'Waiting',
                 symbol = options.symbol,
                 name = options.name,
                 price = options.price || 0,
@@ -186,9 +186,9 @@ class DBManager {
                 limit_sell = options.limit_sell || 0,
                 order_date = options.order_date,
                 exec_date = options.exec_date || 0
-            let sql = `INSERT INTO ${table} (uuid, profile, market, order_type, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
+            let sql = `INSERT INTO ${table} (uuid, profile, market, status, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
             sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            self.DB.run(sql, [uuid, profile, market, order_type, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
+            self.DB.run(sql, [uuid, profile, market, status, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})
@@ -426,7 +426,7 @@ class DBManager {
 
     /**
      * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
-     * their profile AND symbol association.
+     * their profile AND uuid association.
      */
     get_stock_orders_by_profile_at_uuid = (profile, uuid, simulated) => {
         const self = this
@@ -470,8 +470,8 @@ class DBManager {
     }
 
     /**
-     * Returns a promise after updating Stock_Orders or Stock_Simulations table rows grouped by
-     * profile at multiple defined fields and values.
+     * Returns a promise after updating Stock_Orders or Stock_Simulations table at associated
+     * UUID field with defined fields and values.
      */
     update_stock_orders_by_uuid_with_multi_field_values = (uuid, simulated, field_values) => {
         const self = this
@@ -499,6 +499,31 @@ class DBManager {
                     console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
                     resolve({success: true})
                 }
+            })
+        })
+    }
+
+    /**
+     * Returns a promise after updating Stock_Orders or Stock_Simulations table at associated
+     * UUID field with defined fields and values. This function is the same as
+     * 'update_stock_orders_by_uuid_with_multi_field_values` except it updates any matching rows
+     * in both tables.
+     */
+    update_all_stock_orders_by_uuid_with_multi_field_values = (uuid, field_values) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+
+            // Build promises for results spanning both types of order table (Stock_Orders and Stock_Simulations)
+            let promises = []
+            promises.push(self.update_stock_orders_by_uuid_with_multi_field_values(uuid, true, field_values))
+            promises.push(self.update_stock_orders_by_uuid_with_multi_field_values(uuid, false, field_values))
+
+            // Execute all promises concurrently and resolve the parsed result
+            Promise.all(promises).then((results) => {
+                let filtered_results = results.filter((res_arr) => {
+                    return res_arr.length
+                })
+                resolve(filtered_results.flat())
             })
         })
     }

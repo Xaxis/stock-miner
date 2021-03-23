@@ -43,7 +43,7 @@ const App = function () {
             default: '#121212',
             paper: '#242424'
         },
-        divider: 'rgba(255,255,255,0.12)'
+        divider: '#242424'
     }
 
     /**
@@ -93,6 +93,7 @@ const App = function () {
                 default: palette.background.default,
                 paper: palette.background.paper
             },
+            divider: palette.divider
             // contrastThreshold: 0.5,
             // tonalOffset: 0.7
         },
@@ -129,7 +130,10 @@ const App = function () {
                         color: palette.secondary.dark,
                         backgroundColor: palette.primary.light,
                         padding: '12px !important',
-                        borderRadius: '4px !important'
+                        borderRadius: '4px !important',
+                        '&.Mui-disabled': {
+                            opacity: '0.5'
+                        }
                     },
                     '&.StockMiner-BigButton.MuiButton-outlined': {
                         backgroundColor: 'transparent !important',

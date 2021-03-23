@@ -14,6 +14,20 @@ export const setProfileList = (list) => {
     }
 }
 
+export const setTableIDActive = (id) => {
+    return {
+        type: ActionTypes.SET_TABLEID_ACTIVE,
+        id: id
+    }
+}
+
+export const setTableTypeActive = (type) => {
+    return {
+        type: ActionTypes.SET_TABLETYPE_ACTIVE,
+        tableType: type
+    }
+}
+
 export const addTableRows = (tableProfile, tableID, rows) => {
     return {
         type: ActionTypes.ADD_TABLE_ROWS,
