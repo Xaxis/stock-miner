@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from "../SymbolSearch/SymbolSearch"
 import AlertDialog from '../AlertDialog/AlertDialog'
+import TableManagerExpandableRow from './TableManagerExpandableRow'
 
 const TableManager = (props) => {
     const {
@@ -25,7 +26,7 @@ const TableManager = (props) => {
         setTableIDActive,
         setTableTypeActive,
         ...other
-    } = props;
+    } = props
 
     /**
      * Component style overrides.
@@ -311,18 +312,14 @@ const TableManager = (props) => {
                         //     console.log(action, tableState)
                         // },
                         onRowsDelete: handleRowsDelete,
-                        onRowSelectionChange: handleRowSelectionChange
-                        // expandableRowsHeader: true,
-                        // expandableRows: true,
-                        // renderExpandableRow: (rowData, rowMeta) => {
-                        //     return (
-                        //         <TableRow>
-                        //             <TableCell>
-                        //                 TEST
-                        //             </TableCell>
-                        //         </TableRow>
-                        //     )
-                        // }
+                        onRowSelectionChange: handleRowSelectionChange,
+                        expandableRowsHeader: false,
+                        expandableRows: true,
+                        renderExpandableRow: (rowData, rowMeta) => {
+                            return (
+                                <TableManagerExpandableRow rowData={rowData} rowMeta={rowMeta}/>
+                            )
+                        }
                     }}
                 />
                 <AlertDialog
