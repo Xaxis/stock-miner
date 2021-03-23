@@ -53,9 +53,15 @@ let DP = new DataProvider()
 
 
 /**
+ * Initialize the Order Processor.
+ */
+let OP = new OrderProcessor(DBM)
+
+
+/**
  * Initialize the Data Transducer.
  */
-let DT = new DataTransducer(DBM, DP)
+let DT = new DataTransducer(DBM, DP, OP)
 
 
 /**
@@ -197,7 +203,6 @@ app.get('/app/get/orders/list/:profile/:simulated', (req, res) => {
 })
 
 app.get('/app/get/orders/symbol/:profile/:symbol/:type', (req, res) => {
-    console.log('MOTHER FUCKING HAPPENING!!!!!! HERE THOUGH')
     DBM.get_stock_orders_by_profile_at_symbol(req.params.profile, req.params.symbol, (req.params.type === 'simulated'))
         .then((rows) => {
             res.send(rows)
@@ -208,9 +213,6 @@ app.get('/app/get/orders/symbol/:profile/:symbol/:type', (req, res) => {
 })
 
 app.get('/app/get/orders/uuid/:profile/:uuid/:simulated', (req, res) => {
-
-    console.log('MOTHER FUCKING HAPPENING!!!!!!')
-
     DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.simulated === 'simulated'))
         .then((rows) => {
             res.send(rows)

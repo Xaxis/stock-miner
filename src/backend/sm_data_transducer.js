@@ -6,9 +6,10 @@
  */
 class DataTransducer {
 
-    constructor(DBManager, DataProvider) {
+    constructor(DBManager, DataProvider, OrderProcessor) {
         this.DB = DBManager
         this.DP = DataProvider
+        this.OP = OrderProcessor
         this.ACTIVE_PROFILE = 'noop'
         this.ACTIVE_PROFILE_TASKS = []
         this.ALL_TASKS = []
@@ -44,6 +45,10 @@ class DataTransducer {
                 // Attempt to update rows in Stock_Simulations and Stock_Orders tables with new data. We attempt
                 // to update in both because we don't know in which type of order table the order/row exists.
                 this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(task.uuid, set_data)
+
+                // Check and run Order tasks
+                // @todo - Build this
+
             })
         }, period)
     }

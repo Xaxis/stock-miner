@@ -357,6 +357,10 @@ const SideBarOrderMenuBuy = (props) => {
 
         // @todo - If Sell Limit exists, a Buy Limit must also be given
 
+        // @todo - Assume Buy Limit must be less than current estimated price
+
+        // @todo - Assume Sell Limit must be greater than current estimated price (and buy limit)
+
         return true
     }
 
@@ -436,7 +440,6 @@ const SideBarOrderMenuBuy = (props) => {
             const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}/${tableTypeActive}`)
             let row_result = await row_response.json()
             if (row_result.length) {
-                console.log('params: ', row_result.profile, tableIDActive, row_result[0])
                 updateTableRows(profileActive[0], tableIDActive, row_result)
             }
 
