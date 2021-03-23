@@ -294,7 +294,7 @@ const TableManager = (props) => {
                     options={{
                         filterType: "checkbox",
                         responsive: "standard",
-                        selectableRows: "multiple",
+                        selectableRows: "single",
                         selectableRowsOnClick: true,
                         responsive: "vertical",
                         rowsPerPage: 10,
