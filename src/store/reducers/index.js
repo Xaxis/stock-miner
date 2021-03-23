@@ -33,7 +33,10 @@ const initialState = {
     tableData: [],
 
     // Holds the current selected row object
-    currentSelectedRow: null
+    currentSelectedRow: null,
+
+    // Holds the current selected row's index
+    currentSelectedRowIndex: []
 }
 
 const Reducers = (state = initialState, action) => {
@@ -212,7 +215,8 @@ const Reducers = (state = initialState, action) => {
         case ActionTypes.SET_SELECTED_ROW:
             return {
                 ...state,
-                currentSelectedRow: action.row
+                currentSelectedRow: action.row,
+                currentSelectedRowIndex: action.indexArr
             }
 
 

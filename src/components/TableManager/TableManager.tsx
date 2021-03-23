@@ -17,6 +17,7 @@ const TableManager = (props) => {
         tableType,
         tableData,
         profileActive,
+        currentSelectedRowIndex,
         addTableRows,
         updateTableRows,
         deleteTableRows,
@@ -276,9 +277,9 @@ const TableManager = (props) => {
         if (allRowsArr.length) {
             let rowIndex = allRowsArr[allRowsArr.length - 1].dataIndex
             let selectedRow = tableDataObj.tables[tableID][rowIndex]
-            setSelectedRow(selectedRow)
+            setSelectedRow(selectedRow, [currentRowArr[0].index])
         } else {
-            setSelectedRow(null)
+            setSelectedRow(null, [])
         }
     }
 
@@ -299,6 +300,7 @@ const TableManager = (props) => {
                         responsive: "vertical",
                         rowsPerPage: 10,
                         elevation: 0,
+                        rowsSelected: currentSelectedRowIndex,
                         draggableColumns: {
                             enabled: false
                         },
@@ -353,7 +355,8 @@ TableManager.propTypes = {
 const mapStateToProps = (state) => {
     return {
         tableData: state.tableData,
-        profileActive: state.profileActive
+        profileActive: state.profileActive,
+        currentSelectedRowIndex: state.currentSelectedRowIndex
     }
 }
 
@@ -362,7 +365,7 @@ const mapDispatchToProps = (dispatch) => {
         addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
         updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
         deleteTableRows: (tableProfile, tableID, uuids) => dispatch(ActionTypes.deleteTableRows(tableProfile, tableID, uuids)),
-        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row)),
+        setSelectedRow: (row, indexArr) => dispatch(ActionTypes.setSelectedRow(row, indexArr)),
         setTableIDActive: (id) => dispatch(ActionTypes.setTableIDActive(id)),
         setTableTypeActive: (tableType) => dispatch(ActionTypes.setTableTypeActive(tableType))
     }

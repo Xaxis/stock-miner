@@ -62,9 +62,10 @@ export const deleteProfileTables = (tableProfile) => {
     }
 }
 
-export const setSelectedRow = (row) => {
+export const setSelectedRow = (row, indexArr=[]) => {
     return {
         type: ActionTypes.SET_SELECTED_ROW,
-        row: row
+        row: row,
+        indexArr: indexArr
     }
 }

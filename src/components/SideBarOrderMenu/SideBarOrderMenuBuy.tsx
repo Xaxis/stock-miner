@@ -163,7 +163,7 @@ const SideBarOrderMenuBuy = (props) => {
      * @todo - Make sure this works.
      */
     const resetBuyInputs = () => {
-        setSelectedRow(null)
+        setSelectedRow(null, [])
 
         // Reset input values
         setCurrentSymbol("")
