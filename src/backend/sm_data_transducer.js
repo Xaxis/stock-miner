@@ -48,6 +48,7 @@ class DataTransducer {
 
                 // Check and run Order tasks
                 // @todo - Build this
+                this.OP.process_order(task)
 
             })
         }, period)

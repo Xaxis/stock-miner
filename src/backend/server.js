@@ -6,6 +6,7 @@ const {DBManager} = require('./sm_db_manager.js')
 const {SymbolProvider} = require('./sm_symbol_provider.js')
 const {DataProvider} = require('./sm_data_provider.js')
 const {DataTransducer} = require('./sm_data_transducer.js')
+const {OrderProcessor} = require('./sm_order_processor.js')
 const {WebSocketServer} = require('./sm_websocket_server.js')
 const app = Express()
 const server_name = 'Stock Miner API Server'
