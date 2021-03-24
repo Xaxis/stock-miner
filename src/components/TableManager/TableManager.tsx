@@ -8,9 +8,10 @@ import fetch from 'cross-fetch'
 import {w3cwebsocket as W3CWebSocket} from 'websocket'
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
-import SymbolSearch from "../SymbolSearch/SymbolSearch"
+import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import AlertDialog from '../AlertDialog/AlertDialog'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
+import TableManagerActionMenu from './TableManagerActionMenu'
 
 const TableManager = (props) => {
     const {
@@ -47,6 +48,11 @@ const TableManager = (props) => {
                     minHeight: '68px !important',
                     backgroundColor: theme.palette.secondary.dark
                 }
+            },
+
+            // Row style overrides
+            '& .MuiTableBody-root .MuiTableCell-root[data-testid]:last-child': {
+                textAlign: 'right'
             }
         }
     }))()
@@ -127,6 +133,20 @@ const TableManager = (props) => {
             options: {
                 filter: true,
                 sort: true
+            }
+        },
+        {
+            name: "",
+            label: "",
+            options: {
+                filter: false,
+                sort: false,
+                display: true,
+                customBodyRenderLite: (dataIndex, rowIndex) => {
+                    return (
+                        <TableManagerActionMenu dataIndex={rowIndex} rowIndex={rowIndex}/>
+                    )
+                }
             }
         },
     ])

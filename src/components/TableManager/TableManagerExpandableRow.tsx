@@ -22,21 +22,20 @@ const TableManagerExpandableRow = (props) => {
         <TableRow>
             <TableCell colSpan={42}>
                 <Collapse in={true}>
-                    TEST
+                    <Grid container spacing={0}>
+                        <Grid item xs={6}>
+                            <Typography>
+                                TEST 1
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography>
+                                TEST 2
+                            </Typography>
+                        </Grid>
+                    </Grid>
                 </Collapse>
             </TableCell>
-            {/*<Grid container spacing={0}>*/}
-            {/*    <Grid item xs={6}>*/}
-            {/*        <Typography>*/}
-            {/*            TEST 1*/}
-            {/*        </Typography>*/}
-            {/*    </Grid>*/}
-            {/*    <Grid item xs={6}>*/}
-            {/*        <Typography>*/}
-            {/*            TEST 2*/}
-            {/*        </Typography>*/}
-            {/*    </Grid>*/}
-            {/*</Grid>*/}
         </TableRow>
     )
 }
