@@ -181,8 +181,20 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     DBM.set_profile_status(req.params.profile, req.params.status)
         .then(() => {
-            res.send({success: true})
+
+            //
+            // @todo - Update all orders/rows in profile to status "Paused"
+            // Update all orders that are 'Running' to 'Paused'
+            // DBM.update_all_stock_orders_by_profile_with_multi_field_values(
+            //     req.params.profile,
+            //     {status: req.params.status}
+            // )
+            //     .then(() => {
+            //
+            //     })
+
             DT.build_all_active_tasks_from_db()
+            res.send({success: true})
         })
         .catch(() => {
             res.send({success: false})

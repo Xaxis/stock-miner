@@ -318,8 +318,8 @@ class DBManager {
                     self.update_config_multi_field_values({active_profile: new_name})
 
                     // Update profile field in all matching rows in Stock_Orders & Stock_Simulations
-                    self.update_stock_orders_by_profile_at_field_value(old_name, true, 'profile', new_name)
-                    self.update_stock_orders_by_profile_at_field_value(old_name, false, 'profile', new_name)
+                    self.update_stock_orders_by_profile_with_multi_field_values(old_name, true, {profile: new_name})
+                    self.update_stock_orders_by_profile_with_multi_field_values(old_name, false, {profile: new_name})
                     resolve({success: true})
                 }
             })
@@ -365,6 +365,65 @@ class DBManager {
                     result.push(row)
                 })
                 resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Returns a promise that returns a list of rows from Stock_Orders or Stock_Simulations tables
+     * where field/value conditions have been met.
+     */
+    get_stock_orders_where_multi_field_values = (simulated, field_values) => {
+        const self = this
+        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        let sql = `SELECT * FROM ${table} WHERE `
+        let end_idx = 0
+        let fv_length = Object.keys(field_values).length
+        for (const [field, value] of Object.entries(field_values)) {
+            sql += `${field} = "${value}"`
+            end_idx += 1
+            if (end_idx < fv_length) {
+                sql += " AND "
+            } else {
+                sql += " "
+            }
+        }
+        return new Promise(function (resolve, reject) {
+            self.DB.all(sql, function (err, rows) {
+                if (err) {
+                    console.log("SMDB: " + table + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row)
+                })
+                resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Returns a promise that returns a list of rows from Stock_Orders and Stock_Simulations tables
+     * where field/value conditions have been met. This is exactly the same functionality as
+     * 'get_stock_orders_by_profile_where_multi_field_values' except it runs the query on BOTH orders
+     * tables.
+     */
+    get_all_stock_orders_where_multi_field_values = (field_values) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+
+            // Build promises for results spanning both types of order table (Stock_Orders and Stock_Simulations)
+            let promises = []
+            promises.push(self.get_stock_orders_where_multi_field_values(true, field_values))
+            promises.push(self.get_stock_orders_where_multi_field_values(false, field_values))
+
+            // Execute all promises concurrently and resolve the parsed result
+            Promise.all(promises).then((results) => {
+                let filtered_results = results.filter((res_arr) => {
+                    return res_arr.length
+                })
+                resolve(filtered_results.flat())
             })
         })
     }
@@ -448,15 +507,27 @@ class DBManager {
     }
 
     /**
-     * Returns a promise after updating Stock_Orders or Stock_Simulations table rows grouped by
-     * profile at a defined field and value.
+     * Returns a promise after updating Stock_Orders or Stock_Simulations table rows associated with
+     * a given profile with field/values object.
      */
-    update_stock_orders_by_profile_at_field_value = (profile, simulated, field, value) => {
+    update_stock_orders_by_profile_with_multi_field_values = (profile, simulated, field_values) => {
         const self = this
         const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
+        let sql = `UPDATE ${table} SET `
+        let end_idx = 0
+        let fv_length = Object.keys(field_values).length
+        for (const [field, value] of Object.entries(field_values)) {
+            sql += `${field} = "${value}"`
+            end_idx += 1
+            if (end_idx < fv_length) {
+                sql += ", "
+            } else {
+                sql += " "
+            }
+        }
+        sql += `WHERE profile = "${profile}"`
         return new Promise(function (resolve, reject) {
-            let sql = `UPDATE ${table} SET ${field} = ? WHERE profile = ?`
-            self.DB.run(sql, [value, profile], function (err) {
+            self.DB.run(sql, function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})
@@ -465,6 +536,31 @@ class DBManager {
                     console.log(`SMDB: ${table}: # of Row Changes: ` + this.changes)
                     resolve({success: true})
                 }
+            })
+        })
+    }
+
+    /**
+     * Returns a promise after updating Stock_Orders or Stock_Simulations table rows associated with
+     * a given profile field with field/values object. This function is the same as
+     * 'update_stock_orders_by_profile_with_multi_field_values` except it updates any matching rows
+     * in both tables.
+     */
+    update_all_stock_orders_by_profile_with_multi_field_values = (profile, field_values) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+
+            // Build promises for results spanning both types of order table (Stock_Orders and Stock_Simulations)
+            let promises = []
+            promises.push(self.update_stock_orders_by_profile_with_multi_field_values(profile, true, field_values))
+            promises.push(self.update_stock_orders_by_uuid_with_multi_field_values(profile, false, field_values))
+
+            // Execute all promises concurrently and resolve the parsed result
+            Promise.all(promises).then((results) => {
+                let filtered_results = results.filter((res_arr) => {
+                    return res_arr.length
+                })
+                resolve(filtered_results.flat())
             })
         })
     }
