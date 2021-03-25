@@ -176,7 +176,8 @@ class DBManager {
                 uuid = options.uuid,
                 profile = options.profile,
                 market = options.market,
-                status = options.status || 'Waiting',
+                status = 'Waiting',
+                paused = 'true',
                 symbol = options.symbol,
                 name = options.name,
                 price = options.price || 0,
@@ -186,9 +187,9 @@ class DBManager {
                 limit_sell = options.limit_sell || 0,
                 order_date = options.order_date,
                 exec_date = options.exec_date || 0
-            let sql = `INSERT INTO ${table} (uuid, profile, market, status, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
-            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            self.DB.run(sql, [uuid, profile, market, status, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
+            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
+            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})
@@ -198,40 +199,6 @@ class DBManager {
                     resolve({success: true})
                 }
             })
-        })
-    }
-
-    /**
-     * Add an entry to the Stock_Holdings table.
-     * @todo - Refactor this to include options argument and return as promise.
-     */
-    add_stock_holdings_entry = (uuid, profile, market, symbol, name, shares, price, cost_basis, simulated) => {
-        let sql = "INSERT INTO Stock_Holdings (uuid, profile, market, symbol, name, shares, price, cost_basis, simulated) "
-        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
-        this.DB.run(sql, [uuid, profile, market, symbol, name, shares, price, cost_basis, simulated], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Stock_Holdings: Last ID: " + this.lastID)
-                console.log("SMDB: Stock_Holdings: # of Row Changes: " + this.changes)
-            }
-        })
-    }
-
-    /**
-     * Add an entry to the Stock_Records table.
-     * @todo - Refactor this to return as promise.
-     */
-    add_stock_record_entry = (market, symbol, quote, timestamp) => {
-        let sql = "INSERT INTO Stock_Records (market, symbol, quote, timestamp) "
-        sql += "VALUES (?, ?, ?, ?) "
-        this.DB.run(sql, [market, symbol, quote, timestamp], function (err) {
-            if (err) {
-                console.log("SMDB: " + err)
-            } else {
-                console.log("SMDB: Stock_Records: Last ID: " + this.lastID)
-                console.log("SMDB: Stock_Records: # of Row Changes: " + this.changes)
-            }
         })
     }
 
@@ -347,6 +314,23 @@ class DBManager {
     }
 
     /**
+     * Returns the 'status' field of a given profile returned as a Promise.
+     */
+    get_profile_status = (profile) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT status FROM Profiles WHERE profile = "${profile}"`
+            self.DB.get(sql, function (err, row) {
+                if (err) {
+                    console.log("SMDB: " + err)
+                    reject([])
+                }
+                resolve(row.status)
+            })
+        })
+    }
+
+    /**
      * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
      * their profile association.
      */
@@ -408,6 +392,8 @@ class DBManager {
      * where field/value conditions have been met. This is exactly the same functionality as
      * 'get_stock_orders_by_profile_where_multi_field_values' except it runs the query on BOTH orders
      * tables.
+     * @todo - This function makes many of the GET functions useless. Update other functions to use this
+     * function where needed.
      */
     get_all_stock_orders_where_multi_field_values = (field_values) => {
         const self = this

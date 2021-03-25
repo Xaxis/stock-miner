@@ -181,19 +181,29 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     DBM.set_profile_status(req.params.profile, req.params.status)
         .then(() => {
+            let profile_paused = req.params.status === 'paused'
 
-            //
-            // @todo - Update all orders/rows in profile to status "Paused"
-            // Update all orders that are 'Running' to 'Paused'
-            // DBM.update_all_stock_orders_by_profile_with_multi_field_values(
-            //     req.params.profile,
-            //     {status: req.params.status}
-            // )
-            //     .then(() => {
-            //
-            //     })
+            // When a profile is set to paused, set all 'Running' order rows paused state to true
+            if (profile_paused) {
+                DBM.get_all_stock_orders_where_multi_field_values({profile: req.params.profile, status: 'Running'})
+                    .then((rows) => {
+                        rows.forEach((row) => {
+                            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: true})
+                        })
+                        DT.build_all_active_tasks_from_db()
+                    })
+            }
 
-            DT.build_all_active_tasks_from_db()
+            // Otherwise update orders to un-paused ('Running') state.
+            else {
+                DBM.get_all_stock_orders_where_multi_field_values({profile: req.params.profile, status: 'Running'})
+                    .then((rows) => {
+                        rows.forEach((row) => {
+                            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: false})
+                        })
+                        DT.build_all_active_tasks_from_db()
+                    })
+            }
             res.send({success: true})
         })
         .catch(() => {
@@ -208,7 +218,7 @@ app.get('/app/get/orders/list/:profile/:simulated', (req, res) => {
             DT.set_active_stream_profile(req.params.profile)
             DT.add_active_tasks(rows)
             DT.build_all_active_tasks_from_db()
-            res.send(rows)
+            res.send(DT.parse_row_data_status(rows))
         })
         .catch(() => {
             res.send([])
@@ -218,7 +228,7 @@ app.get('/app/get/orders/list/:profile/:simulated', (req, res) => {
 app.get('/app/get/orders/symbol/:profile/:symbol/:type', (req, res) => {
     DBM.get_stock_orders_by_profile_at_symbol(req.params.profile, req.params.symbol, (req.params.type === 'simulated'))
         .then((rows) => {
-            res.send(rows)
+            res.send(DT.parse_row_data_status(rows))
         })
         .catch(() => {
             res.send([])
@@ -228,7 +238,7 @@ app.get('/app/get/orders/symbol/:profile/:symbol/:type', (req, res) => {
 app.get('/app/get/orders/uuid/:profile/:uuid/:simulated', (req, res) => {
     DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.simulated === 'simulated'))
         .then((rows) => {
-            res.send(rows)
+            res.send(DT.parse_row_data_status(rows))
         })
         .catch(() => {
             res.send([])
@@ -283,19 +293,26 @@ app.get('/app/order/buy/:uuid/:cost_basis/:limit_buy/:limit_sell', (req, res) =>
     let uuid, cost_basis, limit_buy, limit_sell;
     ({uuid, cost_basis, limit_buy, limit_sell} = req.params)
 
-    // Build field/value object to put into database
-    let set_data = {
-        cost_basis: cost_basis,
-        limit_buy: limit_buy || 0,
-        limit_sell: limit_sell || 0,
-        status: 'Running'
-    }
+    // Retrieve the corresponding row to
+    DBM.get_profile_status(DT.get_active_stream_profile())
+        .then((status) => {
+            let paused = status == 'active' ? 'false' : 'true'
 
-    // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
-    DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
-        .then(() => {
-            res.send({success: true})
-            DT.build_all_active_tasks_from_db()
+            // Build field/value object to put into database
+            let set_data = {
+                cost_basis: cost_basis,
+                limit_buy: limit_buy || 0,
+                limit_sell: limit_sell || 0,
+                status: 'Running',
+                paused: paused
+            }
+
+            // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
+            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
+                .then(() => {
+                    res.send({success: true})
+                    DT.build_all_active_tasks_from_db()
+                })
         })
 })
 

@@ -20,8 +20,11 @@ import fetch from 'cross-fetch'
 const SideBarProfilesMenu = ({
                                  profileActive,
                                  profileList,
+                                 tableIDActive,
+                                 tableTypeActive,
                                  setProfileActive,
                                  setProfileList,
+                                 updateTableRows,
                                  deleteProfileTables
                              }) => {
     const [expandedPanel1, setExpandedPanel1] = useState(true)
@@ -107,6 +110,11 @@ const SideBarProfilesMenu = ({
             const pl_response = await fetch(`http://localhost:2222/app/get/profiles/list`)
             const pl_result = await pl_response.json()
             setProfileList(pl_result)
+
+            // Reload all rows with updated statuses upon profile status change.
+            const rows_response = await fetch(`http://localhost:2222/app/get/orders/list/${activeProfileName}/${tableTypeActive}`)
+            let rows_result = await rows_response.json()
+            if (rows_result.length) updateTableRows(activeProfileName, tableIDActive, rows_result)
         })()
     }
 
@@ -323,7 +331,9 @@ const SideBarProfilesMenu = ({
 const mapStateToProps = (state) => {
     return {
         profileActive: state.profileActive,
-        profileList: state.profileList
+        profileList: state.profileList,
+        tableIDActive: state.tableIDActive,
+        tableTypeActive: state.tableTypeActive
     }
 }
 
@@ -331,6 +341,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setProfileActive: (active) => dispatch(ActionTypes.setProfileActive(active)),
         setProfileList: (list) => dispatch(ActionTypes.setProfileList(list)),
+        updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
         deleteProfileTables: (tableProfile, tableID, rows) => dispatch(ActionTypes.deleteProfileTables(tableProfile))
     }
 }

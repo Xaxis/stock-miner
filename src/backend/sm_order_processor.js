@@ -12,7 +12,7 @@ class OrderProcessor {
      * outside this class.
      */
     process_order = (order) => {
-        console.log('Do Order Processing Here!', order)
+        // console.log('Do Order Processing Here!', order)
     }
 
     /**

@@ -20,7 +20,7 @@ const SideBarOrderMenuBuy = (props) => {
         tableTypeActive,
         currentSelectedRow,
         setSelectedRow,
-        updateTableRows
+        updateTableRows,
         ...other
     } = props;
 

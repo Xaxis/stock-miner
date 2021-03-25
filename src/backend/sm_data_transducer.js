@@ -72,7 +72,7 @@ class DataTransducer {
             .then((rows) => {
                 rows.forEach((row) => {
                     this.ALL_TASKS.push(
-                        Object.assign(row,{
+                        Object.assign(row, {
                             uuid: row.uuid,
                             profile: row.profile,
                             market: row.market.toUpperCase(),
@@ -91,6 +91,13 @@ class DataTransducer {
         // Reset active profile list and flag
         this.ACTIVE_PROFILE_TASKS = []
         this.ACTIVE_PROFILE = profile
+    }
+
+    /**
+     * Gets the active stream profile.
+     */
+    get_active_stream_profile = () => {
+        return this.ACTIVE_PROFILE
     }
 
     /**
@@ -196,8 +203,8 @@ class DataTransducer {
     }
 
     /**
-     * Retrieves sanity checks on the availability of streamed data and assists in
-     * building the expected object for consumption by the frontend.
+     * Retrieves sanity checks on the availability of streamed data and assists in building
+     * each row object for consumption by the frontend.
      */
     get_parsed_stream_data = (market, symbol) => {
         let stream_data = {}
@@ -220,14 +227,33 @@ class DataTransducer {
         if (profile !== 'noop') {
             this.ACTIVE_PROFILE_TASKS.forEach((task) => {
                 if (task.profile === profile) {
-                    stream_data.rows.push(Object.assign({
+
+                    // Merge stream data rows into data object to send
+                    let data_row = Object.assign({
                         uuid: task.uuid,
                         price: 0
-                    }, this.get_parsed_stream_data(task.market, task.symbol)))
+                    }, this.get_parsed_stream_data(task.market, task.symbol))
+
+                    // Add row to data object to send
+                    stream_data.rows.push(data_row)
                 }
             })
         }
         return stream_data
+    }
+
+    /**
+     * This function is used to correct the 'Status' data presented to the user in the
+     * user interface with the 'status' value indicating the operation of a 'Running' order.
+     */
+    parse_row_data_status = (rows) => {
+        let parsed_rows = rows.map((row) => {
+            if (row.status === 'Running' && row.paused === 'true') {
+                row.status = 'Paused'
+            }
+            return row
+        })
+        return parsed_rows
     }
 }
 
