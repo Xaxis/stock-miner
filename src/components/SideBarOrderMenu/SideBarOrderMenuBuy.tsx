@@ -17,7 +17,6 @@ const SideBarOrderMenuBuy = (props) => {
     const {
         profileActive,
         tableIDActive,
-        tableTypeActive,
         currentSelectedRow,
         setSelectedRow,
         updateTableRows,
@@ -437,7 +436,7 @@ const SideBarOrderMenuBuy = (props) => {
             let order_result = await order_response.json()
 
             // Retrieve update row from DB
-            const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}/${tableTypeActive}`)
+            const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}`)
             let row_result = await row_response.json()
             if (row_result.length) {
                 updateTableRows(profileActive[0], tableIDActive, row_result)
@@ -531,8 +530,7 @@ const mapStateToProps = (state) => {
     return {
         profileActive: state.profileActive,
         currentSelectedRow: state.currentSelectedRow,
-        tableIDActive: state.tableIDActive,
-        tableTypeActive: state.tableTypeActive
+        tableIDActive: state.tableIDActive
     }
 }
 

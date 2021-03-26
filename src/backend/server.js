@@ -235,8 +235,8 @@ app.get('/app/get/orders/symbol/:profile/:symbol/:type', (req, res) => {
         })
 })
 
-app.get('/app/get/orders/uuid/:profile/:uuid/:simulated', (req, res) => {
-    DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid, (req.params.simulated === 'simulated'))
+app.get('/app/get/orders/uuid/:profile/:uuid', (req, res) => {
+    DBM.get_stock_orders_by_profile_at_uuid(req.params.profile, req.params.uuid)
         .then((rows) => {
             res.send(DT.parse_row_data_status(rows))
         })
@@ -260,7 +260,7 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
         name: name,
         order_date: Date.now()
     }).then(() => {
-        DBM.get_stock_orders_by_profile_at_uuid(profile, uuid, simulated)
+        DBM.get_stock_orders_by_profile_at_uuid(profile, uuid)
             .then((rows) => {
                 res.send(rows)
             })

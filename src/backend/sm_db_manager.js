@@ -392,8 +392,6 @@ class DBManager {
      * where field/value conditions have been met. This is exactly the same functionality as
      * 'get_stock_orders_by_profile_where_multi_field_values' except it runs the query on BOTH orders
      * tables.
-     * @todo - This function makes many of the GET functions useless. Update other functions to use this
-     * function where needed.
      */
     get_all_stock_orders_where_multi_field_values = (field_values) => {
         const self = this
@@ -470,25 +468,19 @@ class DBManager {
     }
 
     /**
-     * Returns a list of stock orders from the Stock_Orders or Stock_Simulations tables by
-     * their profile AND uuid association.
+     * Returns a list of stock orders from the Stock_Orders and Stock_Simulations tables by
+     * their profile AND uuid association in the form of a Promise.
      */
-    get_stock_orders_by_profile_at_uuid = (profile, uuid, simulated) => {
+    get_stock_orders_by_profile_at_uuid = (profile, uuid) => {
         const self = this
-        const table = simulated ? 'Stock_Simulations' : 'Stock_Orders'
         return new Promise(function (resolve, reject) {
-            let sql = `SELECT * FROM ${table} WHERE profile = ? AND uuid = ?`
-            self.DB.all(sql, [profile, uuid], function (err, rows) {
-                if (err) {
-                    console.log("SMDB: " + table + err)
-                    reject([])
-                }
-                let result = []
-                rows.forEach((row) => {
-                    result.push(row)
-                })
-                resolve(result)
+            self.get_all_stock_orders_where_multi_field_values({
+                profile: profile,
+                uuid: uuid
             })
+                .then((row) => {
+                    resolve(row)
+                })
         })
     }
 
