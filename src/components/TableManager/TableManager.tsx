@@ -264,6 +264,7 @@ const TableManager = (props) => {
                     const response = await fetch(`http://localhost:2222/app/deregister/orders/${tableType}/${uuid}`)
                     let result = await response.json()
                     setRowsToDeleteNext([])
+                    setSelectedRow(null, [])
                 })()
             })
         }
