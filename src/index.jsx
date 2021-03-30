@@ -197,6 +197,12 @@ const App = function () {
                     }
                 }
             },
+            MuiDivider: {
+                root: {
+                    marginTop: '16px !important',
+                    marginBottom: '16px !important'
+                }
+            },
             MuiPaper: {
                 root: {
                     backgroundColor: palette.secondary.darkAlt,
@@ -262,7 +268,7 @@ const App = function () {
                 root: {
                     boxShadow: 'none',
                     backgroundColor: palette.secondary.darkAlt,
-                    color: `${palette.text.secondary} !important`,
+                    color: `${palette.text.disabled} !important`,
                     '&:last-child': {
                         borderBottom: `1px solid ${palette.secondary.main}`,
                     },
@@ -280,6 +286,41 @@ const App = function () {
                         color: `${palette.text.primary} !important`,
                         '& > :first-child': {
                             borderBottom: `1px solid ${palette.secondary.main}`
+                        }
+                    },
+                    '& + .MuiDivider-root': {
+                        marginTop: '0 !important'
+                    },
+
+                    // Accordions within Accordions @todo - Build this
+                    '& .MuiAccordion-root': {
+                        width: '100%',
+                        borderBottom: `1px solid ${palette.secondary.main}`,
+                        backgroundColor: 'transparent !important',
+                        color: `${palette.text.disabled} !important`,
+                        '& + .MuiAccordion-root': {
+                            borderTop: 'none !important'
+                        },
+                        '& .MuiAccordionSummary-root': {
+                            paddingLeft: '0',
+                            paddingRight: '0',
+                            '&:hover': {
+                                backgroundColor: 'transparent !important',
+                            },
+                            '&$expanded': {
+                                backgroundColor: 'transparent !important',
+                                color: `${palette.text.secondary} !important`,
+                            },
+                            '& .MuiAccordionSummary-content': {
+                                margin: '0'
+                            }
+                        },
+                        '& .MuiAccordionDetails-root': {
+                            padding: '16px 0',
+                            display: 'block !important',
+                            '& .MuiFormControl-root': {
+                                width: '100%'
+                            }
                         }
                     }
                 }
@@ -300,7 +341,7 @@ const App = function () {
                         }
                     },
                     '& .MuiIconButton-label': {
-                        color: `${palette.text.secondary} !important`
+                        color: `${palette.text.disabled} !important`
                     }
                 }
             },

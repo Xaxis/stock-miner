@@ -10,8 +10,14 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import MenuItem from '@material-ui/core/MenuItem'
 import Grid from '@material-ui/core/Grid'
+import Accordion from '@material-ui/core/Accordion'
+import AccordionSummary from '@material-ui/core/AccordionSummary'
+import AccordionDetails from '@material-ui/core/AccordionDetails'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import CheckBox from '@material-ui/core/CheckBox'
 import fetch from 'cross-fetch'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 const SideBarOrderMenuBuy = (props) => {
     const {
@@ -41,6 +47,9 @@ const SideBarOrderMenuBuy = (props) => {
             },
             '& + *': {
                 marginTop: '16px'
+            },
+            '&:not(:first-child)': {
+                marginTop: '16px'
             }
         },
         button_progress: {
@@ -53,6 +62,12 @@ const SideBarOrderMenuBuy = (props) => {
             zIndex: 1
         }
     }))()
+
+    /**
+     * Inner Accordion panels
+     */
+    const [expandedInnerPanel1, setExpandedInnerPanel1] = useState(false)
+    const [expandedInnerPanel2, setExpandedInnerPanel2] = useState(false)
 
     /**
      * Order field values.
@@ -72,6 +87,16 @@ const SideBarOrderMenuBuy = (props) => {
     const [limitSellPercent, setLimitSellPercent] = useState("")
     const [limitSellPercentLabel, setLimitSellPercentLabel] = useState("Sell Limit % ($0.00)")
     const [limitSellPercentPlaceholder, setLimitSellPercentPlaceholder] = useState("+0.00")
+
+    /**
+     * Loss prevention values.
+     */
+    const [lossPreventAmount, setLossPreventAmount] = useState("")
+    const [lossPreventPercent, setLossPreventPercent] = useState("")
+    const [lossPreventPrice, setLossPreventPrice] = useState("")
+    const [lossPreventAmountPlaceholder, setLossPreventAmountPlaceholder] = useState("$0.00")
+    const [lossPreventPercentPlaceholder, setLossPreventPercentPlaceholder] = useState("0.00")
+    const [lossPreventPricePlaceholder, setLossPreventPricePlaceholder] = useState("$0.00")
 
     /**
      * Input validation, error handling flags and condition state values.
@@ -103,7 +128,29 @@ const SideBarOrderMenuBuy = (props) => {
         default: "Will attempt to buy at specified % change.",
         error: "Please provide an appropriate value."
     })
+    const [lossPreventError, setLossPreventError] = useState(false)
+    const [lossPreventAmountHelperText, setLossPreventAmountHelperText] = useState({
+        default: "Will auto sell at amount ($) decrease.",
+        error: "Please provide an appropriate value."
+    })
+    const [lossPreventPercentHelperText, setLossPreventPercentHelperText] = useState({
+        default: "Will auto sell at percent (%) decrease.",
+        error: "Please provide an appropriate value."
+    })
+    const [lossPreventPriceHelperText, setLossPreventPriceHelperText] = useState({
+        default: "Will auto sell at stock price ($) value.",
+        error: "Please provide an appropriate value."
+    })
 
+    /**
+     * Toggle handler sets state on menu's inner accordion panels.
+     */
+    const handleInnerAccordionPanelExpand1 = (panel) => (event) => {
+        setExpandedInnerPanel1(expandedInnerPanel1 ? false : true)
+    }
+    const handleInnerAccordionPanelExpand2 = (panel) => (event) => {
+        setExpandedInnerPanel2(expandedInnerPanel2 ? false : true)
+    }
 
     /**
      * Updates values in the trade/order menu when a row is selected.
@@ -179,6 +226,11 @@ const SideBarOrderMenuBuy = (props) => {
         setOrderQuantity(0)
         setLimitBuyPercentLabel('Buy Limit % ($0.00)')
         setLimitSellPercentLabel('Sell Limit % ($0.00)')
+
+        // Reset loss prevention values
+        setLossPreventAmount('')
+        setLossPreventPercent('')
+        setLossPreventPrice('')
 
         // Reset error flags
         setOrderAmountError(false)
@@ -364,6 +416,36 @@ const SideBarOrderMenuBuy = (props) => {
     }
 
     /**
+     * Handle input of any/all the loss prevention fields. All of the loss prevention fields
+     * are updated when any of them are changed, as they all contain equivalent values.
+     */
+    const handleLossPreventionTranslation = (value, type) => {
+        let amount_loss = ''
+        let percent_loss = ''
+        let price_loss = ''
+        switch (type) {
+            case 'amount':
+                amount_loss = handlePriceInput(value)
+                percent_loss = (parseFloat(amount_loss) / parseFloat(handlePriceInput(currentEstimatedPrice)) * 100).toFixed(2)
+                price_loss = (handlePriceInput(currentEstimatedPrice) - amount_loss).toFixed(7)
+                break
+            case 'percent':
+                percent_loss = handlePercentInput(value)
+                amount_loss = ((parseFloat(handlePriceInput(currentEstimatedPrice) * parseFloat(percent_loss)) / 100).toFixed(7)
+                price_loss = (handlePriceInput(currentEstimatedPrice) - amount_loss).toFixed(7)
+                break
+            case 'price':
+                price_loss = handlePriceInput(value)
+                percent_loss = (parseFloat(price_loss) / parseFloat(handlePriceInput(currentEstimatedPrice)) * 100).toFixed(2)
+                amount_loss = (handlePriceInput(currentEstimatedPrice) - price_loss).toFixed(7)
+                break
+        }
+        setLossPreventAmount('$' + amount_loss)
+        setLossPreventPercent(isNaN(percent_loss) ? '' : percent_loss)
+        setLossPreventPrice('$' + price_loss)
+    }
+
+    /**
      * Limited input sanitation on fields that accept price/amount values.
      */
     const handlePriceInput = (str_value) => {
@@ -472,28 +554,114 @@ const SideBarOrderMenuBuy = (props) => {
                 required
             />
 
-            <TextField
-                select
-                label="Limit Type"
-                variant="outlined"
-                value={limitType}
-                InputLabelProps={{shrink: true}}
+            <Accordion
+                square
+                expanded={expandedInnerPanel1}
+                onChange={handleInnerAccordionPanelExpand1()}
                 disabled={!currentSelectedRow}
-                onChange={(e) => {
-                    setLimitType(e.target.value)
-                    if (e.target.value === 'percent') {
-                        setLimitBuyAmount('')
-                        setLimitSellAmount('')
-                    }
-                }}
             >
-                <MenuItem key="price" value="price">Price Based</MenuItem>
-                <MenuItem key="percent" value="percent">Percentage Based</MenuItem>
-            </TextField>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                    <FormControlLabel
+                        control={<CheckBox checked={expandedInnerPanel1} disabled={!currentSelectedRow}/>}
+                        label={"Limit Order"}
+                    />
+                </AccordionSummary>
+                <AccordionDetails>
+                    <TextField
+                        select
+                        label="Limit Type"
+                        variant="outlined"
+                        value={limitType}
+                        InputLabelProps={{shrink: true}}
+                        disabled={!currentSelectedRow}
+                        onChange={(e) => {
+                            setLimitType(e.target.value)
+                            if (e.target.value === 'percent') {
+                                setLimitBuyAmount('')
+                                setLimitSellAmount('')
+                            }
+                        }}
+                    >
+                        <MenuItem key="price" value="price">Price Based</MenuItem>
+                        <MenuItem key="percent" value="percent">Percentage Based</MenuItem>
+                    </TextField>
 
-            {renderLimitFields()}
+                    {renderLimitFields()}
+                </AccordionDetails>
+            </Accordion>
 
-            <Divider/>
+            <Accordion
+                square
+                expanded={expandedInnerPanel2}
+                onChange={handleInnerAccordionPanelExpand2()}
+                disabled={!currentSelectedRow}
+            >
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                    <FormControlLabel
+                        control={<CheckBox checked={expandedInnerPanel2} disabled={!currentSelectedRow}/>}
+                        label={"Loss Prevention"}
+                    />
+                </AccordionSummary>
+                <AccordionDetails>
+                    <TextField
+                        label="Amount $ Loss"
+                        placeholder={lossPreventAmountPlaceholder}
+                        variant="outlined"
+                        InputLabelProps={{shrink: true}}
+                        value={lossPreventAmount}
+                        disabled={!currentSelectedRow}
+                        helperText={lossPreventError ? lossPreventAmountHelperText.error : lossPreventAmountHelperText.default}
+                        error={lossPreventError}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                handleLossPreventionTranslation(e.target.value, 'amount')
+                            } else {
+                                setLossPreventAmount('')
+                                setLossPreventPercent('')
+                                setLossPreventPrice('')
+                            }
+                        }}
+                    />
+                    <TextField
+                        label="Percent % Loss"
+                        placeholder={lossPreventPercentPlaceholder}
+                        variant="outlined"
+                        InputLabelProps={{shrink: true}}
+                        value={lossPreventPercent}
+                        disabled={!currentSelectedRow}
+                        helperText={lossPreventError ? lossPreventPercentHelperText.error : lossPreventPercentHelperText.default}
+                        error={lossPreventError}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                handleLossPreventionTranslation(e.target.value, 'percent')
+                            } else {
+                                setLossPreventAmount('')
+                                setLossPreventPercent('')
+                                setLossPreventPrice('')
+                            }
+                        }}
+                    />
+                    <TextField
+                        label="Stock Price"
+                        placeholder={lossPreventPricePlaceholder}
+                        variant="outlined"
+                        InputLabelProps={{shrink: true}}
+                        value={lossPreventPrice}
+                        disabled={!currentSelectedRow}
+                        helperText={lossPreventError ? lossPreventPriceHelperText.error : lossPreventPriceHelperText.default}
+                        error={lossPreventError}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                handleLossPreventionTranslation(e.target.value, 'price')
+                            } else {
+                                setLossPreventAmount('')
+                                setLossPreventPercent('')
+                                setLossPreventPrice('')
+                            }
+                        }}
+                    />
+                </AccordionDetails>
+            </Accordion>
 
             <Grid container spacing={0} className={classes.grid_box}>
                 <Grid item xs={6}>
