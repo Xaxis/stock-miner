@@ -12,7 +12,15 @@ class OrderProcessor {
      * outside this class.
      */
     process_order = (order) => {
-        // console.log('Do Order Processing Here!', order)
+        console.log('Do Order Processing Here!', order)
+    }
+
+    /**
+     * Returns true when a loss prevent percent point has been hit.
+     * @todo - ..
+     */
+    is_loss_prevent_point_hit = () => {
+
     }
 
     /**

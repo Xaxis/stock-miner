@@ -281,7 +281,6 @@ const App = function () {
                     boxShadow: 'none',
                     backgroundColor: palette.secondary.darkAlt,
                     color: `${palette.text.disabled} !important`,
-                    opacity: '0.5',
                     '&:last-child': {
                         borderBottom: `1px solid ${palette.secondary.main}`,
                     },
@@ -295,7 +294,6 @@ const App = function () {
                         display: 'none'
                     },
                     '&$expanded': {
-                        opacity: '1',
                         margin: 'auto',
                         color: `${palette.text.primary} !important`,
                         '& > :first-child': {

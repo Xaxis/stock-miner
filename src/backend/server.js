@@ -289,9 +289,9 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
         })
 })
 
-app.get('/app/order/buy/:uuid/:cost_basis/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
-    let uuid, cost_basis, limit_buy, limit_sell, loss_perc;
-    ({uuid, cost_basis, limit_buy, limit_sell, loss_perc} = req.params)
+app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
+    let uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc;
+    ({uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc} = req.params)
 
     // Retrieve and verify profile status
     DBM.get_profile_status(DT.get_active_stream_profile())
@@ -304,6 +304,8 @@ app.get('/app/order/buy/:uuid/:cost_basis/:limit_buy/:limit_sell/:loss_perc', (r
                 limit_buy: limit_buy || 0,
                 limit_sell: limit_sell || 0,
                 loss_perc: loss_perc || 0,
+                purchase_price: purchase_price || 0,
+                order_type: 'buy',
                 status: 'Running',
                 paused: paused
             }
