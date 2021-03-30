@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `name`              TEXT NOT NULL,
     `shares`            NUMERIC,
     `price`             NUMERIC,
-    `purchase_price`    NUMERIC
+    `purchase_price`    NUMERIC,
     `cost_basis`        NUMERIC,
     `limit_buy`         NUMERIC,
     `limit_sell`        NUMERIC,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `name`              TEXT NOT NULL,
     `shares`            NUMERIC,
     `price`             NUMERIC,
-    `purchase_price`    NUMERIC
+    `purchase_price`    NUMERIC,
     `cost_basis`        NUMERIC,
     `limit_buy`         NUMERIC,
     `limit_sell`        NUMERIC,
