@@ -17,10 +17,10 @@ class OrderProcessor {
 
     /**
      * Returns true when a loss prevent percent point has been hit.
-     * @todo - ..
      */
-    is_loss_prevent_point_hit = () => {
-
+    is_loss_prevent_point_hit = (purchase_price, current_price, loss_percent) => {
+        let percent_point = ((parseFloat(purchase_price) / parseFloat(current_price)) * 100).toFixed(2)
+        return percent_point >= parseFloat(loss_percent)
     }
 
     /**
