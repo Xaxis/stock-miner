@@ -439,7 +439,7 @@ const SideBarOrderMenuBuy = (props) => {
                 break
             case 'price':
                 price_loss = handlePriceInput(value)
-                percent_loss = (parseFloat(price_loss) / parseFloat(handlePriceInput(currentEstimatedPrice)) * 100).toFixed(2)
+                percent_loss = Math.abs((parseFloat(price_loss) / parseFloat(handlePriceInput(currentEstimatedPrice)) * 100) - 100).toFixed(2)
                 amount_loss = (handlePriceInput(currentEstimatedPrice) - price_loss).toFixed(7)
                 break
         }
@@ -512,12 +512,13 @@ const SideBarOrderMenuBuy = (props) => {
     const handleOrderBuySubmit = () => {
         (async () => {
 
-            // Process order
+            // Process order inputs and order
             let uuid = currentSelectedRow.uuid
             let cost_basis = orderAmount.replace('$', '')
             let limit_buy = limitBuyAmount.replace('$', '') || 0
             let limit_sell = limitSellAmount.replace('$', '') || 0
-            const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${limit_buy}/${limit_sell}`)
+            let loss_perc = lossPreventPercent || 0
+            const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${limit_buy}/${limit_sell}/${loss_perc}`)
             let order_result = await order_response.json()
 
             // Retrieve update row from DB
@@ -607,7 +608,7 @@ const SideBarOrderMenuBuy = (props) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <TextField
-                        label="Amount $ Loss"
+                        label="Stock Amount Loss"
                         placeholder={lossPreventAmountPlaceholder}
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
@@ -626,7 +627,7 @@ const SideBarOrderMenuBuy = (props) => {
                         }}
                     />
                     <TextField
-                        label="Percent % Loss"
+                        label="Stock Percent Loss"
                         placeholder={lossPreventPercentPlaceholder}
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
@@ -645,7 +646,7 @@ const SideBarOrderMenuBuy = (props) => {
                         }}
                     />
                     <TextField
-                        label="Stock Price"
+                        label="Stock Price Loss"
                         placeholder={lossPreventPricePlaceholder}
                         variant="outlined"
                         InputLabelProps={{shrink: true}}

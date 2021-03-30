@@ -185,11 +185,12 @@ class DBManager {
                 cost_basis = options.cost_basis || 0,
                 limit_buy = options.limit_buy || 0,
                 limit_sell = options.limit_sell || 0,
+                loss_perc = options.loss_perc || 0,
                 order_date = options.order_date,
                 exec_date = options.exec_date || 0
-            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date) `
-            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, order_date, exec_date], function (err) {
+            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date) `
+            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, shares, cost_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date], function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})

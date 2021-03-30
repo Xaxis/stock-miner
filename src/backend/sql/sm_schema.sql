@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `paused`        TEXT NOT NULL DEFAULT 'true',
     `symbol`        TEXT NOT NULL,
     `name`          TEXT NOT NULL,
-    `shares`        NUMERIC NOT NULL,
-    `price`         NUMERIC NOT NULL,
-    `cost_basis`    NUMERIC NOT NULL,
+    `shares`        NUMERIC,
+    `price`         NUMERIC,
+    `cost_basis`    NUMERIC,
     `limit_buy`     NUMERIC,
     `limit_sell`    NUMERIC,
-    `order_date`    DATE NOT NULL,
+    `loss_perc`     NUMERIC,
+    `order_date`    DATE,
     `exec_date`     DATE
 );
 CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
@@ -29,12 +30,13 @@ CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `paused`        TEXT NOT NULL DEFAULT 'true',
     `symbol`        TEXT NOT NULL,
     `name`          TEXT NOT NULL,
-    `shares`        NUMERIC NOT NULL,
-    `price`         NUMERIC NOT NULL,
-    `cost_basis`    NUMERIC NOT NULL,
+    `shares`        NUMERIC,
+    `price`         NUMERIC,
+    `cost_basis`    NUMERIC,
     `limit_buy`     NUMERIC,
     `limit_sell`    NUMERIC,
-    `order_date`    DATE NOT NULL,
+    `loss_perc`     NUMERIC,
+    `order_date`    DATE,
     `exec_date`     DATE
 );
 CREATE TABLE IF NOT EXISTS `Stock_Holdings` (
