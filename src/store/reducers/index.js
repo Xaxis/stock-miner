@@ -2,15 +2,15 @@ import * as ActionTypes from '../actions/action_types'
 
 const templateObjects = {
     tableRow: {
+        _meta: {},
         uuid: '',
-        type: '-',
+        market: '-',
         symbol: '-',
         name: '-',
         price: '-',
         status: '-',
-        shares: 0,
-        equity: 0,
-        change: 0
+        limit_buy: 0,
+        limit_sell: 0
     }
 }
 
@@ -106,10 +106,12 @@ const Reducers = (state = initialState, action) => {
                     newRowObject.uuid = row.uuid
                     newRowObject.symbol = row.symbol
                     newRowObject.name = row.name
-                    newRowObject.type = row.market
+                    newRowObject.market = row.market
                     newRowObject.price = row.price
-                    newRowObject.shares = row.shares
                     newRowObject.status = row.status
+                    newRowObject.limit_buy = row.limit_buy
+                    newRowObject.limit_sell = row.limit_sell
+                    newRowObject._meta = row
 
                     // Add new row object to new rows array
                     newRows.push(newRowObject)
@@ -177,6 +179,7 @@ const Reducers = (state = initialState, action) => {
                         action.rows.forEach((data) => {
                             if (data.uuid === row.uuid) {
                                 row = Object.assign(row, data)
+                                row._meta = Object.assign(row._meta, data)
                             }
                         })
                     })

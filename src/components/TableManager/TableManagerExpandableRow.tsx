@@ -15,8 +15,47 @@ const TableManagerExpandableRow = (props) => {
     const {
         rowData,
         rowMeta,
+        tableData,
         ...other
     } = props
+
+    /**
+     * ... @todo - under construction
+     */
+    useEffect(() => {
+        // console.log(rowData, rowMeta)
+        console.log(getRowDataByUUID(rowData[0]))
+    }, [tableData])
+
+    /**
+     * Returns a reference to a row in tableData by UUID.
+     */
+    const getRowDataByUUID = (uuid) => {
+        let result = null
+        if (tableData.length) {
+
+            // Iterate over profiles
+            tableData.forEach((profile) => {
+
+                // Iterate over tables in profile
+                profile.tables.forEach((table) => {
+
+                    // Search for matching row
+                    let row = table.filter((row) => {
+                        return row.uuid === uuid
+                    })
+
+                    // Return if found
+                    if (row.length) {
+                        result = row[0]
+                    }
+                })
+            })
+            return result
+        } else {
+            return null
+        }
+    }
 
     return (
         <TableRow>
@@ -46,7 +85,9 @@ TableManagerExpandableRow.propTypes = {
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+        tableData: state.tableData,
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {

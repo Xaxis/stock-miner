@@ -69,8 +69,8 @@ const TableManager = (props) => {
             }
         },
         {
-            name: "type",
-            label: "Type",
+            name: "market",
+            label: "Market",
             options: {
                 filter: true,
                 sort: true,
@@ -110,26 +110,16 @@ const TableManager = (props) => {
             }
         },
         {
-            name: "shares",
-            label: "Shares",
+            name: "limit_buy",
+            label: "Buy Point",
             options: {
                 filter: true,
                 sort: true
             }
         },
-
         {
-            name: "equity",
-            label: "Equity",
-            options: {
-                filter: true,
-                sort: true
-            }
-        },
-
-        {
-            name: "change",
-            label: "Change %",
+            name: "limit_sell",
+            label: "Sell Point",
             options: {
                 filter: true,
                 sort: true
