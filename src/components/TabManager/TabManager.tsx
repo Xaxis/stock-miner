@@ -24,7 +24,7 @@ function TabPanel(props) {
                 </Box>
             )}
         </div>
-    );
+    )
 }
 
 TabPanel.propTypes = {
@@ -37,7 +37,7 @@ function a11yProps(index) {
     return {
         id: `scrollable-auto-tab-${index}`,
         'aria-controls': `scrollable-auto-tabpanel-${index}`,
-    };
+    }
 }
 
 export default function TabManager() {
@@ -51,19 +51,21 @@ export default function TabManager() {
             flexGrow: 1,
             width: '100%',
             height: '100%',
-            backgroundColor: theme.palette.secondary.darkAlt,
             overflow: 'hidden',
             '& [role="tabpanel"]': {
                 height: 'calc(100vh - 117px)',
                 overflowY: 'auto',
                 overflowX: 'hidden'
+            },
+            '& .MuiAppBar-root': {
+                backgroundColor: theme.palette.secondary.main
             }
         }
     }))()
 
     const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+        setValue(newValue)
+    }
 
     return (
         <div className={classes.root}>
@@ -90,5 +92,5 @@ export default function TabManager() {
                 <TableManager tableID={1} tableType="actual"/>
             </TabPanel>
         </div>
-    );
+    )
 }

@@ -114,6 +114,7 @@ const App = function () {
         overrides: {
             MuiAppBar: {
                 root: {
+                    backgroundColor: palette.secondary.main,
                     boxShadow: 'none'
                 },
             },
@@ -251,7 +252,7 @@ const App = function () {
             },
             MuiTabs: {
                 root: {
-                    backgroundColor: palette.secondary.darkAlt
+                    backgroundColor: palette.secondary.main,
                 },
                 indicator: {
                     backgroundColor: palette.primary.main
@@ -261,6 +262,7 @@ const App = function () {
                 root: {
                     minWidth: 'auto !important',
                     color: `${palette.text.secondary} !important`,
+                    backgroundColor: 'transparent',
                     textTransform: 'none',
                     '&$selected': {
                         backgroundColor: palette.secondary.main,
