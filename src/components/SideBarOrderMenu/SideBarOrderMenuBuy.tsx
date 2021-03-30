@@ -243,6 +243,9 @@ const SideBarOrderMenuBuy = (props) => {
         setReviewOrderClicked(false)
         setOrderProcessing(false)
 
+        // Reset accordions
+        setExpandedInnerPanel1(false)
+        setExpandedInnerPanel2(false)
     }
 
     /**

@@ -174,6 +174,16 @@ const App = function () {
                     }
                 },
             },
+            MuiCheckbox: {
+                root: {
+                    '&$checked .MuiSvgIcon-root': {
+                        color: `${palette.primary.main} !important`
+                    },
+                    '&$checked': {
+                        color: `${palette.primary.main} !important`
+                    }
+                }
+            },
             MuiSelect: {
                 root: {
                     borderRadius: '2px !important',
@@ -292,7 +302,7 @@ const App = function () {
                         marginTop: '0 !important'
                     },
 
-                    // Accordions within Accordions @todo - Build this
+                    // Accordions within Accordions
                     '& .MuiAccordion-root': {
                         width: '100%',
                         borderBottom: `1px solid ${palette.secondary.main}`,
