@@ -1,4 +1,8 @@
 /**
+ ** This file contains functions used to convert and modify values.
+ **/
+
+/**
  * Convert a money value to a presentable money string.
  */
 export const toMoneyString = (value) => {

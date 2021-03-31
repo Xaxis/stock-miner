@@ -17,7 +17,7 @@ import CheckBox from '@material-ui/core/CheckBox'
 import fetch from 'cross-fetch'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/conversions'
+import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/value_conversions'
 
 const SideBarOrderMenuBuy = (props) => {
     const {

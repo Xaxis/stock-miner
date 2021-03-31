@@ -10,7 +10,15 @@ import TableCell from '@material-ui/core/TableCell'
 import Collapse from '@material-ui/core/Collapse'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
-import {toMoneyString, toPercentString, calcEquity, calcQuantity, calcTotalReturn, calcTotalChange} from '../../libs/conversions'
+import {getRowDataByUUID} from '../../libs/state_modifiers'
+import {
+    toMoneyString,
+    toPercentString,
+    calcEquity,
+    calcQuantity,
+    calcTotalReturn,
+    calcTotalChange
+} from '../../libs/value_conversions'
 
 const TableManagerExpandableRow = (props) => {
     const {
@@ -59,7 +67,7 @@ const TableManagerExpandableRow = (props) => {
      * Update data whenever tableData is modified.
      */
     useEffect(() => {
-        let row = getRowDataByUUID(rowData[0])
+        let row = getRowDataByUUID(rowData[0], tableData)
         let tmp_equity = calcEquity(row._meta.cost_basis, row._meta.purchase_price, row._meta.price).toFixed(2)
         setEquity(toMoneyString(tmp_equity))
         setCost('$' + parseFloat(row._meta.cost_basis).toFixed(2))
@@ -68,28 +76,6 @@ const TableManagerExpandableRow = (props) => {
         setPurchasePrice('$' + row._meta.purchase_price)
         setTotalChange(toPercentString(calcTotalChange(row._meta.purchase_price, row._meta.price)))
     }, [tableData])
-
-    /**
-     * Returns a reference to a row in tableData by UUID.
-     */
-    const getRowDataByUUID = (uuid) => {
-        let result = null
-        if (tableData.length) {
-            tableData.forEach((profile) => {
-                profile.tables.forEach((table) => {
-                    let row = table.filter((row) => {
-                        return row.uuid === uuid
-                    })
-                    if (row.length) {
-                        result = row[0]
-                    }
-                })
-            })
-            return result
-        } else {
-            return null
-        }
-    }
 
     return (
         <TableRow className={classes.table_row}>
