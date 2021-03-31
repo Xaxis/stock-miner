@@ -62,7 +62,7 @@ const TableManagerExpandableRow = (props) => {
         let row = getRowDataByUUID(rowData[0])
         let tmp_equity = calcEquity(row._meta.cost_basis, row._meta.purchase_price, row._meta.price).toFixed(2)
         setEquity(toMoneyString(tmp_equity))
-        setCost('$' + row._meta.cost_basis)
+        setCost('$' + parseFloat(row._meta.cost_basis).toFixed(2))
         setTotalReturn(toMoneyString(calcTotalReturn(tmp_equity, row._meta.cost_basis)))
         setQuantity(calcQuantity(tmp_equity, row._meta.price))
         setPurchasePrice('$' + row._meta.purchase_price)
