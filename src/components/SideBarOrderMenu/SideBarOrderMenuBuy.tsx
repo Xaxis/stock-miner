@@ -17,6 +17,7 @@ import CheckBox from '@material-ui/core/CheckBox'
 import fetch from 'cross-fetch'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/conversions'
 
 const SideBarOrderMenuBuy = (props) => {
     const {
@@ -159,7 +160,7 @@ const SideBarOrderMenuBuy = (props) => {
         if (currentSelectedRow) {
             setCurrentSymbol(currentSelectedRow.symbol)
             setCurrentEstimatedPrice('$' + currentSelectedRow.price)
-            setOrderQuantity(calcEstimatedShareQuantity(currentEstimatedPrice, orderAmount))
+            setOrderQuantity(calcQuantity(orderAmount, currentEstimatedPrice))
             updater = setInterval(() => {
 
                 // Update the estimated price
@@ -168,7 +169,7 @@ const SideBarOrderMenuBuy = (props) => {
                 // Update amount values in real time when percent limits are active
                 if (limitType === 'percent') {
                     if (limitBuyPercent) {
-                        let buy_percent = handlePercentInput(limitBuyPercent)
+                        let buy_percent = toPercentValue(limitBuyPercent, true)
                         calcUpdatLimitPercentLabelTranslation(
                             buy_percent,
                             setLimitBuyPercentLabel,
@@ -178,7 +179,7 @@ const SideBarOrderMenuBuy = (props) => {
                         )
                     }
                     if (limitSellPercent) {
-                        let sell_percent = handlePercentInput(limitSellPercent)
+                        let sell_percent = toPercentValue(limitSellPercent, true)
                         calcUpdatLimitPercentLabelTranslation(
                             sell_percent,
                             setLimitSellPercentLabel,
@@ -265,7 +266,7 @@ const SideBarOrderMenuBuy = (props) => {
                         error={limitBuyAmountError}
                         onChange={(e) => {
                             if (e.target.value) {
-                                setLimitBuyAmount(handlePriceInput(e.target.value))
+                                setLimitBuyAmount('$' + toMoneyValue(e.target.value))
                             } else {
                                 setLimitBuyAmount('')
                             }
@@ -282,7 +283,7 @@ const SideBarOrderMenuBuy = (props) => {
                         error={limitSellAmountError}
                         onChange={(e) => {
                             if (e.target.value) {
-                                setLimitSellAmount(handlePriceInput(e.target.value))
+                                setLimitSellAmount('$' + toMoneyValue(e.target.value))
                             } else {
                                 setLimitSellAmount('')
                             }
@@ -303,7 +304,7 @@ const SideBarOrderMenuBuy = (props) => {
                         helperText={limitBuyPercentError ? limitBuyPercentHelperText.error : limitBuyPercentHelperText.default}
                         error={limitBuyPercentError}
                         onChange={(e) => {
-                            let semi_cleaned_value = handlePercentInput(e.target.value)
+                            let semi_cleaned_value = toPercentValue(e.target.value, true)
                             setLimitBuyPercent(semi_cleaned_value)
                             calcUpdatLimitPercentLabelTranslation(
                                 semi_cleaned_value,
@@ -324,7 +325,7 @@ const SideBarOrderMenuBuy = (props) => {
                         helperText={limitSellPercentError ? limitSellPercentHelperText.error : limitSellPercentHelperText.default}
                         error={limitSellPercentError}
                         onChange={(e) => {
-                            let semi_cleaned_value = handlePercentInput(e.target.value)
+                            let semi_cleaned_value = toPercentValue(e.target.value, true)
                             setLimitSellPercent(semi_cleaned_value)
                             calcUpdatLimitPercentLabelTranslation(
                                 semi_cleaned_value,
@@ -427,70 +428,38 @@ const SideBarOrderMenuBuy = (props) => {
         let price_loss = ''
         switch (type) {
             case 'amount':
-                amount_loss = handlePriceInput(value)
-                percent_loss = (parseFloat(amount_loss) / parseFloat(handlePriceInput(currentEstimatedPrice)) * 100).toFixed(2)
-                price_loss = (handlePriceInput(currentEstimatedPrice) - amount_loss).toFixed(7)
+                amount_loss = toMoneyValue(value)
+                percent_loss = ((amount_loss / toMoneyValue(currentEstimatedPrice)) * 100).toFixed(2)
+                price_loss = (toMoneyValue(currentEstimatedPrice) - amount_loss).toFixed(8)
                 break
             case 'percent':
-                percent_loss = handlePercentInput(value)
-                amount_loss = ((parseFloat(handlePriceInput(currentEstimatedPrice) * parseFloat(percent_loss)) / 100).toFixed(7)
-                price_loss = (handlePriceInput(currentEstimatedPrice) - amount_loss).toFixed(7)
+                percent_loss = toPercentValue(value, true)
+                amount_loss = ((toMoneyValue(currentEstimatedPrice) * parseFloat(percent_loss)) / 100).toFixed(8)
+                price_loss = (toMoneyValue(currentEstimatedPrice) - amount_loss).toFixed(8)
                 break
             case 'price':
-                price_loss = handlePriceInput(value)
-                percent_loss = Math.abs((parseFloat(price_loss) / parseFloat(handlePriceInput(currentEstimatedPrice)) * 100) - 100).toFixed(2)
-                amount_loss = (handlePriceInput(currentEstimatedPrice) - price_loss).toFixed(7)
+                price_loss = toMoneyValue(value)
+                percent_loss = Math.abs((price_loss / toMoneyValue(currentEstimatedPrice) * 100) - 100).toFixed(8)
+                amount_loss = (toMoneyValue(currentEstimatedPrice) - price_loss).toFixed(8)
                 break
         }
-        setLossPreventAmount('$' + amount_loss)
+        setLossPreventAmount('$' + (isNaN(amount_loss) ? '' : amount_loss))
         setLossPreventPercent(isNaN(percent_loss) ? '' : percent_loss)
-        setLossPreventPrice('$' + price_loss)
-    }
-
-    /**
-     * Limited input sanitation on fields that accept price/amount values.
-     */
-    const handlePriceInput = (str_value) => {
-        return str_value.replace(/[^0-9.]/g, '')
-    }
-
-    /**
-     * Limited input sanitation on fields that accept percentage values.
-     */
-    const handlePercentInput = (str_value) => {
-        return str_value.replace(/[^0-9.\-\+]/g, '')
-    }
-
-    /**
-     * Calculate estimated share quantity.
-     */
-    const calcEstimatedShareQuantity = (price, amount) => {
-        let clean_price = parseFloat(price.replace('$', ''))
-        let clean_amount = parseFloat(amount.replace('$', ''))
-        if (!clean_amount || clean_amount === NaN) clean_amount = 0
-        if (!clean_price) clean_price = 0
-        let result = (clean_amount / clean_price).toFixed(7)
-        if (clean_price === 0 || clean_amount === 0) {
-            return 0.00
-        } else if (result) {
-            return result
-        }
+        setLossPreventPrice('$' + (isNaN(price_loss) ? '' : price_loss))
     }
 
     /**
      * Creates the Limit Percent inputs' labels.
      */
     const calcUpdatLimitPercentLabelTranslation = (percent, labelUpdater, labelStr, amountUpdater, currentPrice) => {
-        let cleaned_percent = percent.replace('+', '')
-        let cleaned_price = currentPrice || currentEstimatedPrice.replace('$', '')
-        let p = parseFloat(cleaned_percent)
-        let x = parseFloat(cleaned_price)
-        let y = (x * p) / 100
-        let target_amount = parseFloat(cleaned_price) + y
+        let cleaned_percent = toPercentValue(percent)
+        let cleaned_price = currentPrice || toMoneyValue(currentEstimatedPrice)
+        let target_diff = (cleaned_price * cleaned_percent) / 100
+        let target_amount = cleaned_price + target_diff
         let decimal_parts = target_amount.toString().split(".")
         if (decimal_parts.length === 2) {
             if (decimal_parts[1].length > 6) {
-                target_amount = parseFloat(target_amount + decimal_parts[1]).toFixed(7)
+                target_amount = parseFloat(target_amount + decimal_parts[1]).toFixed(8)
             }
         }
 
@@ -513,10 +482,10 @@ const SideBarOrderMenuBuy = (props) => {
 
             // Process order inputs and order
             let uuid = currentSelectedRow.uuid
-            let cost_basis = orderAmount.replace('$', '')
-            let purchase_price = currentEstimatedPrice.replace('$', '')
-            let limit_buy = limitBuyAmount.replace('$', '') || 0
-            let limit_sell = limitSellAmount.replace('$', '') || 0
+            let cost_basis = toMoneyValue(orderAmount)
+            let purchase_price = toMoneyValue(currentEstimatedPrice)
+            let limit_buy = toMoneyValue(limitBuyAmount) || 0
+            let limit_sell = toMoneyValue(limitSellAmount) || 0
             let loss_perc = lossPreventPercent || 0
             const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${purchase_price}/${limit_buy}/${limit_sell}/${loss_perc}`)
             let order_result = await order_response.json()
@@ -547,9 +516,9 @@ const SideBarOrderMenuBuy = (props) => {
                 error={orderAmountError}
                 onChange={(e) => {
                     if (e.target.value) {
-                        let cleaned_amount = handlePriceInput(e.target.value)
+                        let cleaned_amount = toMoneyValue(e.target.value)
                         setOrderAmount('$' + cleaned_amount)
-                        setOrderQuantity(calcEstimatedShareQuantity(currentEstimatedPrice, cleaned_amount))
+                        setOrderQuantity(calcQuantity(cleaned_amount, currentEstimatedPrice))
                     } else {
                         setOrderAmount('')
                     }

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
@@ -10,7 +10,7 @@ import TableCell from '@material-ui/core/TableCell'
 import Collapse from '@material-ui/core/Collapse'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
-import FormGroup from "@material-ui/core/FormGroup";
+import {toMoneyString, toPercentString, calcEquity, calcQuantity, calcTotalReturn, calcTotalChange} from '../../libs/conversions'
 
 const TableManagerExpandableRow = (props) => {
     const {
@@ -68,76 +68,6 @@ const TableManagerExpandableRow = (props) => {
         setPurchasePrice('$' + row._meta.purchase_price)
         setTotalChange(toPercentString(calcTotalChange(row._meta.purchase_price, row._meta.price)))
     }, [tableData])
-
-    /**
-     * Convert a money value to a presentable money string.
-     */
-    const toMoneyString = (value) => {
-        if (value >= 0) {
-            return '$' + value.toString()
-        } else {
-            return '-$' + value.toString().replace('-', '')
-        }
-    }
-
-    /**
-     * Convert a percent value to a presentable percent string.
-     */
-    const toPercentString = (value) => {
-        if (value >= 0) {
-            return '+' + (value.toFixed(2).toString()) + '%'
-        } else {
-            return (value.toFixed(2).toString()) + '%'
-        }
-    }
-
-    /**
-     * Calculate percentage of one value into another.
-     */
-    const calcPercent = (x, y) => {
-        let p = parseFloat(x) / parseFloat(y)
-        return (!isNaN(p) && isFinite(p) ? p : 0) * 100
-    }
-
-    /**
-     * Calculate equity. The 'equity' is the total 'cost_basis' +/- the change of
-     * value of a given stock.
-     */
-    const calcEquity = (cost_basis, purchase_price, current_price) => {
-        let percent_change = (calcPercent(current_price, purchase_price) - 100)
-        let amount_change = parseFloat(cost_basis) * (percent_change / 100)
-        return (cost_basis + amount_change)
-    }
-
-    /**
-     * Calculate quantity. The 'quantity' is the number of shares held based on the
-     * current equity and the price of a given stock.
-     */
-    const calcQuantity = (equity_val, current_price) => {
-        let q = equity_val / parseFloat(current_price)
-        return (!isNaN(q) ? q : 0).toFixed(7)
-    }
-
-    /**
-     * Calculate total return. The 'total return' is the difference in equity and the
-     * purchase price.
-     */
-    const calcTotalReturn = (equity_val, cost_basis) => {
-        return (equity_val - parseFloat(cost_basis)).toFixed(2)
-    }
-
-    /**
-     * Calculate the total percent change.
-     */
-    const calcTotalChange = (purchase_price, current_price) => {
-        let percent_change = calcPercent(current_price, purchase_price)
-        if (percent_change === 0) {
-            return 0
-        } else {
-            let percent_diff = percent_change - 100
-            return percent_diff
-        }
-    }
 
     /**
      * Returns a reference to a row in tableData by UUID.
