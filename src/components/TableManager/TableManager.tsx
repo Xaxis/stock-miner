@@ -102,16 +102,8 @@ const TableManager = (props) => {
             }
         },
         {
-            name: "status",
-            label: "Status",
-            options: {
-                filter: true,
-                sort: true
-            }
-        },
-        {
             name: "limit_buy",
-            label: "Buy Point",
+            label: "Limit Buy",
             options: {
                 filter: true,
                 sort: true
@@ -119,7 +111,23 @@ const TableManager = (props) => {
         },
         {
             name: "limit_sell",
-            label: "Sell Point",
+            label: "Limit Sell",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "loss_perc",
+            label: "Maximum Loss",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "status",
+            label: "Status",
             options: {
                 filter: true,
                 sort: true

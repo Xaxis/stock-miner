@@ -10,7 +10,8 @@ const templateObjects = {
         price: '-',
         status: '-',
         limit_buy: 0,
-        limit_sell: 0
+        limit_sell: 0,
+        loss_perc: 0
     }
 }
 
