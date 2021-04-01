@@ -385,7 +385,8 @@ const App = function () {
             MuiCssBaseline: {
                 '@global': {
                     '*': {
-                        'scrollbar-width': 'thin'
+                        'scrollbar-width': 'thin',
+                        'scrollbar-color': `${palette.secondary.main} ${palette.secondary.darkAlt}`
                     },
                     '*::-webkit-scrollbar': {
                         width: '8px'
