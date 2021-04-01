@@ -23,6 +23,16 @@ const App = function () {
             dark: '#121212',
             darkAlt: '#151515'
         },
+        tertiary: {
+            main: '#00695f',
+            light: '#33877f',
+            dark: '#004942'
+        },
+        quaternary: {
+            main: '#00b0ff',
+            light: '#33bfff',
+            dark: '#007bb2'
+        },
         error: {},
         warning: {},
         info: {},
@@ -72,6 +82,16 @@ const App = function () {
                 light: palette.secondary.light,
                 dark: palette.secondary.dark,
                 darkAlt: palette.secondary.darkAlt
+            },
+            tertiary: {
+                main: palette.tertiary.main,
+                light: palette.tertiary.light,
+                dark: palette.tertiary.dark,
+            },
+            quaternary: {
+                main: palette.quaternary.main,
+                light: palette.quaternary.light,
+                dark: palette.quaternary.dark,
             },
             // error: {},
             // warning: {},

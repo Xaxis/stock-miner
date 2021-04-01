@@ -3,13 +3,16 @@ import {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import * as ActionTypes from '../../store/actions'
-import fetch from 'cross-fetch'
 import TableRow from '@material-ui/core/TableRow'
 import TableCell from '@material-ui/core/TableCell'
 import Collapse from '@material-ui/core/Collapse'
-import Grid from '@material-ui/core/Grid'
+import Accordion from '@material-ui/core/Accordion'
+import AccordionSummary from '@material-ui/core/AccordionSummary'
+import AccordionDetails from '@material-ui/core/AccordionDetails'
 import Typography from '@material-ui/core/Typography'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import TableManagerOrderDetail from './TableManagerOrderDetail'
+import TableManagerOrderHistory from './TableManagerOrderHistory'
 import {getRowDataByUUID} from '../../libs/state_modifiers'
 import {
     toMoneyString,
@@ -38,135 +41,57 @@ const TableManagerExpandableRow = (props) => {
                 backgroundColor: `${theme.palette.secondary.dark} !important`
             }
         },
-        grid_box: {
-            color: theme.palette.text.secondary,
-            '& .MuiGrid-item:first-child': {},
-            '& .MuiGrid-item:last-child': {
-                textAlign: 'right',
-                overflow: 'hidden'
-            },
-            '& + *': {
-                marginTop: '16px',
-                paddingTop: '16px',
-                borderTop: `1px solid ${theme.palette.secondary.main}`
-            },
-            '&:not(:first-child)': {
-                marginTop: '16px'
-            }
+        table_cell: {
+            padding: '0'
         }
     }))()
 
-    const [equity, setEquity] = useState(0)
-    const [cost, setCost] = useState(0)
-    const [totalReturn, setTotalReturn] = useState(0)
-    const [quantity, setQuantity] = useState(0)
-    const [purchasePrice, setPurchasePrice] = useState(0)
-    const [totalChange, setTotalChange] = useState(0)
+    /**
+     * Accordion panels
+     */
+    const [expandedPanel1, setExpandedPanel1] = useState(false)
+    const [expandedPanel2, setExpandedPanel2] = useState(true)
 
     /**
-     * Update data whenever tableData is modified.
+     * Toggle handler sets state on accordion panels
      */
-    useEffect(() => {
-        let row = getRowDataByUUID(rowData[0], tableData)
-        let tmp_equity = calcEquity(row._meta.cost_basis, row._meta.purchase_price, row._meta.price).toFixed(2)
-        setEquity(toMoneyString(tmp_equity))
-        setCost('$' + parseFloat(row._meta.cost_basis).toFixed(2))
-        setTotalReturn(toMoneyString(calcTotalReturn(tmp_equity, row._meta.cost_basis)))
-        setQuantity(calcQuantity(tmp_equity, row._meta.price))
-        setPurchasePrice('$' + row._meta.purchase_price)
-        setTotalChange(toPercentString(calcTotalChange(row._meta.purchase_price, row._meta.price)))
-    }, [tableData])
+    const handleAccordionPanelExpand1 = (panel) => (event) => {
+        setExpandedPanel1(expandedPanel1 ? false : true)
+    }
+    const handleAccordionPanelExpand2 = (panel) => (event) => {
+        setExpandedPanel2(expandedPanel2 ? false : true)
+    }
 
     return (
         <TableRow className={classes.table_row}>
-            <TableCell colSpan={42}>
+            <TableCell colSpan={42} className={classes.table_cell}>
                 <Collapse in={true}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={6}>
 
-                            <Grid container spacing={0} className={classes.grid_box}>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        Equity
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        {equity}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
+                    <Accordion
+                        square
+                        expanded={expandedPanel1}
+                        onChange={handleAccordionPanelExpand1()}
+                    >
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                            <Typography>Order Details</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TableManagerOrderDetail rowData={rowData} rowMeta={rowMeta}/>
+                        </AccordionDetails>
+                    </Accordion>
 
-                            <Grid container spacing={0} className={classes.grid_box}>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        Cost
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        {cost}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={0} className={classes.grid_box}>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        Total Return
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        {totalReturn}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-
-                        </Grid>
-                        <Grid item xs={6}>
-
-                            <Grid container spacing={0} className={classes.grid_box}>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        Purchase Price
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        {purchasePrice}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={0} className={classes.grid_box}>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        Quantity
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        {quantity}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={0} className={classes.grid_box}>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        Total Change
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography>
-                                        {totalChange}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-
-                        </Grid>
-                    </Grid>
+                    <Accordion
+                        square
+                        expanded={expandedPanel2}
+                        onChange={handleAccordionPanelExpand2()}
+                    >
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                            <Typography>Order History</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TableManagerOrderHistory uuid={rowData[0]}/>
+                        </AccordionDetails>
+                    </Accordion>
                 </Collapse>
             </TableCell>
         </TableRow>

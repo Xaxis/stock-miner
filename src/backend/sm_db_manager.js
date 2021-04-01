@@ -649,6 +649,70 @@ class DBManager {
         })
     }
 
+    /**
+     * Add an entry to the Stock_Orders_History table.
+     */
+    add_stock_orders_history_entry = (options) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let uuid, event, info, date = options.date || Date.now();
+            ({uuid, event, info} = options)
+            let sql = `INSERT INTO Stock_Orders_History (uuid, event, info, date) `
+            sql += "VALUES (?, ?, ?, ?) "
+            self.DB.run(sql, [uuid, event, info, date], function (err) {
+                if (err) {
+                    console.log("SMDB: Stock_Orders_History: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: Stock_Orders_History: Last ID: ` + this.lastID)
+                    console.log(`SMDB: Stock_Orders_History: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
+     * Deletes all rows in Stock_Orders_History that correspond to a given uuid.
+     */
+    delete_stock_orders_history_by_uuid = (uuid) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `DELETE FROM Stock_Orders_History WHERE uuid = ?`
+            self.DB.run(sql, [uuid], function (err) {
+                if (err) {
+                    console.log("SMDB: Stock_Orders_History: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: Stock_Orders_History: Last ID: ` + this.lastID)
+                    console.log(`SMDB: Stock_Orders_History: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
+     * Returns a list of rows from Stock_Orders_History that correspond to a given uuid.
+     */
+    get_stock_orders_history_by_uuid = (uuid) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT * FROM Stock_Orders_History WHERE uuid = ? ORDER BY id ASC`
+            self.DB.all(sql, [uuid], function (err, rows) {
+                if (err) {
+                    console.log("SMDB: Stock_Orders_History: " + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row)
+                })
+                resolve(result)
+            })
+        })
+    }
+
 }
 
 module.exports = {

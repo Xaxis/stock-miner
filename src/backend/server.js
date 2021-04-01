@@ -189,6 +189,13 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
                     .then((rows) => {
                         rows.forEach((row) => {
                             DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: true})
+
+                            // Add order history entries
+                            DBM.add_stock_orders_history_entry({
+                                uuid: row.uuid,
+                                event: 'PAUSED',
+                                info: `Order PAUSED and waiting to run.`
+                            })
                         })
                         DT.build_all_active_tasks_from_db()
                     })
@@ -200,6 +207,13 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
                     .then((rows) => {
                         rows.forEach((row) => {
                             DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: false})
+
+                            // Add order history entries
+                            DBM.add_stock_orders_history_entry({
+                                uuid: row.uuid,
+                                event: 'RUNNING',
+                                info: `Order RUNNING and waiting to execute.`
+                            })
                         })
                         DT.build_all_active_tasks_from_db()
                     })
@@ -245,6 +259,16 @@ app.get('/app/get/orders/uuid/:profile/:uuid', (req, res) => {
         })
 })
 
+app.get('/app/get/orders/history/:uuid', (req, res) => {
+    DBM.get_stock_orders_history_by_uuid(req.params.uuid)
+        .then((rows) => {
+            res.send(rows)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
 app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req, res) => {
     let profile, type, uuid, market, symbol, name;
     ({profile, type, uuid, market, symbol, name} = req.params)
@@ -260,6 +284,8 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
         name: name,
         order_date: Date.now()
     }).then(() => {
+
+        // Send registered order row back to client
         DBM.get_stock_orders_by_profile_at_uuid(profile, uuid)
             .then((rows) => {
                 res.send(rows)
@@ -273,6 +299,13 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
 
         // Re-build all profile tasks
         DT.build_all_active_tasks_from_db()
+
+        // Add a History entry
+        DBM.add_stock_orders_history_entry({
+            uuid: uuid,
+            event: 'REGISTERED',
+            info: `Order was REGISTERED and waiting for action.`
+        })
     })
 })
 
@@ -282,7 +315,12 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
     DBM.delete_stock_orders_by_uuid(simulated, req.params.uuid)
         .then(() => {
             res.send({success: true})
+
+            // Re-build all profile tasks
             DT.build_all_active_tasks_from_db()
+
+            // Delete/deregister stock order history associated with UUID
+            DBM.delete_stock_orders_history_by_uuid(req.params.uuid)
         })
         .catch(() => {
             res.send({success: false})
@@ -310,10 +348,49 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                 paused: paused
             }
 
+            // Add order history entries
+            if (cost_basis) {
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'BUY',
+                    info: `Order BUY placed with $${cost_basis} cost basis and is waiting to run.`
+                })
+            }
+            if (limit_buy || limit_sell) {
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'LIMIT',
+                    info: `Order augmented with LIMIT values: (BUY: $${limit_buy}/SELL: $${limit_sell}).`
+                })
+            }
+            if (loss_perc) {
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'LOSS_PREVENT',
+                    info: `Order augmented with LOSS_PREVENT value: (${loss_perc}%).`
+                })
+            }
+            if (paused === 'true') {
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'PAUSED',
+                    info: `Order PAUSED and waiting to run.`
+                })
+            }
+            if (paused === 'false') {
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'RUNNING',
+                    info: `Order RUNNING and waiting to execute.`
+                })
+            }
+
             // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
             DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
                 .then(() => {
                     res.send({success: true})
+
+                    // Re-build all profile tasks
                     DT.build_all_active_tasks_from_db()
                 })
         })
