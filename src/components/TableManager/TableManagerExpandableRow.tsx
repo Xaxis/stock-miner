@@ -13,15 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import TableManagerOrderDetail from './TableManagerOrderDetail'
 import TableManagerOrderHistory from './TableManagerOrderHistory'
-import {getRowDataByUUID} from '../../libs/state_modifiers'
-import {
-    toMoneyString,
-    toPercentString,
-    calcEquity,
-    calcQuantity,
-    calcTotalReturn,
-    calcTotalChange
-} from '../../libs/value_conversions'
+import TableManagerOrderBasic from "./TableManagerOrderBasic";
 
 const TableManagerExpandableRow = (props) => {
     const {
@@ -50,7 +42,8 @@ const TableManagerExpandableRow = (props) => {
      * Accordion panels
      */
     const [expandedPanel1, setExpandedPanel1] = useState(false)
-    const [expandedPanel2, setExpandedPanel2] = useState(true)
+    const [expandedPanel2, setExpandedPanel2] = useState(false)
+    const [expandedPanel3, setExpandedPanel3] = useState(true)
 
     /**
      * Toggle handler sets state on accordion panels
@@ -61,22 +54,24 @@ const TableManagerExpandableRow = (props) => {
     const handleAccordionPanelExpand2 = (panel) => (event) => {
         setExpandedPanel2(expandedPanel2 ? false : true)
     }
+    const handleAccordionPanelExpand3 = (panel) => (event) => {
+        setExpandedPanel3(expandedPanel3 ? false : true)
+    }
 
     return (
         <TableRow className={classes.table_row}>
             <TableCell colSpan={42} className={classes.table_cell}>
                 <Collapse in={true}>
-
                     <Accordion
                         square
                         expanded={expandedPanel1}
                         onChange={handleAccordionPanelExpand1()}
                     >
                         <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                            <Typography>Order Details</Typography>
+                            <Typography>Order Overview</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TableManagerOrderDetail rowData={rowData} rowMeta={rowMeta}/>
+                            <TableManagerOrderBasic rowData={rowData}/>
                         </AccordionDetails>
                     </Accordion>
 
@@ -84,6 +79,19 @@ const TableManagerExpandableRow = (props) => {
                         square
                         expanded={expandedPanel2}
                         onChange={handleAccordionPanelExpand2()}
+                    >
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                            <Typography>Order Details</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TableManagerOrderDetail rowData={rowData}/>
+                        </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion
+                        square
+                        expanded={expandedPanel3}
+                        onChange={handleAccordionPanelExpand3()}
                     >
                         <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                             <Typography>Order History</Typography>

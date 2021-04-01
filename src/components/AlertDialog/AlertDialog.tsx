@@ -18,7 +18,7 @@ const AlertDialog = (props) => {
         disagree,
         children,
         ...other
-    } = props;
+    } = props
 
     return (
         <>
@@ -47,7 +47,7 @@ const AlertDialog = (props) => {
                 </DialogActions>
             </Dialog>
         </>
-    );
+    )
 }
 
 AlertDialog.propTypes = {

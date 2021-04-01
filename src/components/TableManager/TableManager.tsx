@@ -140,9 +140,9 @@ const TableManager = (props) => {
                 filter: false,
                 sort: false,
                 display: true,
-                customBodyRenderLite: (dataIndex, rowIndex) => {
+                customBodyRender: (value, tableMeta) => {
                     return (
-                        <TableManagerActionMenu dataIndex={rowIndex} rowIndex={rowIndex}/>
+                        <TableManagerActionMenu rowData={tableMeta.rowData}/>
                     )
                 }
             }

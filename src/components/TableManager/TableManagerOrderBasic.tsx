@@ -15,7 +15,7 @@ import {
     calcTotalChange
 } from '../../libs/value_conversions'
 
-const TableManagerOrderDetail = (props) => {
+const TableManagerOrderBasic = (props) => {
     const {
         rowData,
         tableData,
@@ -45,41 +45,40 @@ const TableManagerOrderDetail = (props) => {
         }
     }))()
 
-    const [equity, setEquity] = useState(0)
-    const [cost, setCost] = useState(0)
-    const [totalReturn, setTotalReturn] = useState(0)
-    const [quantity, setQuantity] = useState(0)
-    const [purchasePrice, setPurchasePrice] = useState(0)
-    const [totalChange, setTotalChange] = useState(0)
+    const [symbol, setSymbol] = useState(0)
+    const [name, setName] = useState(0)
+    const [status, setStatus] = useState(0)
+    const [limitBuy, setLimitBuy] = useState(0)
+    const [limitSell, setLimitSell] = useState(0)
+    const [maxLoss, setMaxLoss] = useState(0)
 
     /**
      * Update data whenever tableData is modified.
      */
     useEffect(() => {
         let row = getRowDataByUUID(rowData[0], tableData)
-        let tmp_equity = calcEquity(row._meta.cost_basis, row._meta.purchase_price, row._meta.price).toFixed(2)
-        setEquity(toMoneyString(tmp_equity))
-        setCost('$' + parseFloat(row._meta.cost_basis).toFixed(2))
-        setTotalReturn(toMoneyString(calcTotalReturn(tmp_equity, row._meta.cost_basis)))
-        setQuantity(calcQuantity(tmp_equity, row._meta.price))
-        setPurchasePrice('$' + row._meta.purchase_price)
-        setTotalChange(toPercentString(calcTotalChange(row._meta.purchase_price, row._meta.price)))
+        setSymbol(row.symbol)
+        setName(row.name)
+        setStatus(row.status)
+        setLimitBuy(row.limit_buy)
+        setLimitSell(row.limit_sell)
+        setMaxLoss(row.loss_perc)
     }, [tableData])
 
     return (
         <>
             <Grid container spacing={3}>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
 
                     <Grid container spacing={0} className={classes.grid_box}>
                         <Grid item xs={6}>
                             <Typography>
-                                Equity
+                                Symbol
                             </Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography>
-                                {equity}
+                                {symbol}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -87,41 +86,28 @@ const TableManagerOrderDetail = (props) => {
                     <Grid container spacing={0} className={classes.grid_box}>
                         <Grid item xs={6}>
                             <Typography>
-                                Cost
+                                Limit Buy
                             </Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography>
-                                {cost}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-
-                    <Grid container spacing={0} className={classes.grid_box}>
-                        <Grid item xs={6}>
-                            <Typography>
-                                Total Return
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography>
-                                {totalReturn}
+                                {limitBuy}
                             </Typography>
                         </Grid>
                     </Grid>
 
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
 
                     <Grid container spacing={0} className={classes.grid_box}>
                         <Grid item xs={6}>
                             <Typography>
-                                Purchase Price
+                                Name
                             </Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography>
-                                {purchasePrice}
+                                {name}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -129,12 +115,28 @@ const TableManagerOrderDetail = (props) => {
                     <Grid container spacing={0} className={classes.grid_box}>
                         <Grid item xs={6}>
                             <Typography>
-                                Quantity
+                                Limit Sell
                             </Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography>
-                                {quantity}
+                                {limitSell}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+                <Grid item xs={4}>
+
+                    <Grid container spacing={0} className={classes.grid_box}>
+                        <Grid item xs={6}>
+                            <Typography>
+                                Status
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography>
+                                {status}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -142,12 +144,12 @@ const TableManagerOrderDetail = (props) => {
                     <Grid container spacing={0} className={classes.grid_box}>
                         <Grid item xs={6}>
                             <Typography>
-                                Total Change
+                                Maximum Loss
                             </Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography>
-                                {totalChange}
+                                {maxLoss}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -158,7 +160,7 @@ const TableManagerOrderDetail = (props) => {
     )
 }
 
-TableManagerOrderDetail.propTypes = {
+TableManagerOrderBasic.propTypes = {
     rowData: PropTypes.any.isRequired
 }
 
@@ -172,4 +174,4 @@ const mapDispatchToProps = (dispatch) => {
     return {}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TableManagerOrderDetail)
+export default connect(mapStateToProps, mapDispatchToProps)(TableManagerOrderBasic)

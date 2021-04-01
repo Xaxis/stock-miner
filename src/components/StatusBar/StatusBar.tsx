@@ -12,7 +12,7 @@ export default function StatusBar() {
             backgroundColor: theme.palette.secondary.dark,
             borderTop: `1px solid ${theme.palette.secondary.main}`,
             color: theme.palette.text.secondary,
-            zIndex: '9999'
+            zIndex: '999'
         }
     }))()
 
