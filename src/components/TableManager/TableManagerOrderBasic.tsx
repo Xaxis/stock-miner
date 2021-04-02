@@ -6,14 +6,6 @@ import {connect} from 'react-redux'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import {getRowDataByUUID} from '../../libs/state_modifiers'
-import {
-    toMoneyString,
-    toPercentString,
-    calcEquity,
-    calcQuantity,
-    calcTotalReturn,
-    calcTotalChange
-} from '../../libs/value_conversions'
 
 const TableManagerOrderBasic = (props) => {
     const {
@@ -28,11 +20,12 @@ const TableManagerOrderBasic = (props) => {
     const classes = makeStyles(theme => ({
         grid_box: {
             color: theme.palette.text.secondary,
-            '& .MuiGrid-item:first-child': {},
+            '& .MuiGrid-item:first-child': {
+                color: theme.palette.text.disabled
+            },
             '& .MuiGrid-item:last-child': {
                 textAlign: 'right',
-                overflow: 'hidden',
-                color: theme.palette.text.disabled
+                overflow: 'hidden'
             },
             '& + *': {
                 marginTop: '16px',

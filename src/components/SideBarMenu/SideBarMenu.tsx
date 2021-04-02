@@ -6,6 +6,8 @@ import Tab from '@material-ui/core/Tab'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
 import PropTypes from 'prop-types'
+import Popover from '@material-ui/core/Popover'
+import Typography from '@material-ui/core/Typography'
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'
 import TuneIcon from '@material-ui/icons/Tune'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
@@ -20,9 +22,11 @@ import SideBarSettingsMenu from '../SideBarSettingsMenu/SideBarSettingsMenu'
 import SideBarHistoryMenu from '../SideBarHistoryMenu/SideBarHistoryMenu'
 import {makeStyles} from '@material-ui/core/styles'
 
+/**
+ * Simple TabPabel component.
+ */
 function TabPanel(props) {
     const {children, value, index, ...other} = props
-
     return (
         <div
             role="tabpanel"
@@ -37,20 +41,17 @@ function TabPanel(props) {
                 </Box>
             )}
         </div>
-    );
+    )
 }
 
 TabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
-};
+}
+
 
 export default function SideBarMenu() {
-    const [value, setValue] = useState(0)
-    const handleChange = (event, newValue) => {
-        setValue(newValue)
-    }
 
     /**
      * Component style overrides.
@@ -76,8 +77,43 @@ export default function SideBarMenu() {
         },
         tabs: {
             backgroundColor: `${theme.palette.secondary.dark} !important`
+        },
+        popover: {
+            pointerEvents: 'none',
+            marginLeft: '8px',
+            '& .MuiPaper-root': {
+                backgroundColor: `${theme.palette.secondary.main} !important`,
+                color: theme.palette.text.secondary,
+                padding: '4px',
+                borderRadius: '2px !important',
+            }
         }
     }))()
+
+    /**
+     * Component states.
+     */
+    const [value, setValue] = useState(0)
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [popoverString, setPopoverString] = useState('')
+
+    /**
+     * Handle switching tabs.
+     */
+    const handleChange = (event, newValue) => {
+        setValue(newValue)
+    }
+
+    /**
+     * Handle show/hide of popover.
+     */
+    const handlePopoverOpen = (e, string) => {
+        setPopoverString(string)
+        setAnchorEl(e.currentTarget)
+    }
+    const handlePopoverClose = (e) => {
+        setAnchorEl(null)
+    }
 
     return (
         <Grid
@@ -94,12 +130,54 @@ export default function SideBarMenu() {
                     value={value}
                     onChange={handleChange}
                 >
-                    <Tab label={<AttachMoneyIcon/>} aria-label="Order"></Tab>
-                    <Tab icon={<TuneIcon/>} aria-label="Controls"></Tab>
-                    <Tab icon={<RecentActorsIcon/>} aria-label="Profiles"></Tab>
-                    <Tab icon={<ExtensionIcon/>} aria-label="Extensions"></Tab>
-                    <Tab icon={<SettingsIcon/>} aria-label="Settings"></Tab>
-                    <Tab icon={<HistoryIcon/>} aria-label="History"></Tab>
+                    <Tab
+                        label={<AttachMoneyIcon/>}
+                        aria-label="Order"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "Buy/Sell")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
+                    <Tab
+                        icon={<TuneIcon/>}
+                        aria-label="Controls"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "Controls")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
+                    <Tab
+                        icon={<RecentActorsIcon/>}
+                        aria-label="Profiles"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "Profiles")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
+                    <Tab
+                        icon={<ExtensionIcon/>}
+                        aria-label="Extensions"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "Extensions")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
+                    <Tab
+                        icon={<SettingsIcon/>}
+                        aria-label="Settings"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "Settings")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
+                    <Tab
+                        icon={<HistoryIcon/>}
+                        aria-label="History"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "History")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
                 </Tabs>
             </Grid>
             <Grid item xs className={classes.panels}>
@@ -121,6 +199,24 @@ export default function SideBarMenu() {
                 <TabPanel value={value} index={5}>
                     <SideBarHistoryMenu/>
                 </TabPanel>
+
+                <Popover
+                    className={classes.popover}
+                    open={Boolean(anchorEl)}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'center',
+                        horizontal: 'right'
+                    }}
+                    transformOrigin={{
+                        vertical: 'center',
+                        horizontal: 'left'
+                    }}
+                    onClose={handlePopoverClose}
+                    disableRestoreFocus
+                >
+                    <Typography>{popoverString}</Typography>
+                </Popover>
             </Grid>
 
         </Grid>

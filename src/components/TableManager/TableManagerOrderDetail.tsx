@@ -28,11 +28,12 @@ const TableManagerOrderDetail = (props) => {
     const classes = makeStyles(theme => ({
         grid_box: {
             color: theme.palette.text.secondary,
-            '& .MuiGrid-item:first-child': {},
+            '& .MuiGrid-item:first-child': {
+                color: theme.palette.text.disabled
+            },
             '& .MuiGrid-item:last-child': {
                 textAlign: 'right',
-                overflow: 'hidden',
-                color: theme.palette.text.disabled
+                overflow: 'hidden'
             },
             '& + *': {
                 marginTop: '16px',
