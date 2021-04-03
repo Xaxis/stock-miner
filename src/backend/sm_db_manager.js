@@ -290,6 +290,9 @@ class DBManager {
                     // Update profile field in all matching rows in Stock_Orders & Stock_Simulations
                     self.update_stock_orders_by_profile_with_multi_field_values(old_name, true, {profile: new_name})
                     self.update_stock_orders_by_profile_with_multi_field_values(old_name, false, {profile: new_name})
+
+                    // Update Profiles_History table renaming history entries
+                    self.update_profiles_history_by_profile_with_multi_field_values(old_name, {profile: new_name})
                     resolve({success: true})
                 }
             })
@@ -510,7 +513,7 @@ class DBManager {
         return new Promise(function (resolve, reject) {
             self.DB.run(sql, function (err) {
                 if (err) {
-                    console.log("SMDB: " + err)
+                    console.log(`SMDB: ${table}` + err)
                     reject({success: false})
                 } else {
                     console.log(`SMDB: ${table}: Last ID: ` + this.lastID)
@@ -702,6 +705,103 @@ class DBManager {
             self.DB.all(sql, [uuid], function (err, rows) {
                 if (err) {
                     console.log("SMDB: Stock_Orders_History: " + err)
+                    reject([])
+                }
+                let result = []
+                rows.forEach((row) => {
+                    result.push(row)
+                })
+                resolve(result)
+            })
+        })
+    }
+
+    /**
+     * Add an entry to the Profiles_History table.
+     */
+    add_profiles_history_entry = (options) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let profile, event, info, date = options.date || Date.now();
+            ({profile, event, info} = options)
+            let sql = `INSERT INTO Profiles_History (profile, event, info, date) `
+            sql += "VALUES (?, ?, ?, ?) "
+            self.DB.run(sql, [profile, event, info, date], function (err) {
+                if (err) {
+                    console.log("SMDB: Profiles_History: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: Profiles_History: Last ID: ` + this.lastID)
+                    console.log(`SMDB: Profiles_History: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
+     * Deletes all rows in Profiles_History that correspond to a given profile.
+     */
+    delete_profiles_history_by_profile = (profile) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `DELETE FROM Profiles_History WHERE profile = ?`
+            self.DB.run(sql, [profile], function (err) {
+                if (err) {
+                    console.log("SMDB: Profiles_History: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: Profiles_History: Last ID: ` + this.lastID)
+                    console.log(`SMDB: Profiles_History: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
+     * Returns a promise after updating Profiles_History table rows associated with
+     * a given profile with field/values object.
+     */
+    update_profiles_history_by_profile_with_multi_field_values = (profile, field_values) => {
+        const self = this
+        let sql = `UPDATE Profiles_History SET `
+        let end_idx = 0
+        let fv_length = Object.keys(field_values).length
+        for (const [field, value] of Object.entries(field_values)) {
+            sql += `${field} = "${value}"`
+            end_idx += 1
+            if (end_idx < fv_length) {
+                sql += ", "
+            } else {
+                sql += " "
+            }
+        }
+        sql += `WHERE profile = "${profile}"`
+        return new Promise(function (resolve, reject) {
+            self.DB.run(sql, function (err) {
+                if (err) {
+                    console.log("SMDB: Profiles_History: " + err)
+                    reject({success: false})
+                } else {
+                    console.log(`SMDB: Profiles_History: Last ID: ` + this.lastID)
+                    console.log(`SMDB: Profiles_History: # of Row Changes: ` + this.changes)
+                    resolve({success: true})
+                }
+            })
+        })
+    }
+
+    /**
+     * Returns a list of rows from Profiles_History that correspond to a given profile.
+     */
+    get_profiles_history_by_profile = (profile) => {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let sql = `SELECT * FROM Profiles_History WHERE profile = ? ORDER BY id DESC`
+            self.DB.all(sql, [profile], function (err, rows) {
+                if (err) {
+                    console.log("SMDB: Profiles_History: " + err)
                     reject([])
                 }
                 let result = []

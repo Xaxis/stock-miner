@@ -90,6 +90,11 @@ app.get('/app/set/taskfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({task_frequency: req.params.ms})
         .then(() => {
             DT.reset_task_interval(req.params.ms)
+            DBM.add_profiles_history_entry({
+                profile: DT.get_active_stream_profile(),
+                event: 'TASK_FREQUENCY_CHANGED',
+                info: `Server task frequency changed to: ${req.params.ms}ms`
+            })
             res.send({success: true})
         })
         .catch(() => {
@@ -101,6 +106,11 @@ app.get('/app/set/pollingfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
         .then(() => {
             WSS.reset_task_interval(req.params.ms)
+            DBM.add_profiles_history_entry({
+                profile: DT.get_active_stream_profile(),
+                event: 'POLLING_FREQUENCY_CHANGED',
+                info: `Client polling frequency changed to: ${req.params.ms}ms`
+            })
             res.send({success: true})
         })
         .catch(() => {
@@ -136,9 +146,32 @@ app.get('/app/get/profiles/active', (req, res) => {
         })
 })
 
+app.get('/app/get/profiles/history/:profile', (req, res) => {
+    DBM.get_profiles_history_by_profile(req.params.profile)
+        .then((rows) => {
+            res.send(rows)
+        })
+        .catch(() => {
+            res.send([])
+        })
+})
+
 app.get('/app/add/profiles/:profile', (req, res) => {
-    DBM.add_profile_entry(req.params.profile)
+    let profile = req.params.profile
+    DBM.add_profile_entry(profile)
         .then(() => {
+            if (profile !== 'noop') {
+                DBM.add_profiles_history_entry({
+                    profile: profile,
+                    event: 'PROFILE_CREATED',
+                    info: `Created new profile: ${profile}`
+                })
+                DBM.add_profiles_history_entry({
+                    profile: profile,
+                    event: 'PROFILE_SET_PAUSED',
+                    info: `Profile '${profile}' has been paused.`
+                })
+            }
             res.send({success: true})
         })
         .catch(() => {
@@ -161,6 +194,7 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
     DBM.delete_profile_entry(req.params.profile)
         .then(() => {
             DBM.update_config_multi_field_values({active_profile: 'noop'})
+            DBM.delete_profiles_history_by_profile(req.params.profile)
             res.send({success: true})
         })
         .catch(() => {
@@ -171,6 +205,11 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
 app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
     DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
         .then(() => {
+            DBM.add_profiles_history_entry({
+                profile: DT.get_active_stream_profile(),
+                event: 'PROFILE_RENAMED',
+                info: `Profile '${req.params.oldprofile}' renamed to '${req.params.newprofile}.`
+            })
             res.send({success: true})
         })
         .catch(() => {
@@ -179,13 +218,14 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
 })
 
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
-    DBM.set_profile_status(req.params.profile, req.params.status)
+    let profile = req.params.profile
+    DBM.set_profile_status(profile, req.params.status)
         .then(() => {
             let profile_paused = req.params.status === 'paused'
 
             // When a profile is set to paused, set all 'Running' order rows paused state to true
             if (profile_paused) {
-                DBM.get_all_stock_orders_where_multi_field_values({profile: req.params.profile, status: 'Running'})
+                DBM.get_all_stock_orders_where_multi_field_values({profile: profile, status: 'Running'})
                     .then((rows) => {
                         rows.forEach((row) => {
                             DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: true})
@@ -199,11 +239,20 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
                         })
                         DT.build_all_active_tasks_from_db()
                     })
+
+                // Add profiles history entry (profile paused)
+                if (profile !== 'noop') {
+                    DBM.add_profiles_history_entry({
+                        profile: DT.get_active_stream_profile(),
+                        event: 'PROFILE_SET_PAUSED',
+                        info: `Profile '${profile}' has been paused.`
+                    })
+                }
             }
 
             // Otherwise update orders to un-paused ('Running') state.
             else {
-                DBM.get_all_stock_orders_where_multi_field_values({profile: req.params.profile, status: 'Running'})
+                DBM.get_all_stock_orders_where_multi_field_values({profile: profile, status: 'Running'})
                     .then((rows) => {
                         rows.forEach((row) => {
                             DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: false})
@@ -217,6 +266,15 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
                         })
                         DT.build_all_active_tasks_from_db()
                     })
+
+                // Add profiles history entry (profile active)
+                if (profile !== 'noop') {
+                    DBM.add_profiles_history_entry({
+                        profile: DT.get_active_stream_profile(),
+                        event: 'PROFILE_SET_ACTIVE',
+                        info: `Profile '${profile}' set to active.`
+                    })
+                }
             }
             res.send({success: true})
         })

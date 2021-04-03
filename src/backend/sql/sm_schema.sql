@@ -1,7 +1,20 @@
+CREATE TABLE IF NOT EXISTS `Config` (
+    `id`                INTEGER NOT NULL PRIMARY KEY,
+    `active_profile`    TEXT DEFAULT 'noop',
+    `task_frequency`    TEXT DEFAULT '10000',
+    `polling_frequency` TEXT DEFAULT '3000'
+);
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
     `profile`       TEXT NOT NULL UNIQUE,
     `status`        TEXT DEFAULT 'paused'
+);
+CREATE TABLE IF NOT EXISTS `Profiles_History` (
+    `id`                INTEGER NOT NULL PRIMARY KEY,
+    `profile`           TEXT NOT NULL,
+    `event`             TEXT NOT NULL,
+    `info`              TEXT NOT NULL,
+    `date`              DATE NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `id`                INTEGER NOT NULL PRIMARY KEY,
@@ -49,10 +62,4 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders_History` (
     `event`             TEXT NOT NULL,
     `info`              TEXT NOT NULL,
     `date`              DATE NOT NULL
-);
-CREATE TABLE IF NOT EXISTS `Config` (
-    `id`                INTEGER NOT NULL PRIMARY KEY,
-    `active_profile`    TEXT DEFAULT 'noop',
-    `task_frequency`    TEXT DEFAULT '10000',
-    `polling_frequency` TEXT DEFAULT '3000'
 );

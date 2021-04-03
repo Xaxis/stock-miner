@@ -21,7 +21,6 @@ import ChangeIcon from '@material-ui/icons/ChangeHistory'
 import SecureIcon from '@material-ui/icons/Lock'
 import PausedIcon from '@material-ui/icons/Pause'
 import RunningIcon from '@material-ui/icons/DirectionsRun'
-import {getRowDataByUUID} from '../../libs/state_modifiers'
 
 const TableManagerOrderHistory = (props) => {
     const {
@@ -102,7 +101,6 @@ const TableManagerOrderHistory = (props) => {
      * Update data whenever tableData is modified.
      */
     useEffect(() => {
-        // let row = getRowDataByUUID(uuid, tableData)
         renderTimeline(uuid)
     }, [tableData])
 
