@@ -56,9 +56,11 @@ const TableManagerActionMenu = (props) => {
      */
     useEffect(() => {
         let row = getRowDataByUUID(rowData[0], tableData)
-        setSymbol(row.symbol)
-        setStockName(row.name)
-        setStockPrice('$' + row.price)
+        if (row) {
+            setSymbol(row.symbol)
+            setStockName(row.name)
+            setStockPrice('$' + row.price)
+        }
     }, [tableData])
 
     /**
