@@ -8,23 +8,15 @@ import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import fetch from 'cross-fetch'
-import Grid from '@material-ui/core/Grid'
 import Timeline from '@material-ui/lab/Timeline'
 import TimelineItem from '@material-ui/lab/TimelineItem'
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator'
 import TimelineConnector from '@material-ui/lab/TimelineConnector'
-import TimelineContent from '@material-ui/lab/TimelineContent'
 import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent'
 import TimelineDot from '@material-ui/lab/TimelineDot'
 import Paper from '@material-ui/core/Paper'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import RegisterIcon from "@material-ui/icons/Add";
-import BuyIcon from "@material-ui/icons/LocalAtm";
-import ChangeIcon from "@material-ui/icons/ChangeHistory";
-import SecureIcon from "@material-ui/icons/Lock";
-import PausedIcon from "@material-ui/icons/Pause";
-import RunningIcon from "@material-ui/icons/DirectionsRun";
-import DotIcon from "@material-ui/icons/FiberManualRecordOutlined";
+import DotIcon from '@material-ui/icons/FiberManualRecordOutlined'
 
 export default function SideBarHistoryMenu(props) {
     const {
