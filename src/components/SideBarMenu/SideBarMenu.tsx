@@ -100,8 +100,9 @@ export default function SideBarMenu() {
     /**
      * Handle switching tabs.
      */
-    const handleChange = (event, newValue) => {
+    const handleChange = (e, newValue) => {
         setValue(newValue)
+        handlePopoverClose()
     }
 
     /**
@@ -111,7 +112,7 @@ export default function SideBarMenu() {
         setPopoverString(string)
         setAnchorEl(e.currentTarget)
     }
-    const handlePopoverClose = (e) => {
+    const handlePopoverClose = () => {
         setAnchorEl(null)
     }
 
