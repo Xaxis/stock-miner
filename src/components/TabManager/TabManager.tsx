@@ -78,10 +78,9 @@ export default function TabManager() {
                         textColor="primary"
                         variant="scrollable"
                         scrollButtons="auto"
-                        aria-label="scrollable auto tabs example"
                     >
-                        <Tab label="Simulated" {...a11yProps(0)} />
-                        <Tab label="Orders" {...a11yProps(1)} />
+                        <Tab label="Simulate" {...a11yProps(0)} />
+                        <Tab label="Order" {...a11yProps(1)} />
                     </Tabs>
                 </Box>
             </AppBar>

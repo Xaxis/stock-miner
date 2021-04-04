@@ -40,7 +40,7 @@ const App = function () {
         text: {
             primary: '#ffffff',
             secondary: 'rgba(255,255,255,0.7)',
-            disabled: 'rgba(255,255,255,0.5)'
+            disabled: 'rgba(255,255,255,0.4)'
         },
         action: {
             active: '#ffffff',

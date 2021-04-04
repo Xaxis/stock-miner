@@ -55,6 +55,7 @@ TabPanel.propTypes = {
 
 const SideBarMenu = ({
                          ui,
+                         currentSelectedRow,
                          setSideBarOpen,
                      }) => {
 
@@ -83,7 +84,13 @@ const SideBarMenu = ({
             backgroundColor: theme.palette.secondary.dark
         },
         tabs: {
-            backgroundColor: `${theme.palette.secondary.dark} !important`
+            backgroundColor: `${theme.palette.secondary.dark} !important`,
+            '& .MuiTab-root.tab-row-affecting': {
+
+            },
+            '& .MuiTab-root.tab-row-affecting + .MuiTab-root:not(.tab-row-affecting)': {
+                // borderTop: `1px solid ${theme.palette.secondary.main}`
+            }
         },
         tabs_inactive: {
             '& .MuiTabs-indicator': {
@@ -92,6 +99,11 @@ const SideBarMenu = ({
             '& .MuiTab-root.Mui-selected': {
                 backgroundColor: 'transparent',
                 color: `${theme.palette.text.secondary} !important`
+            }
+        },
+        tabs_row_selected: {
+            '& .MuiTab-root.tab-row-affecting': {
+                // color: `${theme.palette.primary.light} !important`
             }
         },
         popover: {
@@ -180,6 +192,7 @@ const SideBarMenu = ({
                 <Tabs
                     className={clsx(classes.tabs, {
                         [classes.tabs_inactive]: !sideBarMenuOpen,
+                        [classes.tabs_row_selected]: currentSelectedRow
                     })}
                     orientation="vertical"
                     variant="scrollable"
@@ -187,10 +200,20 @@ const SideBarMenu = ({
                     onChange={handleChange}
                 >
                     <Tab
+                        className="tab-row-affecting"
                         icon={<AttachMoneyIcon/>}
                         aria-label="Order"
                         onMouseEnter={(e) => {
                             handlePopoverOpen(e, "Buy/Sell")
+                        }}
+                        onMouseLeave={handlePopoverClose}
+                    ></Tab>
+                    <Tab
+                        className="tab-row-affecting"
+                        icon={<ExtensionIcon/>}
+                        aria-label="Extensions"
+                        onMouseEnter={(e) => {
+                            handlePopoverOpen(e, "Extensions")
                         }}
                         onMouseLeave={handlePopoverClose}
                     ></Tab>
@@ -207,14 +230,6 @@ const SideBarMenu = ({
                         aria-label="Profiles"
                         onMouseEnter={(e) => {
                             handlePopoverOpen(e, "Profiles")
-                        }}
-                        onMouseLeave={handlePopoverClose}
-                    ></Tab>
-                    <Tab
-                        icon={<ExtensionIcon/>}
-                        aria-label="Extensions"
-                        onMouseEnter={(e) => {
-                            handlePopoverOpen(e, "Extensions")
                         }}
                         onMouseLeave={handlePopoverClose}
                     ></Tab>
@@ -250,13 +265,13 @@ const SideBarMenu = ({
                     <SideBarOrderMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <SideBarControlsMenu/>
+                    <SideBarExtensionsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={2}>
                     <SideBarProfilesMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={3}>
-                    <SideBarExtensionsMenu/>
+                    <SideBarControlsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={4}>
                     <SideBarSettingsMenu/>
@@ -290,7 +305,8 @@ const SideBarMenu = ({
 
 const mapStateToProps = (state) => {
     return {
-        ui: state.ui
+        ui: state.ui,
+        currentSelectedRow: state.currentSelectedRow
     }
 }
 
