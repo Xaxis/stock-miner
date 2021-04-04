@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import AlertDialog from '../AlertDialog/AlertDialog'
+import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
 import TableManagerActionMenu from './TableManagerActionMenu'
 
@@ -39,14 +40,37 @@ const TableManager = (props) => {
             '& .MuiToolbar-root[role="toolbar"]': {
                 minHeight: '68px',
                 paddingLeft: '16px',
-                paddingRight: '16px'
+                paddingRight: '16px',
             },
 
             // Selected delete menu style overrides
             '& .MuiPaper-root:first-child': {
                 '& > .MuiPaper-root': {
-                    minHeight: '68px !important',
-                    backgroundColor: theme.palette.secondary.dark
+                    backgroundColor: 'transparent',
+
+                    // Fix for when using customToolbarSelect
+                    // @todo - Track this issue here: github.com/gregnb/mui-datatables/issues/783
+                    '& > *:first-child': {
+                        display: 'none'
+                    },
+                }
+            },
+
+            // Header overrides
+            '& .MuiTable-root[role="grid"] .MuiTableHead-root': {
+                '& .MuiButton-root': {
+                    margin: '0',
+                    padding: '4px 0 4px 0 !important',
+                    borderTop: `2px solid ${theme.palette.secondary.main}`,
+                    borderBottom: `2px solid ${theme.palette.secondary.main}`,
+                    borderRadius: '0',
+                    '&:hover': {
+                        backgroundColor: 'transparent',
+                        borderBottom: `2px solid ${theme.palette.primary.main}`,
+                    }
+                },
+                '& .MuiTableCell-root': {
+                    padding: '12px 16px'
                 }
             },
 
@@ -126,7 +150,7 @@ const TableManager = (props) => {
         },
         {
             name: "loss_perc",
-            label: "Maximum Loss",
+            label: "Max Loss %",
             options: {
                 filter: true,
                 sort: true
@@ -321,7 +345,6 @@ const TableManager = (props) => {
                     columns={columns}
                     options={{
                         filterType: "checkbox",
-                        responsive: "standard",
                         selectableRows: "single",
                         selectableRowsOnClick: true,
                         responsive: "vertical",
@@ -341,6 +364,15 @@ const TableManager = (props) => {
                         onRowSelectionChange: handleRowSelectionChange,
                         expandableRowsHeader: false,
                         expandableRows: true,
+                        customToolbarSelect: (selectedRows, displayData, setSelectedRows) => {
+                            return (
+                                <TableManagerSelectedRowsToolBar
+                                    selectedRows={selectedRows}
+                                    displayData={displayData}
+                                    setSelectedRows={setSelectedRows}
+                                />
+                            )
+                        },
                         renderExpandableRow: (rowData, rowMeta) => {
                             return (
                                 <TableManagerExpandableRow rowData={rowData} rowMeta={rowMeta}/>
