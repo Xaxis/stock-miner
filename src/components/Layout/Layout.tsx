@@ -39,7 +39,6 @@ const Layout = ({
             overflowX: 'hidden',
             '& > .MuiPaper-root': {
                 top: '48px',
-                backgroundColor: 'darkblue',
                 height: 'calc(100vh - 68px)',
             }
         },

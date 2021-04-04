@@ -52,14 +52,13 @@ export default function TabManager() {
             width: '100%',
             height: '100%',
             overflow: 'hidden',
+            backgroundColor: theme.palette.secondary.darkAlt,
             '& [role="tabpanel"]': {
                 height: 'calc(100vh - 116px)',
                 overflowY: 'auto',
-                overflowX: 'hidden'
+                overflowX: 'hidden',
+                borderTop: `1px solid ${theme.palette.secondary.main}`
             },
-            '& .MuiAppBar-root': {
-                backgroundColor: theme.palette.secondary.main
-            }
         }
     }))()
 
@@ -69,7 +68,7 @@ export default function TabManager() {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" color="default">
+            <div position="static">
                 <Box display='flex' flexGrow={1}>
                     <Tabs
                         value={value}
@@ -83,7 +82,7 @@ export default function TabManager() {
                         <Tab label="Order" {...a11yProps(1)} />
                     </Tabs>
                 </Box>
-            </AppBar>
+            </div>
             <TabPanel value={value} index={0}>
                 <TableManager tableID={0} tableType="simulated"/>
             </TabPanel>

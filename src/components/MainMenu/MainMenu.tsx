@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import LogoIcon from '@material-ui/icons/Fingerprint'
+import LogoIcon from '@material-ui/icons/ShowChart'
 import ProfileSelect from '../ProfileSelect/ProfileSelect'
 
 export default function MainMenu() {
@@ -16,7 +16,7 @@ export default function MainMenu() {
     const classes = makeStyles(theme => ({
         mainmenu: {
             height: '48px',
-            backgroundColor: theme.palette.secondary.dark,
+            backgroundColor: theme.palette.secondary.darkAlt,
             borderBottom: `1px solid ${theme.palette.secondary.main}`,
             '& > .mainmenu-wrapper': {
                 minHeight: '48px',
@@ -41,6 +41,12 @@ export default function MainMenu() {
                 minWidth: '136px',
                 maxWidth: '136px'
             }
+        },
+        logo: {
+            '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'default'
+            }
         }
     }))()
 
@@ -55,9 +61,9 @@ export default function MainMenu() {
                     className="mainmenu-grid"
                 >
                     <Grid item xs={3} className="mainmenu-grid-col1">
-                        <IconButton color="inherit">
-                            <LogoIcon/>
-                        </IconButton>
+                        {/*<IconButton className={classes.logo}>*/}
+                        {/*    <LogoIcon/>*/}
+                        {/*</IconButton>*/}
                     </Grid>
                     <Grid item xs className="mainmenu-grid-col2">
                         {/*<Button aria-controls="file-menu" aria-haspopup="true">*/}

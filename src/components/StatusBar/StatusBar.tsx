@@ -9,7 +9,7 @@ export default function StatusBar() {
             position: 'fixed',
             height: '24px',
             bottom: '0px',
-            backgroundColor: theme.palette.secondary.dark,
+            backgroundColor: theme.palette.secondary.darkAlt,
             borderTop: `1px solid ${theme.palette.secondary.main}`,
             color: theme.palette.text.secondary,
             zIndex: '999'

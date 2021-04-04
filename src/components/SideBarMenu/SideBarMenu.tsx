@@ -66,14 +66,12 @@ const SideBarMenu = ({
         root: {
             display: 'flex',
             height: 'calc(100vh - 68px)',
-            backgroundColor: theme.palette.secondary.dark,
             borderRight: `1px solid ${theme.palette.secondary.main}`,
         },
         controls: {
             maxWidth: '68px',
             minWidth: '68px',
             height: '100%',
-            backgroundColor: theme.palette.secondary.dark,
             borderRight: `1px solid ${theme.palette.secondary.main}`,
         },
         panels: {
@@ -81,10 +79,8 @@ const SideBarMenu = ({
             width: '331px',
             overflowY: 'auto',
             overflowX: 'hidden',
-            backgroundColor: theme.palette.secondary.dark
         },
         tabs: {
-            backgroundColor: `${theme.palette.secondary.dark} !important`,
             '& .MuiTab-root.tab-row-affecting': {
 
             },
@@ -98,7 +94,10 @@ const SideBarMenu = ({
             },
             '& .MuiTab-root.Mui-selected': {
                 backgroundColor: 'transparent',
-                color: `${theme.palette.text.secondary} !important`
+                color: `${theme.palette.text.secondary} !important`,
+                '&:hover': {
+                    backgroundColor: `${theme.palette.secondary.main}`,
+                }
             }
         },
         tabs_row_selected: {
@@ -268,10 +267,10 @@ const SideBarMenu = ({
                     <SideBarExtensionsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={2}>
-                    <SideBarProfilesMenu/>
+                    <SideBarControlsMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={3}>
-                    <SideBarControlsMenu/>
+                    <SideBarProfilesMenu/>
                 </TabPanel>
                 <TabPanel value={value} index={4}>
                     <SideBarSettingsMenu/>

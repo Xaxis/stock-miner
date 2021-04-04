@@ -12,7 +12,6 @@ import Divider from '@material-ui/core/Divider'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ModifyIcon from '@material-ui/icons/Edit'
 import PauseIcon from '@material-ui/icons/Pause'
-import ArchiveIcon from '@material-ui/icons/Archive'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import FullscreenDialog from '../FullScreenDialog/FullScreenDialog'
@@ -129,12 +128,6 @@ const TableManagerActionMenu = (props) => {
                         <PauseIcon size="small"/>
                     </ListItemIcon>
                     <ListItemText primary="Pause Order"/>
-                </MenuItem>
-                <MenuItem>
-                    <ListItemIcon>
-                        <ArchiveIcon size="small"/>
-                    </ListItemIcon>
-                    <ListItemText primary="Archive Order"/>
                 </MenuItem>
                 <MenuItem>
                     <ListItemIcon>

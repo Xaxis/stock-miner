@@ -20,8 +20,8 @@ const App = function () {
         secondary: {
             main: '#242424',
             light: '#4A4A4A',
-            dark: '#121212',
-            darkAlt: '#151515'
+            dark: '#151515',
+            darkAlt: '#101010'
         },
         tertiary: {
             main: '#00695f',
@@ -50,7 +50,7 @@ const App = function () {
             disabledBackground: 'rgba(255,255,255,0.12)'
         },
         background: {
-            default: '#121212',
+            default: '#101010',
             paper: '#242424'
         },
         divider: '#242424'
@@ -271,9 +271,6 @@ const App = function () {
                 }
             },
             MuiTabs: {
-                root: {
-                    backgroundColor: palette.secondary.main,
-                },
                 indicator: {
                     backgroundColor: palette.primary.main
                 }
@@ -282,7 +279,6 @@ const App = function () {
                 root: {
                     minWidth: 'auto !important',
                     color: `${palette.text.secondary} !important`,
-                    backgroundColor: 'transparent',
                     textTransform: 'none',
                     '&$selected': {
                         backgroundColor: palette.secondary.main,
