@@ -7,6 +7,7 @@ import * as ActionTypes from '../../store/actions'
 import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
+import Typography from '@material-ui/core/Typography'
 
 const TableManagerOrderStepper = (props) => {
     const {
@@ -17,28 +18,67 @@ const TableManagerOrderStepper = (props) => {
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
-        root: {
-        }
+        root: {}
     }))()
 
     /**
      * Component states.
      */
     const [activeStep, setActiveStep] = useState(0)
+    const [steps, setSteps] = useState([
+        {
+            label: 'Waiting',
+            info: 'Place an order.'
+        },
+        {
+            label: 'Running',
+            info: 'Order task is running.'
+        },
+        {
+            label: 'Executing',
+            info: 'Order task is executing.'
+        },
+        {
+            label: 'Finished',
+            info: 'Order is finished.'
+        }
+    ])
+
+    /**
+     * Returns the step content object by its id.
+     */
+    const getStepContent = (step) => {
+        if (steps.indexOf(step) !== -1) {
+            return steps[step]
+        } else {
+            return {
+                label: null,
+                info: null
+            }
+        }
+    }
 
     return (
         <div className={classes.root}>
-            TEST
-            {/*<Stepper activeStep={activeStep}>*/}
-            {/*    WIKKIY WIKIY WAK!*/}
-            {/*</Stepper>*/}
-
+            <Stepper activeStep={activeStep}>
+                {steps.map((step, index) => {
+                    const stepProps = {}
+                    const labelProps = {}
+                    if (step.hasOwnProperty('info')) {
+                        if (step.info) labelProps.optional = <Typography variant="caption">{step.info}</Typography>
+                    }
+                    return (
+                        <Step key={index} {...stepProps}>
+                            <StepLabel {...labelProps}>{step.label}</StepLabel>
+                        </Step>
+                    )
+                })}
+            </Stepper>
         </div>
     )
 }
 
-TableManagerOrderStepper.propTypes = {
-}
+TableManagerOrderStepper.propTypes = {}
 
 const mapStateToProps = (state) => {
     return {

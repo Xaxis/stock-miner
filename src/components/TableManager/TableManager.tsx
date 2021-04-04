@@ -46,6 +46,7 @@ const TableManager = (props) => {
             // Selected delete menu style overrides
             '& .MuiPaper-root:first-child': {
                 '& > .MuiPaper-root': {
+                    minHeight: '68px !important',
                     backgroundColor: 'transparent',
 
                     // Fix for when using customToolbarSelect

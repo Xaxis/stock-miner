@@ -257,10 +257,10 @@ const App = function () {
             MuiTableRow: {
                 root: {
                     '&:hover': {
-                        backgroundColor: `${palette.secondary.main} !important`
+                        backgroundColor: `${palette.secondary.dark} !important`
                     },
                     '&$selected': {
-                        backgroundColor: `${palette.secondary.main} !important`
+                        backgroundColor: `${palette.secondary.dark} !important`
                     },
                     '&:last-child': {}
                 }
@@ -376,6 +376,21 @@ const App = function () {
             MuiAccordionDetails: {
                 root: {
                     padding: '16px'
+                }
+            },
+            MuiStepper: {
+                root: {
+                    padding: '8px',
+                    '& .MuiStepConnector-root .MuiStepConnector-line': {
+                        borderColor: `${palette.secondary.main} !important`
+                    }
+                }
+            },
+            MuiStep: {
+                root: {
+                    '& .MuiStepIcon-root:not(.MuiStepIcon-active)': {
+                        color: `${palette.secondary.main}`
+                    }
                 }
             },
             MuiCssBaseline: {
