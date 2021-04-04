@@ -1,29 +1,32 @@
 import * as React from 'react'
-import {useState} from 'react'
+import clsx from 'clsx'
+import {useEffect, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
+import * as ActionTypes from '../../store/actions'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import PropTypes from 'prop-types'
 import Popover from '@material-ui/core/Popover'
 import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'
 import TuneIcon from '@material-ui/icons/Tune'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import ExtensionIcon from '@material-ui/icons/Extension'
 import SettingsIcon from '@material-ui/icons/Settings'
 import HistoryIcon from '@material-ui/icons/History'
+import MenuOpenIcon from '@material-ui/icons/MenuOpen'
 import SideBarOrderMenu from '../SideBarOrderMenu/SideBarOrderMenu'
 import SideBarControlsMenu from '../SideBarControlsMenu/SideBarControlsMenu'
 import SideBarProfilesMenu from '../SideBarProfilesMenu/SideBarProfilesMenu'
 import SideBarExtensionsMenu from '../SideBarExtensionsMenu/SideBarExtensionsMenu'
 import SideBarSettingsMenu from '../SideBarSettingsMenu/SideBarSettingsMenu'
 import SideBarHistoryMenu from '../SideBarHistoryMenu/SideBarHistoryMenu'
-import {makeStyles} from '@material-ui/core/styles'
 
 /**
- * Simple TabPabel component.
+ * Simple TabPanel component.
  */
 function TabPanel(props) {
     const {children, value, index, ...other} = props
@@ -50,33 +53,46 @@ TabPanel.propTypes = {
     value: PropTypes.any.isRequired,
 }
 
-
-export default function SideBarMenu() {
+const SideBarMenu = ({
+                         ui,
+                         setSideBarOpen,
+                     }) => {
 
     /**
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
         root: {
+            display: 'flex',
             height: 'calc(100vh - 68px)',
             backgroundColor: theme.palette.secondary.dark,
-            borderRight: `1px solid ${theme.palette.secondary.main}`
+            borderRight: `1px solid ${theme.palette.secondary.main}`,
         },
         controls: {
             maxWidth: '68px',
             minWidth: '68px',
             height: '100%',
             backgroundColor: theme.palette.secondary.dark,
-            borderRight: `1px solid ${theme.palette.secondary.main}`
+            borderRight: `1px solid ${theme.palette.secondary.main}`,
         },
         panels: {
             height: '100%',
+            width: '331px',
             overflowY: 'auto',
             overflowX: 'hidden',
             backgroundColor: theme.palette.secondary.dark
         },
         tabs: {
             backgroundColor: `${theme.palette.secondary.dark} !important`
+        },
+        tabs_inactive: {
+            '& .MuiTabs-indicator': {
+                backgroundColor: 'transparent !important'
+            },
+            '& .MuiTab-root.Mui-selected': {
+                backgroundColor: 'transparent',
+                color: `${theme.palette.text.secondary} !important`
+            }
         },
         popover: {
             pointerEvents: 'none',
@@ -87,6 +103,30 @@ export default function SideBarMenu() {
                 padding: '4px',
                 borderRadius: '2px !important',
             }
+        },
+        menu_toggle: {
+            position: 'absolute',
+            left: '13px',
+            bottom: '6px',
+            color: theme.palette.text.disabled,
+            opacity: '0.25',
+            '&:hover': {
+                color: theme.palette.text.secondary,
+                opacity: '1',
+                backgroundColor: 'transparent !important'
+            }
+        },
+        menu_toggle_open: {
+            transform: 'rotate(0)',
+            transition: theme.transitions.create('transform', {
+                duration: theme.transitions.duration.enteringScreen
+            })
+        },
+        menu_toggle_close: {
+            transform: 'rotate(-180deg)',
+            transition: theme.transitions.create('transform', {
+                duration: theme.transitions.duration.enteringScreen
+            })
         }
     }))()
 
@@ -96,6 +136,7 @@ export default function SideBarMenu() {
     const [value, setValue] = useState(0)
     const [anchorEl, setAnchorEl] = useState(null)
     const [popoverString, setPopoverString] = useState('')
+    const [sideBarMenuOpen, setSideBarMenuOpen] = useState(false)
 
     /**
      * Handle switching tabs.
@@ -103,6 +144,8 @@ export default function SideBarMenu() {
     const handleChange = (e, newValue) => {
         setValue(newValue)
         handlePopoverClose()
+        setSideBarMenuOpen(true)
+        setSideBarOpen(true)
     }
 
     /**
@@ -116,23 +159,35 @@ export default function SideBarMenu() {
         setAnchorEl(null)
     }
 
+    /**
+     * Handle toggling sidebar menu open/closed.
+     */
+    const handleToggleMenu = (e) => {
+        if (ui.sideBarOpen) {
+            setSideBarMenuOpen(false)
+            setSideBarOpen(false)
+        } else {
+            setSideBarMenuOpen(true)
+            setSideBarOpen(true)
+        }
+    }
+
     return (
-        <Grid
-            container
-            spacing={0}
-            justify='flex-start'
+        <div
             className={classes.root}
         >
-            <Grid item xs={3} className={classes.controls}>
+            <div className={classes.controls}>
                 <Tabs
-                    className={classes.tabs}
+                    className={clsx(classes.tabs, {
+                        [classes.tabs_inactive]: !sideBarMenuOpen,
+                    })}
                     orientation="vertical"
                     variant="scrollable"
                     value={value}
                     onChange={handleChange}
                 >
                     <Tab
-                        label={<AttachMoneyIcon/>}
+                        icon={<AttachMoneyIcon/>}
                         aria-label="Order"
                         onMouseEnter={(e) => {
                             handlePopoverOpen(e, "Buy/Sell")
@@ -180,8 +235,17 @@ export default function SideBarMenu() {
                         onMouseLeave={handlePopoverClose}
                     ></Tab>
                 </Tabs>
-            </Grid>
-            <Grid item xs className={classes.panels}>
+                <IconButton
+                    className={clsx(classes.menu_toggle, {
+                        [classes.menu_toggle_open]: sideBarMenuOpen,
+                        [classes.menu_toggle_close]: !sideBarMenuOpen
+                    })}
+                    onClick={handleToggleMenu}
+                >
+                    <MenuOpenIcon/>
+                </IconButton>
+            </div>
+            <div className={classes.panels}>
                 <TabPanel value={value} index={0}>
                     <SideBarOrderMenu/>
                 </TabPanel>
@@ -218,8 +282,22 @@ export default function SideBarMenu() {
                 >
                     <Typography>{popoverString}</Typography>
                 </Popover>
-            </Grid>
+            </div>
 
-        </Grid>
-    );
-};
+        </div>
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {
+        ui: state.ui
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setSideBarOpen: (open) => dispatch(ActionTypes.setSideBarOpen(open)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBarMenu)

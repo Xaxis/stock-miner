@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react'
 import {connect} from 'react-redux'
 import {makeStyles} from '@material-ui/core/styles'
 import * as ActionTypes from '../../store/actions'
+import fetch from 'cross-fetch'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
@@ -15,7 +16,6 @@ import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
 import AlertDialog from '../AlertDialog/AlertDialog'
-import fetch from 'cross-fetch'
 
 const SideBarProfilesMenu = ({
                                  profileActive,
@@ -184,7 +184,6 @@ const SideBarProfilesMenu = ({
                 <AccordionDetails>
                     <FormGroup>
                         <TextField
-                            className={classes.input}
                             error={newProfileNameError}
                             label={`New Profile`}
                             variant="outlined"
@@ -219,7 +218,6 @@ const SideBarProfilesMenu = ({
                         />
 
                         <TextField
-                            className={classes.input}
                             error={renameProfileError}
                             label={`Rename Profile`}
                             variant="outlined"
@@ -254,7 +252,6 @@ const SideBarProfilesMenu = ({
                         />
 
                         <TextField
-                            className={classes.input}
                             select
                             label="Profile Status"
                             variant="outlined"
@@ -271,7 +268,6 @@ const SideBarProfilesMenu = ({
                         </TextField>
 
                         <TextField
-                            className={classes.input}
                             error={deleteProfileError}
                             label={`Delete Profile`}
                             variant="outlined"

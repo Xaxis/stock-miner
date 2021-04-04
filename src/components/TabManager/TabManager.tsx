@@ -53,7 +53,7 @@ export default function TabManager() {
             height: '100%',
             overflow: 'hidden',
             '& [role="tabpanel"]': {
-                height: 'calc(100vh - 117px)',
+                height: 'calc(100vh - 116px)',
                 overflowY: 'auto',
                 overflowX: 'hidden'
             },

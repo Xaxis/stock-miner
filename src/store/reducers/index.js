@@ -17,6 +17,11 @@ const templateObjects = {
 
 const initialState = {
 
+    // States related to the UI
+    ui: {
+        sideBarOpen: false
+    },
+
     // Single value array containing the active profile name
     profileActive: [],
 
@@ -42,6 +47,17 @@ const initialState = {
 
 const Reducers = (state = initialState, action) => {
     switch (action.type) {
+
+        /**
+         * Set main sidebar open/closed state.
+         */
+        case ActionTypes.SET_SIDEBAR_OPEN:
+            return {
+                ...state,
+                ui: {
+                    sideBarOpen: action.open
+                }
+            }
 
 
         /**

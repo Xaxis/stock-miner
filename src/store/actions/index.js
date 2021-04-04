@@ -1,5 +1,12 @@
 import * as ActionTypes from './action_types'
 
+export const setSideBarOpen = (open) => {
+    return {
+        type: ActionTypes.SET_SIDEBAR_OPEN,
+        open: open
+    }
+}
+
 export const setProfileActive = (active) => {
     return {
         type: ActionTypes.SET_PROFILE_ACTIVE,

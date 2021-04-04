@@ -1,27 +1,64 @@
 import * as React from 'react'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import clsx from 'clsx'
+import {useState, useEffect} from 'react'
+import fetch from 'cross-fetch'
 import {makeStyles} from '@material-ui/core/styles'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
-import Grid from '@material-ui/core/Grid'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import Drawer from '@material-ui/core/Drawer'
 import MainMenu from '../MainMenu/MainMenu'
 import TabManager from '../TabManager/TabManager'
 import SideBarMenu from '../SideBarMenu/SideBarMenu'
 import StatusBar from '../StatusBar/StatusBar'
-import {useEffect} from 'react'
-import fetch from 'cross-fetch'
 
 const Layout = ({
+                    ui,
                     setProfileActive,
                     setProfileList
                 }) => {
 
     /**
+     * Component states.
+     */
+    const [drawerWidth, setDrawerWidth] = useState(68)
+    const [drawerOpen, setDrawerOpen] = useState(false)
+
+    /**
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
-        root: {
-            height: 'calc(100% - 83px)'
+        wrapper: {
+            height: 'calc(100% - 66px)',
+            display: 'flex'
+        },
+        drawer: {
+            zIndex: '500',
+            flexShrink: 0,
+            width: drawerWidth,
+            overflowX: 'hidden',
+            '& > .MuiPaper-root': {
+                top: '48px',
+                backgroundColor: 'darkblue',
+                height: 'calc(100vh - 68px)',
+            }
+        },
+        drawerOpen: {
+            width: drawerWidth,
+            transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen
+            })
+        },
+        drawerClose: {
+            transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen
+            })
+        },
+        main: {
+            zIndex: '510',
+            flexGrow: 1
         }
     }))()
 
@@ -43,25 +80,56 @@ const Layout = ({
         })()
     })
 
+    /**
+     * Handle changing the sidebar open state.
+     */
+    useEffect(() => {
+        if (ui.sideBarOpen) {
+            handleDrawerOpen()
+        } else if (!ui.sideBarOpen) {
+            handleDrawerClose()
+        }
+    }, [ui])
+
+    /**
+     * Handle open/close of drawer.
+     */
+    const handleDrawerOpen = () => {
+        setDrawerWidth(400)
+        setDrawerOpen(true)
+    }
+    const handleDrawerClose = () => {
+        setDrawerWidth(68)
+        setDrawerOpen(false)
+    }
+
     return (
         <>
             <CssBaseline/>
             <MainMenu/>
-            <Grid container spacing={0} className={classes.root}>
-                <Grid item xs={3}>
+            <div className={classes.wrapper}>
+                <Drawer
+                    variant="permanent"
+                    className={clsx(classes.drawer, {
+                        [classes.drawerOpen]: drawerOpen,
+                        [classes.drawerClose]: !drawerOpen
+                    })}
+                >
                     <SideBarMenu/>
-                </Grid>
-                <Grid item xs={9}>
+                </Drawer>
+                <div className={classes.main}>
                     <TabManager/>
-                </Grid>
-            </Grid>
+                </div>
+            </div>
             <StatusBar/>
         </>
     )
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+        ui: state.ui
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
