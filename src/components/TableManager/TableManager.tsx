@@ -53,6 +53,13 @@ const TableManager = (props) => {
             // Row style overrides
             '& .MuiTableBody-root .MuiTableCell-root[data-testid]:last-child': {
                 textAlign: 'right'
+            },
+
+            // Footer overrides
+            '& .MuiTable-root .MuiTableFooter-root .MuiTableRow-root': {
+                '&:hover': {
+                    backgroundColor: 'transparent !important'
+                }
             }
         }
     }))()
