@@ -8,6 +8,7 @@ import fetch from 'cross-fetch'
 import {w3cwebsocket as W3CWebSocket} from 'websocket'
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
+import CircularProgress from '@material-ui/core/CircularProgress'
 import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
@@ -116,6 +117,9 @@ const TableManager = (props) => {
                     backgroundColor: 'transparent !important'
                 }
             }
+        },
+        table_loading: {
+            color: theme.palette.text.primary,
         }
     }))()
 
@@ -222,6 +226,9 @@ const TableManager = (props) => {
     // Table data buffer used to proxy data table state
     const [proxyTableData, setProxyTableData] = useState([])
 
+    // Flag to indicate whether table is loading
+    const [tableLoading, setTableLoading] = useState(false)
+
     // Web socket used to access data stream
     const wsocket = useRef(null)
 
@@ -240,6 +247,7 @@ const TableManager = (props) => {
             let profileKey = profileActive[0]
             if (profileKey !== 'noop') {
                 (async () => {
+                    setTableLoading(true)
                     const response = await fetch(`http://localhost:2222/app/get/orders/list/${profileKey}/${tableType}`)
                     let rows = await response.json()
 
@@ -252,6 +260,7 @@ const TableManager = (props) => {
                         // Load data into data table
                         addTableRows(profileKey, tableID, rows)
                     }
+                    setTableLoading(false)
                 })()
             }
         }
@@ -385,6 +394,13 @@ const TableManager = (props) => {
                             return (
                                 <TableManagerExpandableRow rowData={rowData} rowMeta={rowMeta}/>
                             )
+                        },
+                        textLabels: {
+                            body: {
+                                noMatch: tableLoading ?
+                                    <CircularProgress size={24} className={classes.table_loading}/> :
+                                    `Start by adding a symbol you would like to watch.`
+                            }
                         }
                     }}
                 />
