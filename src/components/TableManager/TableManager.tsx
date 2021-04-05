@@ -9,7 +9,6 @@ import {w3cwebsocket as W3CWebSocket} from 'websocket'
 import Grid from '@material-ui/core/Grid'
 import MUIDataTable from "mui-datatables"
 import SymbolSearch from '../SymbolSearch/SymbolSearch'
-import AlertDialog from '../AlertDialog/AlertDialog'
 import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
 import TableManagerActionMenu from './TableManagerActionMenu'
@@ -23,7 +22,6 @@ const TableManager = (props) => {
         currentSelectedRowIndex,
         addTableRows,
         updateTableRows,
-        deleteTableRows,
         setSelectedRow,
         setTableIDActive,
         setTableTypeActive,
@@ -181,12 +179,6 @@ const TableManager = (props) => {
         },
     ])
 
-    // Alert dialogue open state
-    const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
-
-    // Buffer containing which rows to delete
-    const [rowsToDeleteNext, setRowsToDeleteNext] = useState([])
-
     // Table data buffer used to proxy data table state
     const [proxyTableData, setProxyTableData] = useState([])
 
@@ -283,41 +275,6 @@ const TableManager = (props) => {
     }, [wsocket.current])
 
     /**
-     * Sends request to server to delete rows.
-     * @todo - Implement alert dialog before deleting rows.
-     */
-    useEffect(() => {
-        if (rowsToDeleteNext.length) {
-            deleteTableRows(profileActive[0], tableID, rowsToDeleteNext)
-            rowsToDeleteNext.forEach((uuid) => {
-                (async () => {
-                    const response = await fetch(`http://localhost:2222/app/deregister/orders/${tableType}/${uuid}`)
-                    let result = await response.json()
-                    setRowsToDeleteNext([])
-                    setSelectedRow(null, [])
-                })()
-            })
-        }
-    }, [rowsToDeleteNext])
-
-    /**
-     * Handles table's row delete event. Adding UUIDs to the rowsToDeleteNext array
-     * triggers the corresponding useEffect action and sends the UUIDs to delete to the
-     * server.
-     * @todo - Implement alert dialog before deleting rows.
-     */
-    const handleRowsDelete = (rowsDeleted) => {
-        const profileKey = profileActive[0]
-        const tableDataObj = tableData.filter((tableObj) => {
-            return tableObj.tableProfile === profileKey
-        })[0]
-        const uuidsToDelete = rowsDeleted.data.map(d => tableDataObj.tables[tableID][d.dataIndex].uuid)
-        setRowsToDeleteNext(uuidsToDelete)
-        // setDeleteAlertDialogOpen(true)
-        // return false
-    }
-
-    /**
      * Sets the selected row object in the store/state. This is used by all other
      * parts of the app that need a rows data.
      */
@@ -361,7 +318,6 @@ const TableManager = (props) => {
                         // onTableChange: (action, tableState) => {
                         //     console.log(action, tableState)
                         // },
-                        onRowsDelete: handleRowsDelete,
                         onRowSelectionChange: handleRowSelectionChange,
                         expandableRowsHeader: false,
                         expandableRows: true,
@@ -381,23 +337,6 @@ const TableManager = (props) => {
                         }
                     }}
                 />
-                <AlertDialog
-                    isOpen={deleteAlertDialogOpen}
-                    onDisagree={() => {
-                        // setRowsToDeleteNext([])
-                        // setDeleteAlertDialogOpen(false)
-                    }}
-                    onAgree={() => {
-                        // deleteTableRows(tableID, rowsToDeleteNext)
-                        // setDeleteAlertDialogOpen(false)
-                    }}
-                    title='Delete trades in table?'
-                    subtitle='Are you sure you want to attempt to delete the selected trades?
-                    Note: Any held trades will not be deleted. You must sell them first.'
-                    agree={'Delete'}
-                    disagree={'Cancel'}
-                >
-                </AlertDialog>
             </Grid>
         </Grid>
     )
@@ -420,7 +359,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         addTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.addTableRows(tableProfile, tableID, rows)),
         updateTableRows: (tableProfile, tableID, rows) => dispatch(ActionTypes.updateTableRows(tableProfile, tableID, rows)),
-        deleteTableRows: (tableProfile, tableID, uuids) => dispatch(ActionTypes.deleteTableRows(tableProfile, tableID, uuids)),
         setSelectedRow: (row, indexArr) => dispatch(ActionTypes.setSelectedRow(row, indexArr)),
         setTableIDActive: (id) => dispatch(ActionTypes.setTableIDActive(id)),
         setTableTypeActive: (tableType) => dispatch(ActionTypes.setTableTypeActive(tableType))
