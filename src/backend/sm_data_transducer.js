@@ -33,13 +33,16 @@ class DataTransducer {
         this.TASK_INTERVAL = setInterval(() => {
 
             // Update the database with the most recent stream data
-            if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
+            // if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
             this.ALL_TASKS.forEach((task) => {
                 let data = this.DP.STREAM_DATA[task.market][task.symbol]
                 let set_data = {
 
-                    // Set the Ask price
-                    price: (data) ? data.ap : 0
+                    // Set the current price
+                    price: (data) ? data.ap : 0,
+
+                    // Calculate current equity
+                    equity: 2
                 }
 
                 // Attempt to update rows in Stock_Simulations and Stock_Orders tables with new data. We attempt
@@ -103,6 +106,7 @@ class DataTransducer {
     /**
      * Returns true if a task is unique and has not already been added to the ACTIVE_PROFILE_TASKS
      * array.
+     * @todo - May not need this any longer. Review.
      */
     is_task_unique = (uuid) => {
         return !this.ALL_TASKS.filter((task) => {
@@ -203,11 +207,13 @@ class DataTransducer {
     }
 
     /**
-     * Retrieves sanity checks on the availability of streamed data and assists in building
+     * Retrieves sanity checks on the availability of data provider data and assists in building
      * each row object for consumption by the frontend.
      */
     get_parsed_stream_data = (market, symbol) => {
-        let stream_data = {}
+        let stream_data = {
+            price: 0
+        }
         if (this.is_data_stream_ready(market, symbol)) {
             stream_data.price = this.DP.STREAM_DATA[market][symbol].ap
         }
@@ -215,31 +221,61 @@ class DataTransducer {
     }
 
     /**
-     * Return a reference to the realtime stream data related to a given profile.
+     * Returns a Promise that returns the data object to stream to the client.
      */
     get_data_stream_for_profile = (tableid, profile = this.ACTIVE_PROFILE) => {
-        let stream_data = {
-            _profile: profile,
-            _tableid: tableid,
-            rows: []
-        }
-        console.log(`SMDT: Sending data for profile (${profile}). ${this.ACTIVE_PROFILE_TASKS.length} rows.`)
-        if (profile !== 'noop') {
-            this.ACTIVE_PROFILE_TASKS.forEach((task) => {
-                if (task.profile === profile) {
+        const self = this
+        return new Promise(function (resolve, reject) {
+            let stream_data = {
+                _profile: profile,
+                _tableid: tableid,
+                promises: [],
+                rows: [],
+            }
 
-                    // Merge stream data rows into data object to send
-                    let data_row = Object.assign({
-                        uuid: task.uuid,
-                        price: 0
-                    }, this.get_parsed_stream_data(task.market, task.symbol))
+            // Proceed only when profile isn't temporary no-op.
+            if (profile !== 'noop') {
+                console.log(`SMDT: Sending data for profile (${profile}). ${self.ACTIVE_PROFILE_TASKS.length} rows.`)
+                self.ACTIVE_PROFILE_TASKS.forEach((task) => {
+                    if (task.profile === profile) {
 
-                    // Add row to data object to send
-                    stream_data.rows.push(data_row)
-                }
-            })
-        }
-        return stream_data
+                        // Merge stream data rows into data object
+                        let data_row = Object.assign({
+                            uuid: task.uuid
+                        }, self.get_parsed_stream_data(task.market, task.symbol))
+
+                        // Add data to rows
+                        stream_data.rows.push(data_row)
+
+                        // Add promises to unretrieved database data
+                        stream_data.promises.push(self.DB.get_all_stock_orders_where_multi_field_values({uuid: task.uuid}))
+                    }
+                })
+
+                // Execute all promises concurrently and parse results
+                Promise.all(stream_data.promises).then((results) => {
+
+                    // Filter and flatten results array from promises
+                    delete stream_data.promises
+                    let results_to_merge = results.filter((res_arr) => {
+                        return res_arr.length
+                    }).flat()
+
+                    // Merge database results with their corresponding stream data objects
+                    stream_data.rows = stream_data.rows.map((data_obj, index) => {
+                        let row = results_to_merge[index]
+                        return Object.assign(data_obj, {
+                            shares: row.shares,
+                            purchase_price: row.purchase_price,
+                            cost_basis: row.cost_basis,
+                        })
+                    })
+
+                    // Resolve the merged results
+                    resolve(stream_data)
+                })
+            }
+        })
     }
 
     /**

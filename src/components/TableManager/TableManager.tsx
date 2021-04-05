@@ -12,6 +12,7 @@ import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
 import TableManagerActionMenu from './TableManagerActionMenu'
+import {prepareDataTableValues} from '../../libs/value_conversions'
 
 const TableManager = (props) => {
     const {
@@ -132,6 +133,14 @@ const TableManager = (props) => {
             }
         },
         {
+            name: "equity",
+            label: "Equity",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
             name: "limit_buy",
             label: "Limit Buy",
             options: {
@@ -205,6 +214,11 @@ const TableManager = (props) => {
 
                     // Add rows from database to table
                     if (rows.length) {
+
+                        // Prepare values for data table
+                        rows = prepareDataTableValues(rows)
+
+                        // Load data into data table
                         addTableRows(profileKey, tableID, rows)
                     }
                 })()
@@ -270,6 +284,11 @@ const TableManager = (props) => {
         if (!wsocket.current) return
         wsocket.current.onmessage = (payload) => {
             let data_obj = JSON.parse(payload.data)
+
+            // Calculate some values from data
+            data_obj.rows = prepareDataTableValues(data_obj.rows)
+
+            // Update the data table
             updateTableRows(data_obj._profile, data_obj._tableid, data_obj.rows)
         }
     }, [wsocket.current])

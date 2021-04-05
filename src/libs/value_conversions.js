@@ -28,7 +28,7 @@ export const toPercentString = (value) => {
  * Convert a money string to a clean float value. Passing 'novalue' as true
  * returns the cleaned value as a string.
  */
-export const toMoneyValue = (string, novalue=false) => {
+export const toMoneyValue = (string, novalue = false) => {
     let value = string.toString().replace(/[^0-9.]/g, '')
     return novalue ? value : parseFloat(value)
 }
@@ -37,7 +37,7 @@ export const toMoneyValue = (string, novalue=false) => {
  * Convert a percent string to a clean float value. Passing 'novalue' as true
  * returns the cleaned value as a string.
  */
-export const toPercentValue = (string, novalue=false) => {
+export const toPercentValue = (string, novalue = false) => {
     let value = string.toString().replace(/[^0-9.\-\+]/g, '')
     return novalue ? value : parseFloat(value)
 }
@@ -91,4 +91,16 @@ export const calcTotalChange = (purchase_price, current_price) => {
         let percent_diff = percent_change - 100
         return percent_diff
     }
+}
+
+/**
+ * Takes array of DataTable rows and prepares/parses them further for display in a DataTable.
+ */
+export const prepareDataTableValues = (rows) => {
+    return rows.map((row) => {
+        return Object.assign({
+            equity: toMoneyString(calcEquity(row.cost_basis, row.purchase_price, row.price).toFixed(2))
+        }, row)
+    })
+
 }

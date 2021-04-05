@@ -7,11 +7,12 @@ const templateObjects = {
         market: '-',
         symbol: '-',
         name: '-',
-        price: '-',
-        status: '-',
-        limit_buy: 0,
-        limit_sell: 0,
-        loss_perc: 0
+        price: 0.00,
+        equity: 0.00,
+        limit_buy: 0.00,
+        limit_sell: 0.00,
+        loss_perc: 0.00,
+        status: '-'
     }
 }
 
@@ -125,6 +126,7 @@ const Reducers = (state = initialState, action) => {
                     newRowObject.name = row.name
                     newRowObject.market = row.market
                     newRowObject.price = row.price
+                    newRowObject.equity = row.equity
                     newRowObject.status = row.status
                     newRowObject.limit_buy = row.limit_buy
                     newRowObject.limit_sell = row.limit_sell

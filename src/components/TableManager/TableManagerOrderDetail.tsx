@@ -9,7 +9,7 @@ import {getRowDataByUUID} from '../../libs/state_modifiers'
 import {
     toMoneyString,
     toPercentString,
-    calcEquity,
+    toMoneyValue,
     calcQuantity,
     calcTotalReturn,
     calcTotalChange
@@ -58,7 +58,7 @@ const TableManagerOrderDetail = (props) => {
      */
     useEffect(() => {
         let row = getRowDataByUUID(rowData[0], tableData)
-        let tmp_equity = calcEquity(row._meta.cost_basis, row._meta.purchase_price, row._meta.price).toFixed(2)
+        let tmp_equity = toMoneyValue(row.equity)
         setEquity(toMoneyString(tmp_equity))
         setCost('$' + parseFloat(row._meta.cost_basis).toFixed(2))
         setTotalReturn(toMoneyString(calcTotalReturn(tmp_equity, row._meta.cost_basis)))

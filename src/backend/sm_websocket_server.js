@@ -76,13 +76,16 @@ class WebSocketServer {
      * The main interval loop responsible for sending stream data to the client.
      */
     init_task_interval = (period) => {
+        let self = this
         this.TASK_INTERVAL = setInterval(() => {
             if (!this.TASK_INTERVAL_PAUSED) {
                 try {
                     if (!this.CONNECTION_OBJECT._error) {
                         if (this.PROFILE && this.CONNECTION_OBJECT.readyState === 1) {
-                            let stream_data = this.DT.get_data_stream_for_profile(this.TABLEID, this.PROFILE)
-                            this.CONNECTION_OBJECT.send(JSON.stringify(stream_data))
+                            this.DT.get_data_stream_for_profile(this.TABLEID, this.PROFILE)
+                                .then((stream_data) => {
+                                    self.CONNECTION_OBJECT.send(JSON.stringify(stream_data))
+                                })
                         }
                     }
                 } catch (error) {
