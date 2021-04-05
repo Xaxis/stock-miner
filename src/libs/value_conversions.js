@@ -14,6 +14,15 @@ export const toMoneyString = (value) => {
 }
 
 /**
+ * Converts a money value to a "beautiful" money string, including commas.
+ * @todo - Experimental. Refine and eventually use a method like this.
+ */
+export const toBeautifulMoneyString = (value) => {
+    value = value.toString().replace('$', '').replace(',', '')
+    return new Intl.NumberFormat().format(parseFloat(value))
+}
+
+/**
  * Convert a percent value to a presentable percent string.
  */
 export const toPercentString = (value) => {
@@ -98,7 +107,7 @@ export const calcTotalChange = (purchase_price, current_price) => {
  */
 export const prepareDataTableValues = (rows) => {
     return rows.map((row) => {
-        return Object.assign(row,{
+        return Object.assign(row, {
             // price: toMoneyString(row.price),
             equity: toMoneyString(calcEquity(row.cost_basis, row.purchase_price, row.price).toFixed(2))
         })
