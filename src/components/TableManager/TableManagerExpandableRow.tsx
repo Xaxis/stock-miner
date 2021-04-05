@@ -11,9 +11,10 @@ import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
 import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import TableManagerOrderStepper from './TableManagerOrderStepper'
 import TableManagerOrderDetail from './TableManagerOrderDetail'
 import TableManagerOrderHistory from './TableManagerOrderHistory'
-import TableManagerOrderBasic from "./TableManagerOrderBasic";
+import TableManagerOrderBasic from './TableManagerOrderBasic'
 
 const TableManagerExpandableRow = (props) => {
     const {
@@ -41,6 +42,7 @@ const TableManagerExpandableRow = (props) => {
     /**
      * Accordion panels
      */
+    const [expandedPanel0, setExpandedPanel0] = useState(false)
     const [expandedPanel1, setExpandedPanel1] = useState(false)
     const [expandedPanel2, setExpandedPanel2] = useState(false)
     const [expandedPanel3, setExpandedPanel3] = useState(true)
@@ -48,6 +50,9 @@ const TableManagerExpandableRow = (props) => {
     /**
      * Toggle handler sets state on accordion panels
      */
+    const handleAccordionPanelExpand0 = (panel) => (event) => {
+        setExpandedPanel0(expandedPanel0 ? false : true)
+    }
     const handleAccordionPanelExpand1 = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
     }
@@ -62,6 +67,19 @@ const TableManagerExpandableRow = (props) => {
         <TableRow className={classes.table_row}>
             <TableCell colSpan={42} className={classes.table_cell}>
                 <Collapse in={true}>
+                    <Accordion
+                        square
+                        expanded={expandedPanel0}
+                        onChange={handleAccordionPanelExpand0()}
+                    >
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                            <Typography>Order Progress</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TableManagerOrderStepper/>
+                        </AccordionDetails>
+                    </Accordion>
+
                     <Accordion
                         square
                         expanded={expandedPanel1}

@@ -11,6 +11,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import TableManagerOrderBasic from '../TableManager/TableManagerOrderBasic'
 import TableManagerOrderDetail from '../TableManager/TableManagerOrderDetail'
 import TableManagerOrderHistory from '../TableManager/TableManagerOrderHistory'
+import TableManagerOrderStepper from "../TableManager/TableManagerOrderStepper";
+import Collapse from "@material-ui/core/Collapse";
 
 const OrderDetailView = (props) => {
     const {
@@ -27,6 +29,7 @@ const OrderDetailView = (props) => {
     /**
      * Accordion panels
      */
+    const [expandedPanel0, setExpandedPanel0] = useState(true)
     const [expandedPanel1, setExpandedPanel1] = useState(true)
     const [expandedPanel2, setExpandedPanel2] = useState(true)
     const [expandedPanel3, setExpandedPanel3] = useState(true)
@@ -34,6 +37,9 @@ const OrderDetailView = (props) => {
     /**
      * Toggle handler sets state on accordion panels
      */
+    const handleAccordionPanelExpand0 = (panel) => (event) => {
+        setExpandedPanel0(expandedPanel0 ? false : true)
+    }
     const handleAccordionPanelExpand1 = (panel) => (event) => {
         setExpandedPanel1(expandedPanel1 ? false : true)
     }
@@ -46,6 +52,19 @@ const OrderDetailView = (props) => {
 
     return (
         <>
+            <Accordion
+                square
+                expanded={expandedPanel0}
+                onChange={handleAccordionPanelExpand0()}
+            >
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                    <Typography>Order Progress</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <TableManagerOrderStepper/>
+                </AccordionDetails>
+            </Accordion>
+
             <Accordion
                 square
                 expanded={expandedPanel1}

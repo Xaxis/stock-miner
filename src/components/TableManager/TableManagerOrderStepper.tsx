@@ -18,7 +18,9 @@ const TableManagerOrderStepper = (props) => {
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
-        root: {}
+        root: {
+            width: '100%'
+        }
     }))()
 
     /**
