@@ -194,6 +194,12 @@ const App = function () {
                     '&:hover': {
                         backgroundColor: `transparent`,
                     },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: `${palette.secondary.main}`,
+                    },
+                    '&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: `${palette.secondary.main} !important`,
+                    },
                     '& .MuiChip-root': {
                         margin: '2px 3px 0 3px',
                     }
