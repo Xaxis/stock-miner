@@ -39,10 +39,7 @@ class DataTransducer {
                 let set_data = {
 
                     // Set the current price
-                    price: (data) ? data.ap : 0,
-
-                    // Calculate current equity
-                    equity: 2
+                    price: (data) ? data.ap : 0
                 }
 
                 // Attempt to update rows in Stock_Simulations and Stock_Orders tables with new data. We attempt

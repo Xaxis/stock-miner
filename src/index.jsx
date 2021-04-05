@@ -189,7 +189,11 @@ const App = function () {
             },
             MuiInputBase: {
                 root: {
+                    backgroundColor: `${palette.secondary.dark}`,
                     borderRadius: '2px !important',
+                    '&:hover': {
+                        backgroundColor: `transparent`,
+                    },
                     '& .MuiChip-root': {
                         margin: '2px 3px 0 3px',
                     }

@@ -98,9 +98,10 @@ export const calcTotalChange = (purchase_price, current_price) => {
  */
 export const prepareDataTableValues = (rows) => {
     return rows.map((row) => {
-        return Object.assign({
+        return Object.assign(row,{
+            // price: toMoneyString(row.price),
             equity: toMoneyString(calcEquity(row.cost_basis, row.purchase_price, row.price).toFixed(2))
-        }, row)
+        })
     })
 
 }
