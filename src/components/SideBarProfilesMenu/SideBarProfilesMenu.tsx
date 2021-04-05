@@ -45,7 +45,7 @@ const SideBarProfilesMenu = ({
         default: "Type the name of the current profile to delete and hit Enter/Return to continue.",
         error: "You can only delete the currently loaded profile!"
     })
-    const [profileStatus, setProfileStatus] = useState("paused")
+    const [profileStatus, setProfileStatus] = useState("active")
     const [deleteProfileName, setDeleteProfileName] = useState("")
     const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
 

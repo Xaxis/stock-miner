@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `Config` (
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,
     `profile`       TEXT NOT NULL UNIQUE,
-    `status`        TEXT DEFAULT 'paused'
+    `status`        TEXT DEFAULT 'active'
 );
 CREATE TABLE IF NOT EXISTS `Profiles_History` (
     `id`                INTEGER NOT NULL PRIMARY KEY,

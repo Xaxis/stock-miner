@@ -177,7 +177,7 @@ class DBManager {
                 profile = options.profile,
                 market = options.market,
                 status = 'Waiting',
-                paused = 'true',
+                paused = 'false',
                 symbol = options.symbol,
                 name = options.name,
                 price = options.price || 0,
