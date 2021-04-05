@@ -79,6 +79,37 @@ const TableManager = (props) => {
                 textAlign: 'right'
             },
 
+            // Cell style overrides
+            '& .MuiTableCell-root': {
+                '&:not(.datatables-noprint)': {
+                    '& > *': {
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                    }
+                },
+                '&[data-colindex="0"]:not(.datatables-noprint)': {
+                    maxWidth: '50px !important',
+                    '& > *': {
+                        width: '100%'
+                    }
+                }
+            },
+
+            // Resizable columns divider
+            '& [data-divider-index]': {
+                '&:last-child': {
+                    display: 'none'
+                },
+                '& > *': {
+                    borderColor: 'transparent',
+                    height: '48px',
+                    '&:hover': {
+                        borderColor: theme.palette.secondary.main
+                    }
+                }
+            },
+
             // Footer overrides
             '& .MuiTable-root .MuiTableFooter-root .MuiTableRow-root': {
                 '&:hover': {
@@ -96,7 +127,7 @@ const TableManager = (props) => {
             options: {
                 filter: true,
                 sort: true,
-                display: false
+                display: true
             }
         },
         {
@@ -326,6 +357,7 @@ const TableManager = (props) => {
                         selectableRowsOnClick: true,
                         responsive: "vertical",
                         rowsPerPage: 10,
+                        resizableColumns: true,
                         elevation: 0,
                         rowsSelected: currentSelectedRowIndex,
                         draggableColumns: {
