@@ -381,8 +381,14 @@ const App = function () {
             MuiStepper: {
                 root: {
                     padding: '8px',
-                    '& .MuiStepConnector-root .MuiStepConnector-line': {
-                        borderColor: `${palette.secondary.main} !important`
+                    '& .MuiStepConnector-line': {
+                        borderColor: `${palette.secondary.main}`
+                    },
+                    '& .MuiStepConnector-completed .MuiStepConnector-line': {
+                        borderColor: `${palette.tertiary.main}`
+                    },
+                    '& .MuiStepConnector-active .MuiStepConnector-line': {
+                        borderColor: `${palette.primary.main}`
                     }
                 }
             },
@@ -390,6 +396,9 @@ const App = function () {
                 root: {
                     '& .MuiStepIcon-root:not(.MuiStepIcon-active)': {
                         color: `${palette.secondary.main}`
+                    },
+                    '& .MuiStepIcon-completed': {
+                        color: `${palette.tertiary.main} !important`
                     }
                 }
             },

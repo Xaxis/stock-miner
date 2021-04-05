@@ -203,7 +203,7 @@ const TableManagerActionMenu = (props) => {
                     setRowsToDeleteNext([rowUUID])
                 }}
                 title='Delete Order?'
-                subtitle='Are you sure you want to attempt to delete the selected trades?'
+                subtitle='Are you sure you want to attempt to delete the selected order?'
                 agree={'Delete'}
                 disagree={'Cancel'}
             >
