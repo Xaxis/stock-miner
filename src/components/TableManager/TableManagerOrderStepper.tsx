@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 
 const TableManagerOrderStepper = (props) => {
     const {
+        tableData,
         ...other
     } = props
 
@@ -29,16 +30,16 @@ const TableManagerOrderStepper = (props) => {
     const [activeStep, setActiveStep] = useState(0)
     const [steps, setSteps] = useState([
         {
-            label: 'Running',
-            info: 'Order is running.'
+            label: 'Registered',
+            info: 'Order is being watched.'
         },
         {
-            label: 'Executing',
-            info: 'Order is executing.'
+            label: 'Running',
+            info: 'Order tasks are executing.'
         },
         {
             label: 'Finished',
-            info: 'Order is finished.'
+            info: 'Order has ended.'
         }
     ])
 

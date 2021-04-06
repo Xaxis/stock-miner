@@ -81,9 +81,7 @@ const SideBarMenu = ({
             overflowX: 'hidden',
         },
         tabs: {
-            '& .MuiTab-root.tab-row-affecting': {
-
-            },
+            '& .MuiTab-root.tab-row-affecting': {},
             '& .MuiTab-root.tab-row-affecting + .MuiTab-root:not(.tab-row-affecting)': {
                 // borderTop: `1px solid ${theme.palette.secondary.main}`
             }
@@ -102,7 +100,7 @@ const SideBarMenu = ({
         },
         tabs_row_selected: {
             '& .MuiTab-root.tab-row-affecting': {
-                // color: `${theme.palette.primary.light} !important`
+                color: `${theme.palette.primary.light} !important`
             }
         },
         popover: {
@@ -148,15 +146,28 @@ const SideBarMenu = ({
     const [anchorEl, setAnchorEl] = useState(null)
     const [popoverString, setPopoverString] = useState('')
     const [sideBarMenuOpen, setSideBarMenuOpen] = useState(false)
+    const [lastSideBarSubMenu, setLastSideBarSubMenu] = useState('none')
 
     /**
      * Handle switching tabs.
      */
     const handleChange = (e, newValue) => {
-        setValue(newValue)
+
+        // If the current sideBarSubMenu is not already open, open the sideBarMenu
+        if (lastSideBarSubMenu !== newValue) {
+            setLastSideBarSubMenu(newValue)
+            setValue(newValue)
+            setSideBarMenuOpen(true)
+            setSideBarOpen(true)
+        }
+
+        // Otherwise, if the sideBarSubMenu is clicked again, close the sideBarMenu
+        else {
+            setLastSideBarSubMenu('none')
+            setSideBarMenuOpen(false)
+            setSideBarOpen(false)
+        }
         handlePopoverClose()
-        setSideBarMenuOpen(true)
-        setSideBarOpen(true)
     }
 
     /**
