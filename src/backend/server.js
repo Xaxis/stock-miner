@@ -217,6 +217,7 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
         })
 })
 
+// @todo - Re-think and Re-factor how Running/Waiting/Paused/etc order status is set and functions
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     let profile = req.params.profile
     DBM.set_profile_status(profile, req.params.status)
@@ -261,7 +262,7 @@ app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
                             DBM.add_stock_orders_history_entry({
                                 uuid: row.uuid,
                                 event: 'RUNNING',
-                                info: `Order RUNNING and waiting to execute.`
+                                info: `Order is running.`
                             })
                         })
                         DT.build_all_active_tasks_from_db()
@@ -325,6 +326,26 @@ app.get('/app/get/orders/history/:uuid', (req, res) => {
         .catch(() => {
             res.send([])
         })
+})
+
+// @todo - Re-think and Re-factor how Running/Waiting/Paused/etc order status is set and functions
+app.get('/app/set/orders/status/:uuid/:paused', (req, res) => {
+    let uuid = req.params.uuid
+    let paused = req.params.paused === 'true' ? 'true' : 'false'
+    DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, {
+        paused: paused
+    }).then(() => {
+        DT.build_all_active_tasks_from_db()
+
+        // Add order history entries
+        DBM.add_stock_orders_history_entry({
+            uuid: uuid,
+            event: paused === 'true' ? 'PAUSED' : 'RUNNING',
+            info: paused === 'true' ? `Order is paused.` : `Order is running.`
+        })
+
+        res.send({success: true})
+    })
 })
 
 app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req, res) => {
@@ -432,14 +453,14 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                 DBM.add_stock_orders_history_entry({
                     uuid: uuid,
                     event: 'PAUSED',
-                    info: `Order PAUSED and waiting to run.`
+                    info: `Order is paused.`
                 })
             }
             if (paused === 'false') {
                 DBM.add_stock_orders_history_entry({
                     uuid: uuid,
                     event: 'RUNNING',
-                    info: `Order RUNNING and waiting to execute.`
+                    info: `Order is running.`
                 })
             }
 

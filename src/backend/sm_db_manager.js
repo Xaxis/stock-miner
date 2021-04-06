@@ -701,7 +701,7 @@ class DBManager {
     get_stock_orders_history_by_uuid = (uuid) => {
         const self = this
         return new Promise(function (resolve, reject) {
-            let sql = `SELECT * FROM Stock_Orders_History WHERE uuid = ? ORDER BY id ASC`
+            let sql = `SELECT * FROM Stock_Orders_History WHERE uuid = ? ORDER BY id DESC`
             self.DB.all(sql, [uuid], function (err, rows) {
                 if (err) {
                     console.log("SMDB: Stock_Orders_History: " + err)

@@ -265,6 +265,8 @@ class DataTransducer {
                             shares: row.shares,
                             purchase_price: row.purchase_price,
                             cost_basis: row.cost_basis,
+                            status: row.paused === 'true' ? 'Paused' : row.status,
+                            _meta: row
                         })
                     })
 

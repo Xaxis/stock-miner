@@ -14,6 +14,7 @@ import Divider from '@material-ui/core/Divider'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ModifyIcon from '@material-ui/icons/Edit'
 import PauseIcon from '@material-ui/icons/Pause'
+import PlayIcon from '@material-ui/icons/PlayCircleFilled'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import AlertDialog from '../AlertDialog/AlertDialog'
@@ -61,6 +62,7 @@ const TableManagerActionMenu = (props) => {
     const [stockPrice, setStockPrice] = useState('')
     const [rowsToDeleteNext, setRowsToDeleteNext] = useState([])
     const [deleteAlertDialogOpen, setDeleteAlertDialogOpen] = useState(false)
+    const [orderPaused, setOrderPaused] = useState(false)
 
     /**
      * Load row data by UUID.
@@ -68,10 +70,12 @@ const TableManagerActionMenu = (props) => {
     useEffect(() => {
         setRowUUID(rowData[0])
         let row = getRowDataByUUID(rowData[0], tableData)
+
         if (row) {
             setSymbol(row.symbol)
             setStockName(row.name)
             setStockPrice('$' + row.price)
+            setOrderPaused(row._meta.paused === "true" ? true : false)
         }
     }, [tableData])
 
@@ -125,6 +129,17 @@ const TableManagerActionMenu = (props) => {
         setFullscreenOpen(true)
     }
 
+    /**
+     * Handle pausing/activating an individual order row.
+     */
+    const handlePauseOrder = () => {
+        (async () => {
+            let paused = orderPaused ? 'false' : 'true'
+            const response = await fetch(`http://localhost:2222/app/set/orders/status/${rowUUID}/${paused}`)
+            let result = await response.json()
+        })()
+    }
+
     return (
         <>
             <IconButton
@@ -159,13 +174,21 @@ const TableManagerActionMenu = (props) => {
                     </ListItemIcon>
                     <ListItemText primary="Modify Order"/>
                 </MenuItem>
+
                 <Divider/>
-                <MenuItem>
+
+                <MenuItem
+                    onClick={(e) => {
+                        handleMenuClose(e)
+                        handlePauseOrder()
+                    }}
+                >
                     <ListItemIcon>
-                        <PauseIcon size="small"/>
+                        {orderPaused ? <PlayIcon size="small"/> : <PauseIcon size="small"/>}
                     </ListItemIcon>
-                    <ListItemText primary="Pause Order"/>
+                    <ListItemText primary={orderPaused ? "Activate Order" : "Pause Order"}/>
                 </MenuItem>
+
                 <MenuItem
                     onClick={(e) => {
                         setDeleteAlertDialogOpen(true)
@@ -176,7 +199,9 @@ const TableManagerActionMenu = (props) => {
                     </ListItemIcon>
                     <ListItemText primary="Delete Order"/>
                 </MenuItem>
+
                 <Divider/>
+
                 <MenuItem onClick={handleFullscreenOpen}>
                     <ListItemIcon>
                         <FullscreenIcon size="small"/>
