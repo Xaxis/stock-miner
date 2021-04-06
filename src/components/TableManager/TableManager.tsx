@@ -50,7 +50,6 @@ const TableManager = (props) => {
                     backgroundColor: 'transparent',
 
                     // Fix for when using customToolbarSelect
-                    // @todo - Track this issue here: github.com/gregnb/mui-datatables/issues/783
                     '& > *:first-child': {
                         display: 'none'
                     },
@@ -81,7 +80,7 @@ const TableManager = (props) => {
             },
 
             // Cell style overrides
-            '& .MuiTableCell-root': {
+            '& .MuiTableCell-root:not(.MuiTableCell-head)': {
                 '&:not(.datatables-noprint)': {
                     '& > *': {
                         overflow: 'hidden',
