@@ -176,7 +176,7 @@ class DBManager {
                 uuid = options.uuid,
                 profile = options.profile,
                 market = options.market,
-                status = 'Waiting',
+                status = 'Running',
                 paused = 'false',
                 symbol = options.symbol,
                 name = options.name,

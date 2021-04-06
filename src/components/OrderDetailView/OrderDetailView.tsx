@@ -11,8 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import TableManagerOrderBasic from '../TableManager/TableManagerOrderBasic'
 import TableManagerOrderDetail from '../TableManager/TableManagerOrderDetail'
 import TableManagerOrderHistory from '../TableManager/TableManagerOrderHistory'
-import TableManagerOrderStepper from "../TableManager/TableManagerOrderStepper";
-import Collapse from "@material-ui/core/Collapse";
+import TableManagerOrderStepper from '../TableManager/TableManagerOrderStepper'
 
 const OrderDetailView = (props) => {
     const {

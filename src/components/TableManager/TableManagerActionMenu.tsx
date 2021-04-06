@@ -81,7 +81,6 @@ const TableManagerActionMenu = (props) => {
 
     /**
      * Sends request to server to delete rows.
-     * @todo - Implement alert dialog before deleting rows.
      */
     useEffect(() => {
         let active = true

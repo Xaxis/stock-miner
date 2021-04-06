@@ -26,19 +26,15 @@ const TableManagerOrderStepper = (props) => {
     /**
      * Component states.
      */
-    const [activeStep, setActiveStep] = useState(2)
+    const [activeStep, setActiveStep] = useState(0)
     const [steps, setSteps] = useState([
         {
-            label: 'Waiting',
-            info: 'Place an order.'
-        },
-        {
             label: 'Running',
-            info: 'Order task is running.'
+            info: 'Order is running.'
         },
         {
             label: 'Executing',
-            info: 'Order task is executing.'
+            info: 'Order is executing.'
         },
         {
             label: 'Finished',

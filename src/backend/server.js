@@ -86,6 +86,7 @@ app.get('/app/get/config', (req, res) => {
         })
 })
 
+//@todo - Order/Status/History refactor
 app.get('/app/set/taskfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({task_frequency: req.params.ms})
         .then(() => {
@@ -102,6 +103,7 @@ app.get('/app/set/taskfrequency/:ms', (req, res) => {
         })
 })
 
+//@todo - Order/Status/History refactor
 app.get('/app/set/pollingfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
         .then(() => {
@@ -156,6 +158,7 @@ app.get('/app/get/profiles/history/:profile', (req, res) => {
         })
 })
 
+//@todo - Order/Status/History refactor
 app.get('/app/add/profiles/:profile', (req, res) => {
     let profile = req.params.profile
     DBM.add_profile_entry(profile)
@@ -165,11 +168,12 @@ app.get('/app/add/profiles/:profile', (req, res) => {
                     profile: profile,
                     event: 'PROFILE_CREATED',
                     info: `Created new profile: ${profile}`
-                })
-                DBM.add_profiles_history_entry({
-                    profile: profile,
-                    event: 'PROFILE_SET_PAUSED',
-                    info: `Profile '${profile}' has been paused.`
+                }).then(() => {
+                    DBM.add_profiles_history_entry({
+                        profile: profile,
+                        event: 'PROFILE_SET_ACTIVE',
+                        info: `Profile '${profile}' has been activated.`
+                    })
                 })
             }
             res.send({success: true})
@@ -202,6 +206,7 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
         })
 })
 
+//@todo - Order/Status/History refactor
 app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
     DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
         .then(() => {
@@ -217,66 +222,57 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
         })
 })
 
-// @todo - Re-think and Re-factor how Running/Waiting/Paused/etc order status is set and functions
+//@todo - Order/Status/History refactor
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     let profile = req.params.profile
     DBM.set_profile_status(profile, req.params.status)
         .then(() => {
             let profile_paused = req.params.status === 'paused'
 
-            // When a profile is set to paused, set all 'Running' order rows paused state to true
-            if (profile_paused) {
-                DBM.get_all_stock_orders_where_multi_field_values({profile: profile, status: 'Running'})
-                    .then((rows) => {
-                        rows.forEach((row) => {
-                            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: true})
+            // Update all profile orders statuses
+            DBM.get_all_stock_orders_where_multi_field_values({profile: profile})
+                .then((rows) => {
+                    rows.forEach((row) => {
+                        DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {
+                            paused: profile_paused
+                        })
 
-                            // Add order history entries
+                        // Add appropriate order status history
+                        if (profile_paused) {
                             DBM.add_stock_orders_history_entry({
                                 uuid: row.uuid,
                                 event: 'PAUSED',
-                                info: `Order PAUSED and waiting to run.`
+                                info: `Order set to paused.`
                             })
-                        })
-                        DT.build_all_active_tasks_from_db()
-                    })
+                        } else {
+                            DBM.add_stock_orders_history_entry({
+                                uuid: row.uuid,
+                                event: 'RUNNING',
+                                info: `Order set to run.`
+                            })
+                        }
 
-                // Add profiles history entry (profile paused)
-                if (profile !== 'noop') {
+                    })
+                    DT.build_all_active_tasks_from_db()
+                })
+
+            // Add profiles history entry (profile paused)
+            if (profile !== 'noop') {
+                if (profile_paused) {
                     DBM.add_profiles_history_entry({
                         profile: DT.get_active_stream_profile(),
                         event: 'PROFILE_SET_PAUSED',
                         info: `Profile '${profile}' has been paused.`
                     })
-                }
-            }
-
-            // Otherwise update orders to un-paused ('Running') state.
-            else {
-                DBM.get_all_stock_orders_where_multi_field_values({profile: profile, status: 'Running'})
-                    .then((rows) => {
-                        rows.forEach((row) => {
-                            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(row.uuid, {paused: false})
-
-                            // Add order history entries
-                            DBM.add_stock_orders_history_entry({
-                                uuid: row.uuid,
-                                event: 'RUNNING',
-                                info: `Order is running.`
-                            })
-                        })
-                        DT.build_all_active_tasks_from_db()
-                    })
-
-                // Add profiles history entry (profile active)
-                if (profile !== 'noop') {
+                } else {
                     DBM.add_profiles_history_entry({
                         profile: DT.get_active_stream_profile(),
                         event: 'PROFILE_SET_ACTIVE',
-                        info: `Profile '${profile}' set to active.`
+                        info: `Profile '${profile}' has been activated.`
                     })
                 }
             }
+
             res.send({success: true})
         })
         .catch(() => {
@@ -328,7 +324,7 @@ app.get('/app/get/orders/history/:uuid', (req, res) => {
         })
 })
 
-// @todo - Re-think and Re-factor how Running/Waiting/Paused/etc order status is set and functions
+//@todo - Order/Status/History refactor
 app.get('/app/set/orders/status/:uuid/:paused', (req, res) => {
     let uuid = req.params.uuid
     let paused = req.params.paused === 'true' ? 'true' : 'false'
@@ -341,13 +337,14 @@ app.get('/app/set/orders/status/:uuid/:paused', (req, res) => {
         DBM.add_stock_orders_history_entry({
             uuid: uuid,
             event: paused === 'true' ? 'PAUSED' : 'RUNNING',
-            info: paused === 'true' ? `Order is paused.` : `Order is running.`
+            info: paused === 'true' ? `Order set to paused.` : `Order set to run.`
         })
 
         res.send({success: true})
     })
 })
 
+//@todo - Order/Status/History refactor
 app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req, res) => {
     let profile, type, uuid, market, symbol, name;
     ({profile, type, uuid, market, symbol, name} = req.params)
@@ -383,7 +380,7 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
         DBM.add_stock_orders_history_entry({
             uuid: uuid,
             event: 'REGISTERED',
-            info: `Order was REGISTERED and waiting for action.`
+            info: `Order was registered.`
         })
     })
 })
@@ -406,6 +403,7 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
         })
 })
 
+//@todo - Order/Status/History refactor
 app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
     let uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc;
     ({uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc} = req.params)
@@ -432,7 +430,7 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                 DBM.add_stock_orders_history_entry({
                     uuid: uuid,
                     event: 'BUY',
-                    info: `Order BUY placed with $${cost_basis} cost basis and is waiting to run.`
+                    info: `Order BUY registered with $${cost_basis} cost basis.`
                 })
             }
             if (limit_buy || limit_sell) {
@@ -447,20 +445,6 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                     uuid: uuid,
                     event: 'LOSS_PREVENT',
                     info: `Order augmented with LOSS_PREVENT value: (${loss_perc}%).`
-                })
-            }
-            if (paused === 'true') {
-                DBM.add_stock_orders_history_entry({
-                    uuid: uuid,
-                    event: 'PAUSED',
-                    info: `Order is paused.`
-                })
-            }
-            if (paused === 'false') {
-                DBM.add_stock_orders_history_entry({
-                    uuid: uuid,
-                    event: 'RUNNING',
-                    info: `Order is running.`
                 })
             }
 
