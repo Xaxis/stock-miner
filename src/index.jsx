@@ -40,7 +40,7 @@ const App = function () {
         text: {
             primary: '#ffffff',
             secondary: 'rgba(255,255,255,0.7)',
-            disabled: 'rgba(255,255,255,0.4)'
+            disabled: 'rgba(255,255,255,0.3)'
         },
         action: {
             active: '#ffffff',
@@ -288,11 +288,14 @@ const App = function () {
             MuiTab: {
                 root: {
                     minWidth: 'auto !important',
-                    color: `${palette.text.secondary} !important`,
+                    color: `${palette.text.secondary}`,
                     textTransform: 'none',
                     '&$selected': {
                         backgroundColor: palette.secondary.main,
                         color: `${palette.text.primary} !important`
+                    },
+                    '&$disabled': {
+                        color: `${palette.text.disabled}`
                     },
                     '&:hover': {
                         backgroundColor: palette.secondary.main,

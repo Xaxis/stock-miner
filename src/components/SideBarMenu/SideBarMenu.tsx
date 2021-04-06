@@ -11,7 +11,7 @@ import Box from '@material-ui/core/Box'
 import Popover from '@material-ui/core/Popover'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney'
+import OrderIcon from '@material-ui/icons/Shop'
 import TuneIcon from '@material-ui/icons/Tune'
 import RecentActorsIcon from '@material-ui/icons/RecentActors'
 import ExtensionIcon from '@material-ui/icons/Extension'
@@ -56,6 +56,7 @@ TabPanel.propTypes = {
 const SideBarMenu = ({
                          ui,
                          currentSelectedRow,
+                         setSelectedRow,
                          setSideBarOpen,
                      }) => {
 
@@ -83,7 +84,7 @@ const SideBarMenu = ({
         tabs: {
             '& .MuiTab-root.tab-row-affecting': {},
             '& .MuiTab-root.tab-row-affecting + .MuiTab-root:not(.tab-row-affecting)': {
-                // borderTop: `1px solid ${theme.palette.secondary.main}`
+                borderTop: `1px solid ${theme.palette.secondary.main}`
             }
         },
         tabs_inactive: {
@@ -92,15 +93,21 @@ const SideBarMenu = ({
             },
             '& .MuiTab-root.Mui-selected': {
                 backgroundColor: 'transparent',
+                '&[disabled]': {
+                    color: `${theme.palette.text.disabled} !important`,
+                },
                 color: `${theme.palette.text.secondary} !important`,
                 '&:hover': {
                     backgroundColor: `${theme.palette.secondary.main}`,
                 }
-            }
+            },
         },
         tabs_row_selected: {
             '& .MuiTab-root.tab-row-affecting': {
-                color: `${theme.palette.primary.light} !important`
+                backgroundColor: `${theme.palette.secondary.dark} !important`,
+                '&:hover': {
+                    color: `${theme.palette.primary.light} !important`,
+                }
             }
         },
         popover: {
@@ -118,10 +125,8 @@ const SideBarMenu = ({
             left: '13px',
             bottom: '6px',
             color: theme.palette.text.disabled,
-            opacity: '0.25',
             '&:hover': {
                 color: theme.palette.text.secondary,
-                opacity: '1',
                 backgroundColor: 'transparent !important'
             }
         },
@@ -149,6 +154,20 @@ const SideBarMenu = ({
     const [lastSideBarSubMenu, setLastSideBarSubMenu] = useState('none')
 
     /**
+     * Auto close the side bar menu if a row is not selected and user has a sub menu
+     * open that pertains to an order row.
+     */
+    useEffect(() => {
+        if (!currentSelectedRow && (value !== 0 || value !== 1)) {
+            setSideBarMenuOpen(false)
+            setSideBarOpen(false)
+        } else {
+            setSideBarMenuOpen(true)
+            setSideBarOpen(true)
+        }
+    }, [currentSelectedRow])
+
+    /**
      * Handle switching tabs.
      */
     const handleChange = (e, newValue) => {
@@ -163,6 +182,7 @@ const SideBarMenu = ({
 
         // Otherwise, if the sideBarSubMenu is clicked again, close the sideBarMenu
         else {
+            setSelectedRow(null, [])
             setLastSideBarSubMenu('none')
             setSideBarMenuOpen(false)
             setSideBarOpen(false)
@@ -211,8 +231,9 @@ const SideBarMenu = ({
                 >
                     <Tab
                         className="tab-row-affecting"
-                        icon={<AttachMoneyIcon/>}
+                        icon={<OrderIcon/>}
                         aria-label="Order"
+                        disabled={currentSelectedRow ? false : true}
                         onMouseEnter={(e) => {
                             handlePopoverOpen(e, "Buy/Sell")
                         }}
@@ -222,6 +243,7 @@ const SideBarMenu = ({
                         className="tab-row-affecting"
                         icon={<ExtensionIcon/>}
                         aria-label="Extensions"
+                        disabled={currentSelectedRow ? false : true}
                         onMouseEnter={(e) => {
                             handlePopoverOpen(e, "Extensions")
                         }}
@@ -322,6 +344,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row)),
         setSideBarOpen: (open) => dispatch(ActionTypes.setSideBarOpen(open)),
     }
 }
