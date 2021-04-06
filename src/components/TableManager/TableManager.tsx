@@ -12,6 +12,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
+import TableManagerStatusColumn from './TableManagerStatusColumn'
 import TableManagerActionMenu from './TableManagerActionMenu'
 import {prepareDataTableValues} from '../../libs/value_conversions'
 
@@ -88,6 +89,8 @@ const TableManager = (props) => {
                         whiteSpace: 'nowrap'
                     }
                 },
+
+                // UUID column
                 '&[data-colindex="0"]:not(.datatables-noprint)': {
                     maxWidth: '50px !important',
                     '& > *': {
@@ -203,8 +206,13 @@ const TableManager = (props) => {
             label: "Status",
             options: {
                 filter: true,
-                sort: true
-            }
+                sort: true,
+                customBodyRender: (value, tableMeta) => {
+                    return (
+                        <TableManagerStatusColumn rowData={tableMeta.rowData}/>
+                    )
+                }
+            },
         },
         {
             name: "",
@@ -212,7 +220,6 @@ const TableManager = (props) => {
             options: {
                 filter: false,
                 sort: false,
-                display: true,
                 customBodyRender: (value, tableMeta) => {
                     return (
                         <TableManagerActionMenu rowData={tableMeta.rowData}/>

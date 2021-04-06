@@ -71,22 +71,25 @@ const TableManagerOrderHistory = (props) => {
                 color: theme.palette.text.primary,
                 backgroundColor: theme.palette.secondary.main,
                 '&.timelinedot-registered': {
-                    backgroundColor: theme.palette.secondary.main,
-                },
-                '&.timelinedot-buy': {
                     backgroundColor: theme.palette.primary.dark,
                 },
+                '&.timelinedot-buy': {
+                    backgroundColor: theme.palette.tertiary.dark,
+                },
                 '&.timelinedot-limit': {
-                    backgroundColor: theme.palette.quaternary.dark,
+                    backgroundColor: theme.palette.tertiary.dark,
                 },
                 '&.timelinedot-loss-prevent': {
-                    backgroundColor: theme.palette.quaternary.dark,
+                    backgroundColor: theme.palette.tertiary.dark,
                 },
                 '&.timelinedot-paused': {
-                    backgroundColor: theme.palette.tertiary.main,
+                    backgroundColor: theme.palette.secondary.main,
                 },
                 '&.timelinedot-running': {
                     backgroundColor: theme.palette.tertiary.main,
+                },
+                '&.timelinedot-finished': {
+                    backgroundColor: theme.palette.quaternary.dark
                 }
             }
         },
