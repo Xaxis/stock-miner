@@ -76,7 +76,7 @@ const TableManagerExpandableRow = (props) => {
                             <Typography>Order Progress</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TableManagerOrderStepper/>
+                            <TableManagerOrderStepper uuid={rowData[0]} row={rowData}/>
                         </AccordionDetails>
                     </Accordion>
 

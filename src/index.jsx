@@ -53,7 +53,24 @@ const App = function () {
             default: '#101010',
             paper: '#242424'
         },
-        divider: '#242424'
+        divider: '#242424',
+        status: {
+            registered: {
+                main: '#A835D8',
+                alt: '#4A1362'
+            },
+            running: {
+                main: '#33877f',
+                alt: '#004942'
+            },
+            finished: {
+                main: '#33bfff',
+                alt: '#007bb2'
+            },
+            paused: {
+                main: '#242424'
+            }
+        }
     }
 
     /**
@@ -113,7 +130,24 @@ const App = function () {
                 default: palette.background.default,
                 paper: palette.background.paper
             },
-            divider: palette.divider
+            divider: palette.divider,
+            status: {
+                registered: {
+                    main: palette.status.registered.main,
+                    alt: palette.status.registered.alt
+                },
+                running: {
+                    main: palette.status.running.main,
+                    alt: palette.status.running.alt
+                },
+                finished: {
+                    main: palette.status.finished.main,
+                    alt: palette.status.finished.alt
+                },
+                paused: {
+                    main: palette.status.paused.main
+                }
+            }
             // contrastThreshold: 0.5,
             // tonalOffset: 0.7
         },
@@ -380,6 +414,9 @@ const App = function () {
                             color: `${palette.text.primary} !important`
                         }
                     },
+                    '& .MuiAccordionSummary-content .MuiTypography-root': {
+                        fontWeight: 'bold !important'
+                    },
                     '& .MuiIconButton-label': {
                         color: `${palette.text.disabled} !important`
                     }
@@ -388,30 +425,6 @@ const App = function () {
             MuiAccordionDetails: {
                 root: {
                     padding: '16px'
-                }
-            },
-            MuiStepper: {
-                root: {
-                    padding: '8px',
-                    '& .MuiStepConnector-line': {
-                        borderColor: `${palette.secondary.main}`
-                    },
-                    '& .MuiStepConnector-completed .MuiStepConnector-line': {
-                        borderColor: `${palette.tertiary.main}`
-                    },
-                    '& .MuiStepConnector-active .MuiStepConnector-line': {
-                        borderColor: `${palette.primary.main}`
-                    }
-                }
-            },
-            MuiStep: {
-                root: {
-                    '& .MuiStepIcon-root:not(.MuiStepIcon-active)': {
-                        color: `${palette.secondary.main}`
-                    },
-                    '& .MuiStepIcon-completed': {
-                        color: `${palette.tertiary.main} !important`
-                    }
                 }
             },
             MuiCssBaseline: {

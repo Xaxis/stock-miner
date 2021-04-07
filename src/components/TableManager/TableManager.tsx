@@ -15,6 +15,7 @@ import TableManagerExpandableRow from './TableManagerExpandableRow'
 import TableManagerStatusColumn from './TableManagerStatusColumn'
 import TableManagerActionMenu from './TableManagerActionMenu'
 import {prepareDataTableValues} from '../../libs/value_conversions'
+import {getRowDataByUUID} from '../../libs/state_modifiers'
 
 const TableManager = (props) => {
     const {
@@ -380,19 +381,16 @@ const TableManager = (props) => {
                         },
                         fixedSelectColumn: true,
                         tableBodyHeight: 'calc(100vh - 237px)',
-                        // serverSide: true,
-                        // onTableChange: (action, tableState) => {
-                        //     console.log(action, tableState)
-                        // },
                         onRowSelectionChange: handleRowSelectionChange,
                         expandableRowsHeader: false,
                         expandableRows: true,
                         customToolbarSelect: (selectedRows, displayData, setSelectedRows) => {
+                            let uuid = displayData[selectedRows.data[0].index].data[0]
+                            let row = getRowDataByUUID(uuid, tableData)
                             return (
                                 <TableManagerSelectedRowsToolBar
-                                    selectedRows={selectedRows}
-                                    displayData={displayData}
-                                    setSelectedRows={setSelectedRows}
+                                    uuid={uuid}
+                                    row={row}
                                 />
                             )
                         },

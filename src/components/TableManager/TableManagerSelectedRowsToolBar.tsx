@@ -1,5 +1,4 @@
 import * as React from 'react'
-import {useState, useEffect, useRef} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
@@ -8,9 +7,8 @@ import TableManagerOrderStepper from './TableManagerOrderStepper'
 
 const TableManagerSelectedRowsToolBar = (props) => {
     const {
-        selectedRows,
-        displayData,
-        setSelectedRows,
+        uuid,
+        row,
         ...other
     } = props
 
@@ -24,26 +22,20 @@ const TableManagerSelectedRowsToolBar = (props) => {
         }
     }))()
 
-    /**
-     * Component states.
-     */
-
     return (
         <div className={classes.root}>
-            <TableManagerOrderStepper/>
+            <TableManagerOrderStepper uuid={uuid} row={row}/>
         </div>
     )
 }
 
 TableManagerSelectedRowsToolBar.propTypes = {
-    selectedRows: PropTypes.any.isRequired,
-    displayData: PropTypes.any.isRequired,
-    setSelectedRows: PropTypes.any.isRequired
+    uuid: PropTypes.any.isRequired,
+    row: PropTypes.any.isRequired,
 }
 
 const mapStateToProps = (state) => {
     return {
-        tableData: state.tableData,
     }
 }
 

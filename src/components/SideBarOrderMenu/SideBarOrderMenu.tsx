@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import {connect} from 'react-redux'
 import Accordion from '@material-ui/core/Accordion'
@@ -15,7 +15,9 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
-        root: {}
+        symbol: {
+            color: `${theme.palette.primary.light}`
+        }
     }))()
 
     /**
@@ -63,7 +65,7 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
                 >
                     <Typography>
                         Buy&nbsp;
-                        <span>{currentSymbol}</span>
+                        <span className={classes.symbol}>{currentSymbol}</span>
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -77,7 +79,7 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
                 >
                     <Typography>
                         Sell&nbsp;
-                        <span className="current-selected-trade-symbol">{currentSymbol}</span>
+                        <span className={classes.symbol}>{currentSymbol}</span>
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>

@@ -161,9 +161,6 @@ const SideBarMenu = ({
         if (!currentSelectedRow && (value !== 0 || value !== 1)) {
             setSideBarMenuOpen(false)
             setSideBarOpen(false)
-        } else {
-            setSideBarMenuOpen(true)
-            setSideBarOpen(true)
         }
     }, [currentSelectedRow])
 
