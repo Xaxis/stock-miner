@@ -49,7 +49,7 @@ export const getTableColumnsDefaultValues = () => {
  */
 export const getRowTemplateObject = () => {
     let key_values = [
-        ['_meta', {}],
+        ['_meta', {paused: 'false'}],
         ...getTableColumnsDefaultValues()
     ]
     return Object.fromEntries(key_values)

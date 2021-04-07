@@ -15,7 +15,7 @@ import TableManagerExpandableRow from './TableManagerExpandableRow'
 import TableManagerStatusColumn from './TableManagerStatusColumn'
 import TableManagerActionMenu from './TableManagerActionMenu'
 import {prepareDataTableValues} from '../../libs/value_conversions'
-import {getRowDataByUUID} from '../../libs/state_modifiers'
+import {getRowDataByUUID, makeRowObject, getRowTemplateObject} from '../../libs/state_modifiers'
 
 const TableManager = (props) => {
     const {
@@ -212,6 +212,7 @@ const TableManager = (props) => {
                 customBodyRender: (value, tableMeta) => {
                     let uuid = tableMeta.rowData[0]
                     let row = getRowDataByUUID(uuid, tableData)
+                    if (!row) row = Object.assign(getRowTemplateObject(), makeRowObject(tableMeta.rowData))
                     return (
                         <TableManagerStatusColumn row={row}/>
                     )
@@ -227,6 +228,7 @@ const TableManager = (props) => {
                 customBodyRender: (value, tableMeta) => {
                     let uuid = tableMeta.rowData[0]
                     let row = getRowDataByUUID(uuid, tableData)
+                    if (!row) row = Object.assign(getRowTemplateObject(), makeRowObject(tableMeta.rowData))
                     return (
                         <TableManagerActionMenu row={row}/>
                     )
