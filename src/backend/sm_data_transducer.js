@@ -283,7 +283,7 @@ class DataTransducer {
      */
     parse_row_data_status = (rows) => {
         let parsed_rows = rows.map((row) => {
-            if (row.status === 'Running' && row.paused === 'true') {
+            if (row.paused === 'true') {
                 row.status = 'Paused'
             }
             return row

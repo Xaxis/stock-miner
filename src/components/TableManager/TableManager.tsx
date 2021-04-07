@@ -370,7 +370,7 @@ const TableManager = (props) => {
                         filterType: "checkbox",
                         selectableRows: "single",
                         selectableRowsOnClick: true,
-                        responsive: "vertical",
+                        responsive: "standard",
                         rowsPerPage: 10,
                         resizableColumns: true,
                         elevation: 0,

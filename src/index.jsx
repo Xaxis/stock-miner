@@ -311,7 +311,9 @@ const App = function () {
                     backgroundColor: palette.secondary.darkAlt,
                     color: `${palette.text.disabled} !important`,
                     '&:last-child': {
-                        borderBottom: `1px solid ${palette.secondary.main}`,
+                        '& .MuiAccordionSummary-root': {
+                            borderBottom: `1px solid ${palette.secondary.main}`,
+                        }
                     },
                     '&:not(:first-child)': {
                         borderTop: `1px solid ${palette.secondary.main}`,
@@ -325,9 +327,6 @@ const App = function () {
                     '&$expanded': {
                         margin: 'auto',
                         color: `${palette.text.primary} !important`,
-                        '& > :first-child': {
-                            borderBottom: `1px solid ${palette.secondary.main}`
-                        }
                     },
                     '& + .MuiDivider-root': {
                         marginTop: '0 !important'
