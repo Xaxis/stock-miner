@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `loss_perc`         NUMERIC,
     `order_type`        TEXT NOT NULL DEFAULT 'undefined',
     `order_date`        DATE,
-    `exec_date`         DATE
+    `exec_date`         DATE,
+    `tasks`             TEXT NOT NULL DEFAULT '[]'
 );
 CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `id`                INTEGER NOT NULL PRIMARY KEY,
@@ -54,7 +55,8 @@ CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `loss_perc`         NUMERIC,
     `order_type`        TEXT NOT NULL DEFAULT 'undefined',
     `order_date`        DATE,
-    `exec_date`         DATE
+    `exec_date`         DATE,
+    `tasks`             TEXT NOT NULL DEFAULT '[]'
 );
 CREATE TABLE IF NOT EXISTS `Stock_Orders_History` (
     `id`                INTEGER NOT NULL PRIMARY KEY,
