@@ -72,7 +72,8 @@ const TableManager = (props) => {
                     }
                 },
                 '& .MuiTableCell-root': {
-                    padding: '12px 16px'
+                    padding: '0 0 0 16px',
+                    height: '48px'
                 }
             },
 
@@ -377,7 +378,7 @@ const TableManager = (props) => {
                         selectableRowsOnClick: true,
                         responsive: "standard",
                         rowsPerPage: 10,
-                        resizableColumns: true,
+                        // resizableColumns: true, @todo - Do we need this?
                         elevation: 0,
                         rowsSelected: currentSelectedRowIndex,
                         draggableColumns: {
