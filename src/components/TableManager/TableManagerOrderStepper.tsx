@@ -25,11 +25,20 @@ const TableManagerOrderStepper = (props) => {
         root: {
             width: '100%',
             padding: '8px',
+            '& .MuiTypography-root': {
+                color: theme.palette.text.disabled
+            },
+            '& .MuiTypography-root.MuiStepLabel-completed': {
+                color: theme.palette.text.primary
+            },
+            '& .MuiTypography-root.MuiStepLabel-completed + .MuiTypography-caption': {
+                color: theme.palette.text.primary
+            },
             '& .MuiStepConnector-line': {
                 borderColor: `${theme.palette.status.paused.main}`
             },
             '& .MuiStepConnector-completed .MuiStepConnector-line': {
-                borderColor: `${theme.palette.text.primary}`
+                borderColor: `${theme.palette.text.secondary}`
             },
         },
         step: {
@@ -38,27 +47,18 @@ const TableManagerOrderStepper = (props) => {
             }
         },
         registered: {
-            '& .MuiStepIcon-active': {
-                color: `${theme.palette.status.registered.main}`
-            },
             '& .MuiStepIcon-completed': {
-                color: `${theme.palette.status.registered.alt}`
+                color: `${theme.palette.status.registered.main}`
             }
         },
         running: {
-            '& .MuiStepIcon-active': {
-                color: `${theme.palette.status.running.main}`
-            },
             '& .MuiStepIcon-completed': {
-                color: `${theme.palette.status.running.alt}`
+                color: `${theme.palette.status.running.main}`
             }
         },
         finished: {
-            '& .MuiStepIcon-active': {
-                color: `${theme.palette.status.finished.main}`
-            },
             '& .MuiStepIcon-completed': {
-                color: `${theme.palette.status.finished.alt}`
+                color: `${theme.palette.status.finished.main}`
             }
         },
         paused: {
@@ -76,15 +76,15 @@ const TableManagerOrderStepper = (props) => {
     const [steps, setSteps] = useState([
         {
             label: 'Registered',
-            info: 'Order is being watched.'
+            info: 'Order being watched.'
         },
         {
             label: 'Running',
-            info: 'Order tasks are executing.'
+            info: 'Order processing tasks.'
         },
         {
             label: 'Finished',
-            info: 'Order has ended.'
+            info: 'Order has sold.'
         },
         {
             label: 'Paused',

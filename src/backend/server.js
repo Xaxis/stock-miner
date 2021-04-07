@@ -426,21 +426,21 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
             }
 
             // Add order history entries
-            if (cost_basis) {
+            if (parseFloat(cost_basis)) {
                 DBM.add_stock_orders_history_entry({
                     uuid: uuid,
                     event: 'BUY',
                     info: `Order BUY registered with $${cost_basis} cost basis.`
                 })
             }
-            if (limit_buy || limit_sell) {
+            if (parseFloat(limit_buy) || parseFloat(limit_sell)) {
                 DBM.add_stock_orders_history_entry({
                     uuid: uuid,
                     event: 'LIMIT',
                     info: `Order augmented with LIMIT values: (BUY: $${limit_buy}/SELL: $${limit_sell}).`
                 })
             }
-            if (loss_perc) {
+            if (parseFloat(loss_perc)) {
                 DBM.add_stock_orders_history_entry({
                     uuid: uuid,
                     event: 'LOSS_PREVENT',

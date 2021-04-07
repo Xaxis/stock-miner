@@ -83,6 +83,7 @@ const TableManagerStatusColumn = (props) => {
                 icon = <RegisteredIcon/>
         }
         return (
+            // @todo - Build status chip down arrows into sub-task viewer somehow.
             <div className={classes.root}>
                 <Chip
                     className={'chip-status-' + status.toLowerCase()}
