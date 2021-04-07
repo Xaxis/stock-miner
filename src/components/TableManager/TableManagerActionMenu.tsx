@@ -20,11 +20,10 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import AlertDialog from '../AlertDialog/AlertDialog'
 import FullscreenDialog from '../FullScreenDialog/FullScreenDialog'
 import OrderDetailView from '../OrderDetailView/OrderDetailView'
-import {getRowDataByUUID} from '../../libs/state_modifiers'
 
 const TableManagerActionMenu = (props) => {
     const {
-        rowData,
+        row,
         tableData,
         profileActive,
         tableIDActive,
@@ -54,7 +53,7 @@ const TableManagerActionMenu = (props) => {
     /**
      * Component states.
      */
-    const [rowUUID, setRowUUID] = useState(rowData[0])
+    const [rowUUID, setRowUUID] = useState(row.uuid)
     const [anchorEl, setAnchorEl] = useState(null)
     const [fullscreenOpen, setFullscreenOpen] = useState(false)
     const [symbol, setSymbol] = useState('')
@@ -68,15 +67,11 @@ const TableManagerActionMenu = (props) => {
      * Load row data by UUID.
      */
     useEffect(() => {
-        setRowUUID(rowData[0])
-        let row = getRowDataByUUID(rowData[0], tableData)
-
-        if (row) {
-            setSymbol(row.symbol)
-            setStockName(row.name)
-            setStockPrice('$' + row.price)
-            setOrderPaused(row._meta.paused === "true" ? true : false)
-        }
+        setRowUUID(row.uuid)
+        setSymbol(row.symbol)
+        setStockName(row.name)
+        setStockPrice('$' + row.price)
+        setOrderPaused(row._meta.paused === "true" ? true : false)
     }, [tableData])
 
     /**
@@ -215,7 +210,7 @@ const TableManagerActionMenu = (props) => {
                     setFullscreenOpen(false)
                 }}
                 title={`${symbol} (${stockName}) - ${stockPrice}`}>
-                <OrderDetailView rowData={rowData}/>
+                <OrderDetailView row={row}/>
             </FullscreenDialog>
 
             <AlertDialog
@@ -237,7 +232,7 @@ const TableManagerActionMenu = (props) => {
 }
 
 TableManagerActionMenu.propTypes = {
-    rowData: PropTypes.any.isRequired,
+    row: PropTypes.any.isRequired,
 }
 
 const mapStateToProps = (state) => {

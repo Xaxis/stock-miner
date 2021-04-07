@@ -24,13 +24,12 @@ const TableManagerSelectedRowsToolBar = (props) => {
 
     return (
         <div className={classes.root}>
-            <TableManagerOrderStepper uuid={uuid} row={row}/>
+            <TableManagerOrderStepper row={row}/>
         </div>
     )
 }
 
 TableManagerSelectedRowsToolBar.propTypes = {
-    uuid: PropTypes.any.isRequired,
     row: PropTypes.any.isRequired,
 }
 

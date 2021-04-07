@@ -209,8 +209,10 @@ const TableManager = (props) => {
                 filter: true,
                 sort: true,
                 customBodyRender: (value, tableMeta) => {
+                    let uuid = tableMeta.rowData[0]
+                    let row = getRowDataByUUID(uuid, tableData)
                     return (
-                        <TableManagerStatusColumn rowData={tableMeta.rowData}/>
+                        <TableManagerStatusColumn row={row}/>
                     )
                 }
             },
@@ -222,8 +224,10 @@ const TableManager = (props) => {
                 filter: false,
                 sort: false,
                 customBodyRender: (value, tableMeta) => {
+                    let uuid = tableMeta.rowData[0]
+                    let row = getRowDataByUUID(uuid, tableData)
                     return (
-                        <TableManagerActionMenu rowData={tableMeta.rowData}/>
+                        <TableManagerActionMenu row={row}/>
                     )
                 }
             }
@@ -395,8 +399,10 @@ const TableManager = (props) => {
                             )
                         },
                         renderExpandableRow: (rowData, rowMeta) => {
+                            let uuid = rowData[0]
+                            let row = getRowDataByUUID(uuid, tableData)
                             return (
-                                <TableManagerExpandableRow rowData={rowData} rowMeta={rowMeta}/>
+                                <TableManagerExpandableRow row={row} rowMeta={rowMeta}/>
                             )
                         },
                         textLabels: {

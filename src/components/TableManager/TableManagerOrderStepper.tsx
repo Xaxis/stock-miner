@@ -10,11 +10,9 @@ import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
 import Typography from '@material-ui/core/Typography'
 import clsx from "clsx";
-import Drawer from "@material-ui/core/Drawer";
 
 const TableManagerOrderStepper = (props) => {
     const {
-        uuid,
         row,
         tableData,
         ...other
@@ -41,26 +39,26 @@ const TableManagerOrderStepper = (props) => {
         },
         registered: {
             '& .MuiStepIcon-active': {
-                color: `${theme.palette.status.registered.alt}`
+                color: `${theme.palette.status.registered.main}`
             },
             '& .MuiStepIcon-completed': {
-                color: `${theme.palette.status.registered.main}`
+                color: `${theme.palette.status.registered.alt}`
             }
         },
         running: {
             '& .MuiStepIcon-active': {
-                color: `${theme.palette.status.running.alt}`
+                color: `${theme.palette.status.running.main}`
             },
             '& .MuiStepIcon-completed': {
-                color: `${theme.palette.status.running.main}`
+                color: `${theme.palette.status.running.alt}`
             }
         },
         finished: {
             '& .MuiStepIcon-active': {
-                color: `${theme.palette.status.finished.alt}`
+                color: `${theme.palette.status.finished.main}`
             },
             '& .MuiStepIcon-completed': {
-                color: `${theme.palette.status.finished.main}`
+                color: `${theme.palette.status.finished.alt}`
             }
         },
         paused: {
@@ -73,7 +71,7 @@ const TableManagerOrderStepper = (props) => {
     /**
      * Component states.
      */
-    const [status, setStatus] = useState('Registered')
+    const [status, setStatus] = useState(row.status)
     const [activeStep, setActiveStep] = useState(0)
     const [steps, setSteps] = useState([
         {
@@ -100,22 +98,20 @@ const TableManagerOrderStepper = (props) => {
      * Update status progress based on current order status.
      */
     useEffect(() => {
-        if (row) {
-            setStatus(row.status)
-            switch (row.status) {
-                case 'Registered' :
-                    setActiveStep(1)
-                    break
-                case 'Running' :
-                    setActiveStep(2)
-                    break
-                case 'Finished' :
-                    setActiveStep(3)
-                    break
-                case 'Paused' :
-                    setActiveStep(2)
-                    break
-            }
+        setStatus(row.status)
+        switch (row.status) {
+            case 'Registered' :
+                setActiveStep(1)
+                break
+            case 'Running' :
+                setActiveStep(2)
+                break
+            case 'Finished' :
+                setActiveStep(3)
+                break
+            case 'Paused' :
+                setActiveStep(2)
+                break
         }
     }, [tableData])
 
@@ -172,7 +168,6 @@ const TableManagerOrderStepper = (props) => {
 }
 
 TableManagerOrderStepper.propTypes = {
-    uuid: PropTypes.any.isRequired,
     row: PropTypes.any.isRequired
 }
 

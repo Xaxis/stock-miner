@@ -15,7 +15,7 @@ import TableManagerOrderStepper from '../TableManager/TableManagerOrderStepper'
 
 const OrderDetailView = (props) => {
     const {
-        rowData,
+        row,
         tableData,
         ...other
     } = props
@@ -60,7 +60,7 @@ const OrderDetailView = (props) => {
                     <Typography>Order Progress</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <TableManagerOrderStepper uuid={rowData[0]} row={rowData}/>
+                    <TableManagerOrderStepper row={row}/>
                 </AccordionDetails>
             </Accordion>
 
@@ -73,7 +73,7 @@ const OrderDetailView = (props) => {
                     <Typography>Order Overview</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <TableManagerOrderBasic rowData={rowData}/>
+                    <TableManagerOrderBasic row={row}/>
                 </AccordionDetails>
             </Accordion>
 
@@ -86,7 +86,7 @@ const OrderDetailView = (props) => {
                     <Typography>Order Details</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <TableManagerOrderDetail rowData={rowData}/>
+                    <TableManagerOrderDetail row={row}/>
                 </AccordionDetails>
             </Accordion>
 
@@ -99,7 +99,7 @@ const OrderDetailView = (props) => {
                     <Typography>Order History</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <TableManagerOrderHistory uuid={rowData[0]}/>
+                    <TableManagerOrderHistory uuid={row.uuid}/>
                 </AccordionDetails>
             </Accordion>
         </>
@@ -107,7 +107,7 @@ const OrderDetailView = (props) => {
 }
 
 OrderDetailView.propTypes = {
-    rowData: PropTypes.any.isRequired
+    row: PropTypes.any.isRequired
 }
 
 const mapStateToProps = (state) => {

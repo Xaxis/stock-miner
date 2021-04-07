@@ -6,8 +6,6 @@
 
 /**
  * Returns a reference to a row in tableData by UUID and null if not found.
- * @param uuid {String} The UUID string to search for.
- * @param data {Array} A reference to the tableData array.
  */
 export const getRowDataByUUID = (uuid, data) => {
     let result = null
@@ -26,4 +24,44 @@ export const getRowDataByUUID = (uuid, data) => {
     } else {
         return null
     }
+}
+
+/**
+ * Returns a list of default key value pairs in the mui datatable columns.
+ */
+export const getTableColumnsDefaultValues = () => {
+    return [
+        ['uuid', ''],
+        ['market', ''],
+        ['symbol', ''],
+        ['name', ''],
+        ['price', 0],
+        ['equity', 0],
+        ['limit_buy', 0],
+        ['limit_sell', 0],
+        ['loss_perc', 0],
+        ['status', '']
+    ]
+}
+
+/**
+ * Returns a row object template (used in the mui datatable).
+ */
+export const getRowTemplateObject = () => {
+    let key_values = [
+        ['_meta', {}],
+        ...getTableColumnsDefaultValues()
+    ]
+    return Object.fromEntries(key_values)
+}
+
+/**
+ * Returns the mui datatable row array as an object with its associated keys.
+ */
+export const makeRowObject = (row_arr) => {
+    let key_values = getTableColumnsDefaultValues().map((pair, index) => {
+        pair[1] = row_arr[index]
+        return pair
+    })
+    return Object.fromEntries(key_values)
 }

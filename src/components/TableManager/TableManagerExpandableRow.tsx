@@ -18,8 +18,7 @@ import TableManagerOrderBasic from './TableManagerOrderBasic'
 
 const TableManagerExpandableRow = (props) => {
     const {
-        rowData,
-        rowMeta,
+        row,
         tableData,
         ...other
     } = props
@@ -76,7 +75,7 @@ const TableManagerExpandableRow = (props) => {
                             <Typography>Order Progress</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TableManagerOrderStepper uuid={rowData[0]} row={rowData}/>
+                            <TableManagerOrderStepper row={row}/>
                         </AccordionDetails>
                     </Accordion>
 
@@ -89,7 +88,7 @@ const TableManagerExpandableRow = (props) => {
                             <Typography>Order Overview</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TableManagerOrderBasic rowData={rowData}/>
+                            <TableManagerOrderBasic row={row}/>
                         </AccordionDetails>
                     </Accordion>
 
@@ -102,7 +101,7 @@ const TableManagerExpandableRow = (props) => {
                             <Typography>Order Details</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TableManagerOrderDetail rowData={rowData}/>
+                            <TableManagerOrderDetail row={row}/>
                         </AccordionDetails>
                     </Accordion>
 
@@ -115,7 +114,7 @@ const TableManagerExpandableRow = (props) => {
                             <Typography>Order History</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TableManagerOrderHistory uuid={rowData[0]}/>
+                            <TableManagerOrderHistory uuid={row.uuid}/>
                         </AccordionDetails>
                     </Accordion>
                 </Collapse>
@@ -125,8 +124,7 @@ const TableManagerExpandableRow = (props) => {
 }
 
 TableManagerExpandableRow.propTypes = {
-    rowData: PropTypes.any.isRequired,
-    rowMeta: PropTypes.any.isRequired
+    row: PropTypes.any.isRequired,
 }
 
 const mapStateToProps = (state) => {

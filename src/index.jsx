@@ -29,9 +29,9 @@ const App = function () {
             dark: '#004942'
         },
         quaternary: {
-            main: '#00b0ff',
-            light: '#33bfff',
-            dark: '#007bb2'
+            main: '#007bb2',
+            light: '#3395c1',
+            dark: '#00567c'
         },
         error: {},
         warning: {},
@@ -56,16 +56,16 @@ const App = function () {
         divider: '#242424',
         status: {
             registered: {
-                main: '#A835D8',
-                alt: '#4A1362'
+                alt: '#A835D8',
+                main: '#4A1362'
             },
             running: {
-                main: '#33877f',
-                alt: '#004942'
+                alt: '#33877f',
+                main: '#004942'
             },
             finished: {
-                main: '#33bfff',
-                alt: '#007bb2'
+                alt: '#007bb2',
+                main: '#00567c'
             },
             paused: {
                 main: '#242424'

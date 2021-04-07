@@ -9,16 +9,12 @@ import RegisteredIcon from '@material-ui/icons/Add'
 import RunningIcon from '@material-ui/icons/DirectionsRun'
 import PausedIcon from '@material-ui/icons/Pause'
 import FinishedIcon from '@material-ui/icons/CheckCircle'
-import {getRowDataByUUID} from '../../libs/state_modifiers'
+import DownArrowIcon from '@material-ui/icons/ArrowDropDownCircle'
 
 const TableManagerStatusColumn = (props) => {
     const {
-        rowData,
+        row,
         tableData,
-        profileActive,
-        tableIDActive,
-        tableTypeActive,
-        setSelectedRow,
         ...other
     } = props
 
@@ -27,24 +23,27 @@ const TableManagerStatusColumn = (props) => {
      */
     const classes = makeStyles(theme => ({
         root: {
+            '& .MuiChip-deleteIcon': {
+                backgroundColor: 'transparent'
+            },
             '& .chip-status-registered': {
                 '&.MuiChip-root': {
-                    backgroundColor: theme.palette.primary.dark
+                    backgroundColor: theme.palette.status.registered.main
                 }
             },
             '& .chip-status-running': {
                 '&.MuiChip-root': {
-                    backgroundColor: theme.palette.tertiary.dark
+                    backgroundColor: theme.palette.status.running.main
                 }
             },
             '& .chip-status-paused': {
                 '&.MuiChip-root': {
-                    backgroundColor: theme.palette.secondary.main
+                    backgroundColor: theme.palette.status.paused.main
                 }
             },
             '& .chip-status-finished': {
                 '&.MuiChip-root': {
-                    backgroundColor: theme.palette.quaternary.dark
+                    backgroundColor: theme.palette.status.finished.main
                 }
             }
         }
@@ -53,18 +52,13 @@ const TableManagerStatusColumn = (props) => {
     /**
      * Component states.
      */
-    const [rowUUID, setRowUUID] = useState(rowData[0])
-    const [status, setStatus] = useState('')
+    const [status, setStatus] = useState(row.status)
 
     /**
      * Load row data by UUID.
      */
     useEffect(() => {
-        setRowUUID(rowData[0])
-        let row = getRowDataByUUID(rowData[0], tableData)
-        if (row) {
-            setStatus(row.status)
-        }
+        setStatus(row.status)
     }, [tableData])
 
     /**
@@ -95,6 +89,9 @@ const TableManagerStatusColumn = (props) => {
                     size="small"
                     label={status}
                     icon={icon}
+                    clickable
+                    onDelete={() => {}}
+                    deleteIcon={<DownArrowIcon/>}
                 />
             </div>
         )
@@ -108,15 +105,12 @@ const TableManagerStatusColumn = (props) => {
 }
 
 TableManagerStatusColumn.propTypes = {
-    rowData: PropTypes.any.isRequired,
+    row: PropTypes.any.isRequired,
 }
 
 const mapStateToProps = (state) => {
     return {
         tableData: state.tableData,
-        profileActive: state.profileActive,
-        tableIDActive: state.tableIDActive,
-        tableTypeActive: state.tableTypeActive
     }
 }
 

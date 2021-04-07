@@ -5,11 +5,10 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
-import {getRowDataByUUID} from '../../libs/state_modifiers'
 
 const TableManagerOrderBasic = (props) => {
     const {
-        rowData,
+        row,
         tableData,
         ...other
     } = props
@@ -49,7 +48,6 @@ const TableManagerOrderBasic = (props) => {
      * Update data whenever tableData is modified.
      */
     useEffect(() => {
-        let row = getRowDataByUUID(rowData[0], tableData)
         setSymbol(row.symbol)
         setName(row.name)
         setStatus(row.status)
@@ -154,7 +152,7 @@ const TableManagerOrderBasic = (props) => {
 }
 
 TableManagerOrderBasic.propTypes = {
-    rowData: PropTypes.any.isRequired
+    row: PropTypes.any.isRequired
 }
 
 const mapStateToProps = (state) => {

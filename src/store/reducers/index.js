@@ -1,19 +1,8 @@
 import * as ActionTypes from '../actions/action_types'
+import {getRowTemplateObject} from '../../libs/state_modifiers'
 
 const templateObjects = {
-    tableRow: {
-        _meta: {},
-        uuid: '',
-        market: '-',
-        symbol: '-',
-        name: '-',
-        price: 0.00,
-        equity: 0.00,
-        limit_buy: 0.00,
-        limit_sell: 0.00,
-        loss_perc: 0.00,
-        status: '-'
-    }
+    tableRow: getRowTemplateObject()
 }
 
 const initialState = {
