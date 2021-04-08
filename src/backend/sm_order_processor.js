@@ -6,61 +6,154 @@ class OrderProcessor {
     constructor(DBManager) {
         this.DB = DBManager
         this.TASK_ORDER = [
+            'LOSS_PREVENT',
             'LIMIT_BUY',
             'BUY',
-            'LOSS_PREVENT',
             'SELL',
             'LIMIT_SELL'
         ]
-        this.TASK_EXECUTION_PROCEDURE = [
+        this.TASK_PROCEDURES = {
 
-            // 1. - LIMIT_BUY if task exists (if/when limit point is reached)
-            {
-                event: 'LIMIT_BUY',
-                rules: []
+            /**
+             * BUY: Buys an order.
+             */
+            BUY: {
+                process: (order, tasks_obj) => {
+                    let buy = this.get_order_task_by_event(tasks_obj, 'BUY')
+                    let limit_buy = this.get_order_task_by_event(tasks_obj, 'LIMIT_BUY')
+                    let sell = this.get_order_task_by_event(tasks_obj, 'SELL')
+                    if (
+                        !this.is_order_task_done(buy)
+                        && !limit_buy
+                        && !this.is_order_task_done(sell)
+                    ) {
+                        // @todo - Build complete execution steps
+                        this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                            tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true})
+                        })
+                        return true
+                    }
+                    return false
+                }
             },
 
-            // 2. - BUY if LIMIT_BUY task does not exist (at price or acceptable tolerance percentage)
-            {
-                event: 'BUY',
-                rules: [
-                    ['LIMIT_BUY', false]
-                ]
+            /**
+             * SELL: Sells an order.
+             */
+            SELL: {
+                process: (order, tasks_obj) => {
+                    let buy = this.get_order_task_by_event(tasks_obj, 'BUY')
+                    let limit_sell = this.get_order_task_by_event(tasks_obj, 'LIMIT_SELL')
+                    let sell = this.get_order_task_by_event(tasks_obj, 'SELL')
+                    if (
+                        !this.is_order_task_done(sell)
+                        && !limit_sell
+                        && this.is_order_task_done(buy)
+                    ) {
+                        // @todo - Build complete execution steps
+                        this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                            tasks: this.update_order_task_by_event(tasks_obj, 'SELL', {done: true})
+                        })
+                        sell.done = true
+                        return true
+                    }
+                    return false
+                }
             },
 
-            // 3. - LOSS_PREVENT (sell) if loss percentage is hit (if BUY or LIMIT_BUY tasks complete)
-            {
-                event: 'LOSS_PREVENT',
-                rules: [
-                    ['BUY', true],
-                    ['LIMIT_BUY', true]
-                ]
+            /**
+             * LIMIT_BUY: Buys an order at value point.
+             */
+            LIMIT_BUY: {
+                process: (order, tasks_obj) => {
+                    let buy = this.get_order_task_by_event(tasks_obj, 'BUY')
+                    let limit_buy = this.get_order_task_by_event(tasks_obj, 'LIMIT_BUY')
+                    let sell = this.get_order_task_by_event(tasks_obj, 'SELL')
+                    if (
+                        !this.is_order_task_done(limit_buy)
+                        && !this.is_order_task_done(sell)
+                        && this.is_limit_buy_point_hit(order.price, order.limit_buy)
+                    ) {
+                        // @todo - Build complete execution steps
+                        this.update_order_task_by_event(tasks_obj, 'BUY', {done: true})
+                        this.update_order_task_by_event(tasks_obj, 'LIMIT_BUY', {done: true})
+                        this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                            tasks: tasks_obj
+                        })
+                        return true
+                    }
+                    return false
+                }
             },
 
-            // 4. - LIMIT_SELL - ...
-            {
-                event: 'LIMIT_SELL',
-                rules: [
-                    ['BUY', true],
-                    ['LIMIT_BUY', true]
-                ]
+            /**
+             * LOSS_SELL: Sells an order at value point.
+             */
+            LIMIT_SELL: {
+                process: (order, tasks_obj) => {
+                    let buy = this.get_order_task_by_event(tasks_obj, 'BUY')
+                    let limit_sell = this.get_order_task_by_event(tasks_obj, 'LIMIT_SELL')
+                    let sell = this.get_order_task_by_event(tasks_obj, 'SELL')
+                    if (
+                        !this.is_order_task_done(limit_sell)
+                        && !this.is_order_task_done(sell)
+                        && this.is_order_task_done(buy)
+                        && this.is_limit_sell_point_hit(order.price, order.limit_sell)
+                    ) {
+                        // @todo - Build complete execution steps
+                        this.update_order_task_by_event(tasks_obj, 'SELL', {done: true})
+                        this.update_order_task_by_event(tasks_obj, 'LIMIT_SELL', {done: true})
+                        this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                            tasks: tasks_obj
+                        })
+                        return true
+                    }
+                    return false
+                }
             },
-        ]
+
+            /**
+             * LOSS_PREVENT: Auto sells an order when % loss value point hit.
+             */
+            LOSS_PREVENT: {
+                process: (order, tasks_obj) => {
+                    let loss_prevent = this.get_order_task_by_event(tasks_obj, 'LOSS_PREVENT')
+                    let buy = this.get_order_task_by_event(tasks_obj, 'BUY')
+                    let limit_buy = this.get_order_task_by_event(tasks_obj, 'LIMIT_BUY')
+                    let sell = this.get_order_task_by_event(tasks_obj, 'SELL')
+                    if (
+                        !this.is_order_task_done(loss_prevent)
+                        && (this.is_order_task_done(buy) || this.is_order_task_done(limit_buy))
+                        && this.is_order_task_done(sell)
+                        && this.is_loss_prevent_point_hit(order.purchase_price, order.price, order.loss_perc)
+                    ) {
+                        // @todo - Build complete execution steps
+                        this.update_order_task_by_event(tasks_obj, 'SELL', {done: true})
+                        this.update_order_task_by_event(tasks_obj, 'LIMIT_SELL', {done: true})
+                        this.update_order_task_by_event(tasks_obj, 'LOSS_PREVENT', {done: true})
+                        this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                            tasks: tasks_obj
+                        })
+                        return true
+                    }
+                    return false
+                }
+            }
+        }
     }
 
     /**
      * The main order processor function. This should be the only method used
      * outside this class.
-     * @todo - Under Construction!!!
      */
     process_order = (order) => {
         let tasks_obj = this.get_order_tasks_object(order)
-
-        // Process tasks in correct order
         this.TASK_ORDER.forEach((event) => {
             let task = this.get_order_task_by_event(tasks_obj, event)
             if (task) {
-                console.log(task)
+                if (this.TASK_PROCEDURES[event].process(order, tasks_obj)) {
+                    console.log(`SMOP: Task ${event} is being processed for order: ${order.uuid}`)
+                }
             }
         })
 
@@ -77,6 +170,18 @@ class OrderProcessor {
     }
 
     /**
+     * Update a task object corresponding to a given event and return the tasks object.
+     */
+    update_order_task_by_event = (tasks, event, key_values) => {
+        tasks.forEach((task) => {
+            if (task.event === event) {
+                task = Object.assign(task, key_values)
+            }
+        })
+        return tasks
+    }
+
+    /**
      * Returns a list of order tasks to perform.
      */
     get_order_tasks_object = (order) => {
@@ -84,11 +189,28 @@ class OrderProcessor {
     }
 
     /**
+     * Returns 'true' when a task object's 'done' property is true.
+     */
+    is_order_task_done = (task) => {
+        if (task) {
+            if (task.length) {
+                if (task[0].done) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * Returns true when a loss prevent percent point has been hit.
      */
     is_loss_prevent_point_hit = (purchase_price, current_price, loss_percent) => {
-        let percent_point = ((parseFloat(purchase_price) / parseFloat(current_price)) * 100).toFixed(2)
-        return percent_point >= parseFloat(loss_percent)
+        let clean_purchase_price = parseFloat(purchase_price)
+        let clean_current_price = parseFloat(current_price)
+        let change = clean_current_price - clean_purchase_price
+        let percent_change = ((change / clean_purchase_price) * 100)
+        return Math.abs(percent_change) >= Math.abs(loss_percent)
     }
 
     /**
