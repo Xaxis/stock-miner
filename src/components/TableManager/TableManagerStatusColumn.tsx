@@ -59,6 +59,11 @@ const TableManagerStatusColumn = (props) => {
      */
     useEffect(() => {
         setStatus(row.status)
+
+        // @todo - Build sub tasks status menu
+        // let sub_tasks = JSON.parse(row._meta.tasks)
+        // console.log(sub_tasks)
+
     }, [tableData])
 
     /**
@@ -90,9 +95,9 @@ const TableManagerStatusColumn = (props) => {
                     size="small"
                     label={status}
                     icon={icon}
-                    clickable
+                    clickable={status === 'Running'}
                     onDelete={() => {}}
-                    deleteIcon={<DownArrowIcon/>}
+                    deleteIcon={(status === 'Running') ? <DownArrowIcon/> : <></>}
                 />
             </div>
         )

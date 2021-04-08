@@ -166,7 +166,7 @@ class OrderProcessor {
         let result = tasks.filter((task) => {
             return task.event === event
         })
-        return result.length ? result : null
+        return result.length ? result[0] : null
     }
 
     /**
@@ -193,10 +193,8 @@ class OrderProcessor {
      */
     is_order_task_done = (task) => {
         if (task) {
-            if (task.length) {
-                if (task[0].done) {
-                    return true
-                }
+            if (task.done) {
+                return true
             }
         }
         return false
