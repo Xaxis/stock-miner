@@ -427,6 +427,17 @@ const App = function () {
                     padding: '16px'
                 }
             },
+            MuiPopover: {
+                root: {
+                    pointerEvents: 'none',
+                    '& .MuiPaper-root': {
+                        backgroundColor: `${palette.secondary.main} !important`,
+                        color: palette.text.secondary,
+                        padding: '4px',
+                        borderRadius: '2px !important',
+                    }
+                }
+            },
             MuiCssBaseline: {
                 '@global': {
                     '*': {

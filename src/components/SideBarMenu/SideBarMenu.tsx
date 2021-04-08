@@ -111,14 +111,7 @@ const SideBarMenu = ({
             }
         },
         popover: {
-            pointerEvents: 'none',
-            marginLeft: '8px',
-            '& .MuiPaper-root': {
-                backgroundColor: `${theme.palette.secondary.main} !important`,
-                color: theme.palette.text.secondary,
-                padding: '4px',
-                borderRadius: '2px !important',
-            }
+            marginLeft: '8px'
         },
         menu_toggle: {
             position: 'absolute',
