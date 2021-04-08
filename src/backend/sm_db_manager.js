@@ -502,7 +502,8 @@ class DBManager {
         let end_idx = 0
         let fv_length = Object.keys(field_values).length
         for (const [field, value] of Object.entries(field_values)) {
-            sql += `${field} = "${value}"`
+            let parsed_value = (typeof(value) === 'object') ? JSON.stringify(value) : value
+            sql += `${field} = '${parsed_value}'`
             end_idx += 1
             if (end_idx < fv_length) {
                 sql += ", "
@@ -531,6 +532,7 @@ class DBManager {
      * 'update_stock_orders_by_profile_with_multi_field_values` except it updates any matching rows
      * in both tables.
      */
+    // @todo - Is this being used anywhere? If it's not, remove.
     update_all_stock_orders_by_profile_with_multi_field_values = (profile, field_values) => {
         const self = this
         return new Promise(function (resolve, reject) {
@@ -561,7 +563,8 @@ class DBManager {
         let end_idx = 0
         let fv_length = Object.keys(field_values).length
         for (const [field, value] of Object.entries(field_values)) {
-            sql += `${field} = "${value}"`
+            let parsed_value = (typeof(value) === 'object') ? JSON.stringify(value) : value
+            sql += `${field} = '${parsed_value}'`
             end_idx += 1
             if (end_idx < fv_length) {
                 sql += ", "

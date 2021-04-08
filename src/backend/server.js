@@ -436,7 +436,7 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
             // Add order tasks & history entries
             if (cost_basis) {
                 order_tasks.push({
-                    task: 'BUY',
+                    event: 'BUY',
                     value: cost_basis,
                     done: false
                 })
@@ -454,14 +454,14 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                 })
                 if (limit_buy) {
                     order_tasks.push({
-                        task: 'LIMIT_BUY',
+                        event: 'LIMIT_BUY',
                         value: limit_buy,
                         done: false
                     })
                 }
                 if (limit_sell) {
                     order_tasks.push({
-                        task: 'LIMIT_SELL',
+                        event: 'LIMIT_SELL',
                         value: limit_sell,
                         done: false
                     })
@@ -474,7 +474,7 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                     info: `Order augmented with LOSS_PREVENT value: (${loss_perc}%).`
                 })
                 order_tasks.push({
-                    task: 'LOSS_PREVENT',
+                    event: 'LOSS_PREVENT',
                     value: loss_perc,
                     done: false
                 })

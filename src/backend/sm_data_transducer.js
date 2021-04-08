@@ -33,7 +33,7 @@ class DataTransducer {
         this.TASK_INTERVAL = setInterval(() => {
 
             // Update the database with the most recent stream data
-            // if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
+            if (this.ALL_TASKS.length) console.log(`SMDT: Executing scheduled tasks for: ${this.ALL_TASKS.length} rows.`)
             this.ALL_TASKS.forEach((task) => {
                 let data = this.DP.STREAM_DATA[task.market][task.symbol]
                 let set_data = {
@@ -45,11 +45,19 @@ class DataTransducer {
                 // Attempt to update rows in Stock_Simulations and Stock_Orders tables with new data. We attempt
                 // to update in both because we don't know in which type of order table the order/row exists.
                 this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(task.uuid, set_data)
+                    .then(() => {
 
-                // Check and run Order tasks
-                // @todo - Build this
-                this.OP.process_order(task)
+                        // Retrieve the current task and hand it's associated fields off to the order processor.
+                        this.DB.get_all_stock_orders_where_multi_field_values({uuid: task.uuid})
+                            .then((row) => {
+                                let task_row = row[0]
 
+                                // Proceed when task is not paused.
+                                if (task_row.paused === 'false') {
+                                    this.OP.process_order(task)
+                                }
+                            })
+                    })
             })
         }, period)
     }
