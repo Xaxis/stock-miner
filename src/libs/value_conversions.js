@@ -34,21 +34,19 @@ export const toPercentString = (value) => {
 }
 
 /**
- * Convert a money string to a clean float value. Passing 'novalue' as true
- * returns the cleaned value as a string.
+ * Convert a money string to a clean value.
  */
-export const toMoneyValue = (string, novalue = false) => {
-    let value = string.toString().replace(/[^0-9.]/g, '')
-    return novalue ? value : parseFloat(value)
+export const toMoneyValue = (string) => {
+    let value = string.toString().replace(/\$/g, '').replace(/[^0-9.]|\.(?=.*\.)/g, '')
+    return value
 }
 
 /**
- * Convert a percent string to a clean float value. Passing 'novalue' as true
- * returns the cleaned value as a string.
+ * Convert a percent string to a clean value.
  */
-export const toPercentValue = (string, novalue = false) => {
-    let value = string.toString().replace(/[^0-9.\-\+]/g, '')
-    return novalue ? value : parseFloat(value)
+export const toPercentValue = (string) => {
+    let value = string.toString().replace('%', '').replace(/[^\+0-9.-]|\.(?=.*\.)/g, '')
+    return value
 }
 
 /**

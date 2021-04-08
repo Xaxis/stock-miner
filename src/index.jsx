@@ -430,10 +430,10 @@ const App = function () {
             MuiPopover: {
                 root: {
                     '& .MuiPaper-root': {
-                        backgroundColor: `${palette.secondary.main} !important`,
-                        color: palette.text.secondary,
-                        padding: '4px',
-                        borderRadius: '2px !important',
+                        backgroundColor: `${palette.secondary.dark}`,
+                        '& .MuiListItem-root.Mui-selected': {
+                            backgroundColor: `${palette.secondary.main}`,
+                        }
                     }
                 }
             },

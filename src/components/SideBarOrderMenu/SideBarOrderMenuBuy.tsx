@@ -83,10 +83,10 @@ const SideBarOrderMenuBuy = (props) => {
     const [limitSellAmountPlaceholder, setLimitSellAmountPlaceholder] = useState("$0.00")
     const [limitBuyPercent, setLimitBuyPercent] = useState("")
     const [limitBuyPercentLabel, setLimitBuyPercentLabel] = useState("Buy Limit % ($0.00)")
-    const [limitBuyPercentPlaceholder, setLimitBuyPercentPlaceholder] = useState("-0.00")
+    const [limitBuyPercentPlaceholder, setLimitBuyPercentPlaceholder] = useState("0.00")
     const [limitSellPercent, setLimitSellPercent] = useState("")
     const [limitSellPercentLabel, setLimitSellPercentLabel] = useState("Sell Limit % ($0.00)")
-    const [limitSellPercentPlaceholder, setLimitSellPercentPlaceholder] = useState("+0.00")
+    const [limitSellPercentPlaceholder, setLimitSellPercentPlaceholder] = useState("0.00")
 
     /**
      * Loss prevention values.
@@ -169,7 +169,7 @@ const SideBarOrderMenuBuy = (props) => {
                 // Update amount values in real time when percent limits are active
                 if (limitType === 'percent') {
                     if (limitBuyPercent) {
-                        let buy_percent = toPercentValue(limitBuyPercent, true)
+                        let buy_percent = toPercentValue(limitBuyPercent)
                         calcUpdatLimitPercentLabelTranslation(
                             buy_percent,
                             setLimitBuyPercentLabel,
@@ -179,7 +179,7 @@ const SideBarOrderMenuBuy = (props) => {
                         )
                     }
                     if (limitSellPercent) {
-                        let sell_percent = toPercentValue(limitSellPercent, true)
+                        let sell_percent = toPercentValue(limitSellPercent)
                         calcUpdatLimitPercentLabelTranslation(
                             sell_percent,
                             setLimitSellPercentLabel,
@@ -208,6 +208,8 @@ const SideBarOrderMenuBuy = (props) => {
      * Resets the Buy Inputs with their initial values.
      */
     const resetBuyInputs = () => {
+
+        // @todo - Do we need to reset the selected row?
         // setSelectedRow(null, [])
 
         // Reset input values
@@ -219,9 +221,9 @@ const SideBarOrderMenuBuy = (props) => {
         setLimitSellAmount('')
         setLimitSellAmountPlaceholder('$0.00')
         setLimitBuyPercent('')
-        setLimitBuyPercentPlaceholder('-0.00')
+        setLimitBuyPercentPlaceholder('0.00')
         setLimitSellPercent('')
-        setLimitSellPercentPlaceholder('+0.00')
+        setLimitSellPercentPlaceholder('0.00')
         setOrderQuantity(0)
         setLimitBuyPercentLabel('Buy Limit % ($0.00)')
         setLimitSellPercentLabel('Sell Limit % ($0.00)')
@@ -303,7 +305,7 @@ const SideBarOrderMenuBuy = (props) => {
                         helperText={limitBuyPercentError ? limitBuyPercentHelperText.error : limitBuyPercentHelperText.default}
                         error={limitBuyPercentError}
                         onChange={(e) => {
-                            let semi_cleaned_value = toPercentValue(e.target.value, true)
+                            let semi_cleaned_value = toPercentValue(e.target.value)
                             setLimitBuyPercent(semi_cleaned_value)
                             calcUpdatLimitPercentLabelTranslation(
                                 semi_cleaned_value,
@@ -324,7 +326,7 @@ const SideBarOrderMenuBuy = (props) => {
                         helperText={limitSellPercentError ? limitSellPercentHelperText.error : limitSellPercentHelperText.default}
                         error={limitSellPercentError}
                         onChange={(e) => {
-                            let semi_cleaned_value = toPercentValue(e.target.value, true)
+                            let semi_cleaned_value = toPercentValue(e.target.value)
                             setLimitSellPercent(semi_cleaned_value)
                             calcUpdatLimitPercentLabelTranslation(
                                 semi_cleaned_value,
@@ -432,7 +434,7 @@ const SideBarOrderMenuBuy = (props) => {
                 price_loss = (toMoneyValue(currentEstimatedPrice) - amount_loss).toFixed(8)
                 break
             case 'percent':
-                percent_loss = toPercentValue(value, true)
+                percent_loss = toPercentValue(value)
                 amount_loss = ((toMoneyValue(currentEstimatedPrice) * parseFloat(percent_loss)) / 100).toFixed(8)
                 price_loss = (toMoneyValue(currentEstimatedPrice) - amount_loss).toFixed(8)
                 break
@@ -443,7 +445,7 @@ const SideBarOrderMenuBuy = (props) => {
                 break
         }
         setLossPreventAmount('$' + (isNaN(amount_loss) ? '' : amount_loss))
-        setLossPreventPercent(isNaN(percent_loss) ? '' : percent_loss)
+        setLossPreventPercent(percent_loss)
         setLossPreventPrice('$' + (isNaN(price_loss) ? '' : price_loss))
     }
 
@@ -576,7 +578,7 @@ const SideBarOrderMenuBuy = (props) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <TextField
-                        label="Stock Amount Loss"
+                        label="Max Stock Amount Loss"
                         placeholder={lossPreventAmountPlaceholder}
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
@@ -595,7 +597,7 @@ const SideBarOrderMenuBuy = (props) => {
                         }}
                     />
                     <TextField
-                        label="Stock Percent Loss"
+                        label="Max Stock Percent Loss"
                         placeholder={lossPreventPercentPlaceholder}
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
@@ -614,7 +616,7 @@ const SideBarOrderMenuBuy = (props) => {
                         }}
                     />
                     <TextField
-                        label="Stock Price Loss"
+                        label="Max Stock Price Loss"
                         placeholder={lossPreventPricePlaceholder}
                         variant="outlined"
                         InputLabelProps={{shrink: true}}
