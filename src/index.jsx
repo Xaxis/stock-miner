@@ -429,7 +429,6 @@ const App = function () {
             },
             MuiPopover: {
                 root: {
-                    pointerEvents: 'none',
                     '& .MuiPaper-root': {
                         backgroundColor: `${palette.secondary.main} !important`,
                         color: palette.text.secondary,
