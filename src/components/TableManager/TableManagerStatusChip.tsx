@@ -21,6 +21,7 @@ import FinishedIcon from '@material-ui/icons/CheckCircle'
 import DownArrowIcon from '@material-ui/icons/ArrowDropDownCircle'
 import PendingTaskIcon from '@material-ui/icons/Autorenew'
 import CompleteTaskIcon from '@material-ui/icons/Check'
+import {convertTemplateString} from '../../libs/value_conversions'
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -147,17 +148,19 @@ const TableManagerStatusChip = (props) => {
                     backgroundColor: theme.palette.status.paused.main
                 },
                 '& .MuiBadge-badge': {
-                    color: theme.palette.status.paused.main,
-                    backgroundColor: theme.palette.status.paused.main
+                    display: 'none',
+                    color: theme.palette.status.paused.alt,
+                    backgroundColor: theme.palette.status.paused.alt
+                },
+                '& .MuiListItemText-root': {
+                    opacity: '0.6'
                 }
             },
         },
-        list: {
-        },
-        list_item: {
-        },
+        list: {},
+        list_item: {},
         list_item_complete: {
-            opacity: '0.6',
+            opacity: '0.6'
         },
         avatar: {
             width: theme.spacing(3),
@@ -176,6 +179,7 @@ const TableManagerStatusChip = (props) => {
     /**
      * Component states.
      */
+    const [row, setRow] = useState(row)
     const [status, setStatus] = useState(row.status)
     const [tasks, setTasks] = useState(JSON.parse(row._meta.tasks))
     const [anchorEl, setAnchorEl] = useState(null)
@@ -183,51 +187,61 @@ const TableManagerStatusChip = (props) => {
         BUY: {
             pending: {
                 primary: 'Buy Order Pending',
-                secondary: 'Will place buy order at {1}'
+                secondary: 'Will place buy order at ${0}'
             },
             complete: {
                 primary: 'Buy Order Completed',
-                secondary: 'Order purchased at {1}'
+                secondary: 'Order purchased at ${0}'
             }
         },
         LIMIT_BUY: {
             pending: {
                 primary: 'Buy Limit Order Pending',
-                secondary: 'Will buy if price reaches {1}'
+                secondary: 'Will buy if price reaches ${0}'
             },
             complete: {
                 primary: 'Buy Limit Order Completed',
-                secondary: 'Order purchased at {1}'
+                secondary: 'Order purchased at ${0}'
             }
         },
         SELL: {
             pending: {
                 primary: 'Sell Order Pending',
-                secondary: 'Will place sell order at {1}'
+                secondary: 'Will place sell order at ${0}'
             },
             complete: {
                 primary: 'Sell Order Completed',
-                secondary: 'Order sold at {1}'
+                secondary: 'Order sold at ${0}'
             }
         },
         LIMIT_SELL: {
             pending: {
                 primary: 'Sell Limit Order Pending',
-                secondary: 'Will sell if price reaches {1}'
+                secondary: 'Will sell if price reaches ${0}'
             },
             complete: {
                 primary: 'Sell Limit Order Completed',
-                secondary: 'Order sold at {1}'
+                secondary: 'Order sold at ${0}'
             }
         },
         LOSS_PREVENT: {
             pending: {
                 primary: 'Loss Prevention Pending',
-                secondary: 'Order will sell if price drops {1}%'
+                secondary: 'Order will sell if price drops {0}%'
             },
             complete: {
                 primary: 'Loss Preventing Completed',
-                secondary: 'Order sold at {1}'
+                secondary: 'Order sold at ${0}'
+            }
+        },
+        REGISTERED: {
+            pending: {
+                primary: 'Order Registering',
+                secondary: 'Order waiting to register'
+            },
+            complete: {
+                primary: 'Order Registered',
+                secondary: 'Watching and waiting for order.'
             }
         }
     })
@@ -236,6 +250,7 @@ const TableManagerStatusChip = (props) => {
      * Re-set state when tableData changes.
      */
     useEffect(() => {
+        setRow(row)
         setStatus(row.status)
         setTasks(JSON.parse(row._meta.tasks))
     }, [tableData])
@@ -252,8 +267,49 @@ const TableManagerStatusChip = (props) => {
     /**
      * Handle menu close.
      */
-    const handleMenuClose = () => {
+    const handleMenuClose = (e) => {
+        e.stopPropagation()
+        e.preventDefault()
         setAnchorEl(null)
+    }
+
+    /**
+     * Return the value for a task event.
+     */
+    const getTaskEventValue = (event) => {
+        switch (event) {
+            case 'BUY':
+                return row.cost_basis
+            case 'LIMIT_BUY':
+                return row.limit_buy
+            case 'SELL':
+                return 0
+            case 'LIMIT_SELL':
+                return row.limit_sell
+            case 'LOSS_PREVENT':
+                return row.loss_perc
+            case 'REGISTERED':
+                return 0
+        }
+    }
+
+    /**
+     * Render avatar based on status of sub tasks and status in general.
+     */
+    const renderAvatar = (task) => {
+        if (row.status === 'Paused') {
+            return (
+                <PausedIcon/>
+            )
+        } else if (task.done) {
+            return (
+                <CompleteTaskIcon/>
+            )
+        } else {
+            return (
+                <PendingTaskIcon/>
+            )
+        }
     }
 
     /**
@@ -279,13 +335,19 @@ const TableManagerStatusChip = (props) => {
                                     variant="dot"
                                 >
                                     <Avatar className={classes.avatar}>
-                                        {task.done ? <CompleteTaskIcon/> : <PendingTaskIcon/>}
+                                        {renderAvatar(task)}
                                     </Avatar>
                                 </StyledBadge>
                             </ListItemAvatar>
                             <ListItemText
-                                primary={task.done ? tasksText[task.event].complete.primary : tasksText[task.event].pending.primary}
-                                secondary={task.done ? tasksText[task.event].complete.secondary : tasksText[task.event].pending.secondary}
+                                primary={task.done
+                                    ? tasksText[task.event].complete.primary
+                                    : tasksText[task.event].pending.primary
+                                }
+                                secondary={task.done
+                                    ? convertTemplateString(tasksText[task.event].complete.secondary, [getTaskEventValue(task.event)])
+                                    : convertTemplateString(tasksText[task.event].pending.secondary, [getTaskEventValue(task.event)])
+                                }
                             />
                         </ListItem>
                     )

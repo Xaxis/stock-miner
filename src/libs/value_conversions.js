@@ -112,3 +112,13 @@ export const prepareDataTableValues = (rows) => {
     })
 
 }
+
+/**
+ * Replaces a strings tokens with values provided in passed array.
+ */
+export const convertTemplateString = (string, tokens) => {
+    tokens.forEach((token, i) => {
+        string = string.replace(new RegExp("\\{"+i+"\\}", "g"), tokens[i])
+    })
+    return string
+}

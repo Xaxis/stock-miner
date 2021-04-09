@@ -358,7 +358,12 @@ app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req,
         market: market,
         symbol: symbol,
         name: name,
-        order_date: Date.now()
+        order_date: Date.now(),
+        tasks: [{
+            event: 'REGISTERED',
+            value: true,
+            done: true
+        }]
     }).then(() => {
 
         // Send registered order row back to client
@@ -414,82 +419,87 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
         limit_sell: parseFloat(req.params.limit_sell),
         loss_perc: parseFloat(req.params.loss_perc)
     })
-    let order_tasks = []
 
     // Retrieve and verify profile status
     DBM.get_profile_status(DT.get_active_stream_profile())
         .then((status) => {
             let paused = status == 'active' ? 'false' : 'true'
 
-            // Build field/value object to put into database
-            let set_data = {
-                cost_basis: cost_basis,
-                limit_buy: limit_buy || 0,
-                limit_sell: limit_sell || 0,
-                loss_perc: loss_perc || 0,
-                purchase_price: purchase_price || 0,
-                order_type: 'buy',
-                status: 'Running',
-                paused: paused
-            }
+            // Retrieve row before updating it
+            DBM.get_all_stock_orders_where_multi_field_values({uuid: uuid})
+                .then((row) => {
+                    let order_tasks = JSON.parse(row[0].tasks)
 
-            // Add order tasks & history entries
-            if (cost_basis) {
-                order_tasks.push({
-                    event: 'BUY',
-                    value: cost_basis,
-                    done: false
-                })
-                DBM.add_stock_orders_history_entry({
-                    uuid: uuid,
-                    event: 'BUY',
-                    info: `Order BUY registered with $${cost_basis} cost basis.`
-                })
-            }
-            if (limit_buy || limit_sell) {
-                DBM.add_stock_orders_history_entry({
-                    uuid: uuid,
-                    event: 'LIMIT',
-                    info: `Order augmented with LIMIT values: (BUY: $${limit_buy}/SELL: $${limit_sell}).`
-                })
-                if (limit_buy) {
-                    order_tasks.push({
-                        event: 'LIMIT_BUY',
-                        value: limit_buy,
-                        done: false
-                    })
-                }
-                if (limit_sell) {
-                    order_tasks.push({
-                        event: 'LIMIT_SELL',
-                        value: limit_sell,
-                        done: false
-                    })
-                }
-            }
-            if (loss_perc) {
-                DBM.add_stock_orders_history_entry({
-                    uuid: uuid,
-                    event: 'LOSS_PREVENT',
-                    info: `Order augmented with LOSS_PREVENT value: (${loss_perc}%).`
-                })
-                order_tasks.push({
-                    event: 'LOSS_PREVENT',
-                    value: loss_perc,
-                    done: false
-                })
-            }
+                    // Build field/value object to put into database
+                    let set_data = {
+                        cost_basis: cost_basis,
+                        limit_buy: limit_buy || 0,
+                        limit_sell: limit_sell || 0,
+                        loss_perc: loss_perc || 0,
+                        purchase_price: purchase_price || 0,
+                        order_type: 'buy',
+                        status: 'Running',
+                        paused: paused
+                    }
 
-            // Add tasks to data set
-            set_data.tasks = order_tasks
+                    // Add order tasks & history entries
+                    if (cost_basis) {
+                        order_tasks.push({
+                            event: 'BUY',
+                            value: cost_basis,
+                            done: false
+                        })
+                        DBM.add_stock_orders_history_entry({
+                            uuid: uuid,
+                            event: 'BUY',
+                            info: `Order BUY registered with $${cost_basis} cost basis.`
+                        })
+                    }
+                    if (limit_buy || limit_sell) {
+                        DBM.add_stock_orders_history_entry({
+                            uuid: uuid,
+                            event: 'LIMIT',
+                            info: `Order augmented with LIMIT values: (BUY: $${limit_buy}/SELL: $${limit_sell}).`
+                        })
+                        if (limit_buy) {
+                            order_tasks.push({
+                                event: 'LIMIT_BUY',
+                                value: limit_buy,
+                                done: false
+                            })
+                        }
+                        if (limit_sell) {
+                            order_tasks.push({
+                                event: 'LIMIT_SELL',
+                                value: limit_sell,
+                                done: false
+                            })
+                        }
+                    }
+                    if (loss_perc) {
+                        DBM.add_stock_orders_history_entry({
+                            uuid: uuid,
+                            event: 'LOSS_PREVENT',
+                            info: `Order augmented with LOSS_PREVENT value: (${loss_perc}%).`
+                        })
+                        order_tasks.push({
+                            event: 'LOSS_PREVENT',
+                            value: loss_perc,
+                            done: false
+                        })
+                    }
 
-            // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
-            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
-                .then(() => {
-                    res.send({success: true})
+                    // Add tasks to data set
+                    set_data.tasks = order_tasks
 
-                    // Re-build all profile tasks
-                    DT.build_all_active_tasks_from_db()
+                    // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
+                    DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
+                        .then(() => {
+                            res.send({success: true})
+
+                            // Re-build all profile tasks
+                            DT.build_all_active_tasks_from_db()
+                        })
                 })
         })
 })
