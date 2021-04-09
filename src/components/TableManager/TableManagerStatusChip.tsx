@@ -90,6 +90,11 @@ const TableManagerStatusChip = (props) => {
                 minWidth: '100px',
                 maxWidth: '300px',
                 borderRadius: '2px !important',
+                borderTopWidth: '6px',
+                borderRightWidth: '2px',
+                borderBottomWidth: '2px',
+                borderLeftWidth: '2px',
+                borderStyle: 'solid',
                 '& .MuiListItem-root': {
                     paddingTop: '0',
                     paddingBottom: '0'
@@ -100,29 +105,56 @@ const TableManagerStatusChip = (props) => {
             },
             '&#chip-status-menu-registered': {
                 '& .MuiPopover-paper': {
-                    borderRadius: '2px !important',
-                    border: `2px solid ${theme.palette.status.registered.main}`,
-                    borderTop: `6px solid ${theme.palette.status.registered.main}`
+                    borderColor: theme.palette.status.registered.main
+                },
+                '& .MuiAvatar-circle': {
+                    backgroundColor: theme.palette.status.registered.main
+                },
+                '& .MuiBadge-badge': {
+                    color: theme.palette.status.registered.alt,
+                    backgroundColor: theme.palette.status.registered.alt
                 }
             },
             '&#chip-status-menu-running': {
                 '& .MuiPopover-paper': {
-                    border: `2px solid ${theme.palette.status.running.main}`,
-                    borderTop: `6px solid ${theme.palette.status.running.main}`
+                    borderColor: theme.palette.status.running.main
                 },
                 '& .MuiAvatar-circle': {
-                    backgroundColor: `${theme.palette.status.running.main}`
+                    backgroundColor: theme.palette.status.running.main
                 },
                 '& .MuiBadge-badge': {
-                    color: `${theme.palette.status.running.alt}`,
-                    backgroundColor: `${theme.palette.status.running.alt}`
+                    color: theme.palette.status.running.alt,
+                    backgroundColor: theme.palette.status.running.alt
+                }
+            },
+            '&#chip-status-menu-finished': {
+                '& .MuiPopover-paper': {
+                    borderColor: theme.palette.status.finished.main
+                },
+                '& .MuiAvatar-circle': {
+                    backgroundColor: theme.palette.status.finished.main
+                },
+                '& .MuiBadge-badge': {
+                    color: theme.palette.status.finished.alt,
+                    backgroundColor: theme.palette.status.finished.alt
+                }
+            },
+            '&#chip-status-menu-paused': {
+                '& .MuiPopover-paper': {
+                    borderColor: theme.palette.status.paused.main
+                },
+                '& .MuiAvatar-circle': {
+                    backgroundColor: theme.palette.status.paused.main
+                },
+                '& .MuiBadge-badge': {
+                    color: theme.palette.status.paused.main,
+                    backgroundColor: theme.palette.status.paused.main
                 }
             },
         },
         list: {
         },
         list_item: {
-
         },
         list_item_complete: {
             opacity: '0.6',
@@ -291,14 +323,14 @@ const TableManagerStatusChip = (props) => {
                     size="small"
                     label={status}
                     icon={icon}
-                    clickable={status === 'Running' || status === 'Registered'}
+                    clickable={true}
                     onClick={(e) => {
                         handleMenuOpen(e, e.currentTarget)
                     }}
                     onDelete={(e) => {
                         handleMenuOpen(e, e.target.closest('.MuiChip-root'))
                     }}
-                    deleteIcon={(status === 'Running' || status === 'Registered') ? <DownArrowIcon/> : <></>}
+                    deleteIcon={<DownArrowIcon/>}
                 />
                 <Popover
                     id={'chip-status-menu-' + status.toLowerCase()}
