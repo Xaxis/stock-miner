@@ -12,7 +12,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
-import TableManagerStatusColumn from './TableManagerStatusColumn'
+import TableManagerStatusChip from './TableManagerStatusChip'
 import TableManagerActionMenu from './TableManagerActionMenu'
 import {prepareDataTableValues} from '../../libs/value_conversions'
 import {getRowDataByUUID, makeRowObject, getRowTemplateObject} from '../../libs/state_modifiers'
@@ -214,7 +214,7 @@ const TableManager = (props) => {
                     let row = getRowDataByUUID(uuid, tableData)
                     if (!row) row = Object.assign(getRowTemplateObject(), makeRowObject(tableMeta.rowData))
                     return (
-                        <TableManagerStatusColumn row={row}/>
+                        <TableManagerStatusChip row={row}/>
                     )
                 }
             },
