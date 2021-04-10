@@ -84,7 +84,9 @@ class WebSocketServer {
                         if (this.PROFILE && this.CONNECTION_OBJECT.readyState === 1) {
                             this.DT.get_data_stream_for_profile(this.TABLEID, this.PROFILE)
                                 .then((stream_data) => {
-                                    self.CONNECTION_OBJECT.send(JSON.stringify(stream_data))
+                                    if (stream_data.rows.length) {
+                                        self.CONNECTION_OBJECT.send(JSON.stringify(stream_data))
+                                    }
                                 })
                         }
                     }

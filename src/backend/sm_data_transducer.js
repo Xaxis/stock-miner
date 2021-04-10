@@ -239,7 +239,7 @@ class DataTransducer {
             }
 
             // Proceed only when profile isn't temporary no-op.
-            if (profile !== 'noop') {
+            if (profile !== 'noop' && self.ACTIVE_PROFILE_TASKS.length) {
                 console.log(`SMDT: Sending data for profile (${profile}). ${self.ACTIVE_PROFILE_TASKS.length} rows.`)
                 self.ACTIVE_PROFILE_TASKS.forEach((task) => {
                     if (task.profile === profile) {
