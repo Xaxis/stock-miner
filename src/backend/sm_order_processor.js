@@ -26,10 +26,12 @@ class OrderProcessor {
                         !this.is_order_task_done(buy)
                         && !limit_buy
                         && !this.is_order_task_done(sell)
+                        && this.is_exec_price_within_margin(order.purchase_price, order.price)
                     ) {
                         // @todo - Build complete execution steps
                         this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                            tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true})
+                            tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true}),
+                            exec_date: Date.now()
                         })
                         return true
                     }
@@ -52,7 +54,8 @@ class OrderProcessor {
                     ) {
                         // @todo - Build complete execution steps
                         this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                            tasks: this.update_order_task_by_event(tasks_obj, 'SELL', {done: true})
+                            tasks: this.update_order_task_by_event(tasks_obj, 'SELL', {done: true}),
+                            exec_date: Date.now()
                         })
                         sell.done = true
                         return true
@@ -73,12 +76,14 @@ class OrderProcessor {
                         !this.is_order_task_done(limit_buy)
                         && !this.is_order_task_done(sell)
                         && this.is_limit_buy_point_hit(order.price, order.limit_buy)
+                        && this.is_exec_price_within_margin(order.limit_buy, order.price)
                     ) {
                         // @todo - Build complete execution steps
                         this.update_order_task_by_event(tasks_obj, 'BUY', {done: true})
                         this.update_order_task_by_event(tasks_obj, 'LIMIT_BUY', {done: true})
                         this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                            tasks: tasks_obj
+                            tasks: tasks_obj,
+                            exec_date: Date.now()
                         })
                         return true
                     }
@@ -104,7 +109,8 @@ class OrderProcessor {
                         this.update_order_task_by_event(tasks_obj, 'SELL', {done: true})
                         this.update_order_task_by_event(tasks_obj, 'LIMIT_SELL', {done: true})
                         this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                            tasks: tasks_obj
+                            tasks: tasks_obj,
+                            exec_date: Date.now()
                         })
                         return true
                     }
@@ -132,7 +138,8 @@ class OrderProcessor {
                         this.update_order_task_by_event(tasks_obj, 'LIMIT_SELL', {done: true})
                         this.update_order_task_by_event(tasks_obj, 'LOSS_PREVENT', {done: true})
                         this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                            tasks: tasks_obj
+                            tasks: tasks_obj,
+                            exec_date: Date.now()
                         })
                         return true
                     }
@@ -223,6 +230,21 @@ class OrderProcessor {
      */
     is_limit_sell_point_hit = (current_price, limit_price) => {
         return limit_price <= current_price
+    }
+
+    /**
+     * Is acceptable execution margin percent? When an order is being executed, it is
+     * intended to execute (buy or sell) at a given price. The price it actually executes
+     * at will rarely if ever be that 'purchase_price' due to the ever changing volatility
+     * of the market. To overcome this orders must be executed within an acceptable margin
+     * +/- % of the intended purchase price.
+     */
+    is_exec_price_within_margin = (purchase_price, current_price, margin=0.99) => {
+        let clean_current_price = parseFloat(current_price)
+        let clean_purchase_price = parseFloat(purchase_price)
+        let change = clean_current_price - clean_purchase_price
+        let percent_change = Math.abs(((change / clean_purchase_price) * 100))
+        return percent_change <= margin
     }
 }
 

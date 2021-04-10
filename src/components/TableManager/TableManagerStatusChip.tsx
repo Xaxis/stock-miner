@@ -190,11 +190,11 @@ const TableManagerStatusChip = (props) => {
         BUY: {
             pending: {
                 primary: 'Buy Order Pending',
-                secondary: 'Will place buy order at ${0}'
+                secondary: 'Will buy ${0} worth of stock'
             },
             complete: {
                 primary: 'Buy Order Completed',
-                secondary: 'Order purchased at ${0}'
+                secondary: 'Order completed buying ${0} of stock'
             }
         },
         LIMIT_BUY: {
@@ -244,7 +244,7 @@ const TableManagerStatusChip = (props) => {
             },
             complete: {
                 primary: 'Order Registered',
-                secondary: 'Watching and waiting for order.'
+                secondary: 'Watching and waiting for order'
             }
         }
     })
