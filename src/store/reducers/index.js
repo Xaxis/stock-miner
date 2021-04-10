@@ -109,17 +109,7 @@ const Reducers = (state = initialState, action) => {
                 if (!existingUUIDS.length) {
 
                     // New trade/row object cloned from template
-                    let newRowObject = Object.assign({}, templateObjects.tableRow)
-                    newRowObject.uuid = row.uuid
-                    newRowObject.symbol = row.symbol
-                    newRowObject.name = row.name
-                    newRowObject.market = row.market
-                    newRowObject.price = row.price
-                    newRowObject.equity = row.equity
-                    newRowObject.status = row.status
-                    newRowObject.limit_buy = row.limit_buy
-                    newRowObject.limit_sell = row.limit_sell
-                    newRowObject._meta = row
+                    let newRowObject = Object.assign({}, templateObjects.tableRow, row)
 
                     // Add new row object to new rows array
                     newRows.push(newRowObject)
@@ -187,7 +177,6 @@ const Reducers = (state = initialState, action) => {
                         action.rows.forEach((data) => {
                             if (data.uuid === row.uuid) {
                                 row = Object.assign(row, data)
-                                row._meta = Object.assign(row._meta, data)
                             }
                         })
                     })

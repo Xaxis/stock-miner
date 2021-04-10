@@ -71,7 +71,7 @@ const TableManagerActionMenu = (props) => {
         setSymbol(row.symbol)
         setStockName(row.name)
         setStockPrice('$' + row.price)
-        setOrderPaused(row._meta.paused === "true" ? true : false)
+        setOrderPaused(row.paused === "true")
     }, [tableData])
 
     /**

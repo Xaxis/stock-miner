@@ -40,7 +40,9 @@ export const getTableColumnsDefaultValues = () => {
         ['limit_buy', 0],
         ['limit_sell', 0],
         ['loss_perc', 0],
-        ['status', '']
+        ['status', ''],
+        ['paused', 'false'],
+        ['tasks', '[]']
     ]
 }
 
@@ -49,7 +51,6 @@ export const getTableColumnsDefaultValues = () => {
  */
 export const getRowTemplateObject = () => {
     let key_values = [
-        ['_meta', {paused: 'false'}],
         ...getTableColumnsDefaultValues()
     ]
     return Object.fromEntries(key_values)
@@ -60,7 +61,9 @@ export const getRowTemplateObject = () => {
  */
 export const makeRowObject = (row_arr) => {
     let key_values = getTableColumnsDefaultValues().map((pair, index) => {
-        pair[1] = row_arr[index]
+        if (typeof(row_arr[index]) !== 'undefined') {
+            pair[1] = row_arr[index]
+        }
         return pair
     })
     return Object.fromEntries(key_values)

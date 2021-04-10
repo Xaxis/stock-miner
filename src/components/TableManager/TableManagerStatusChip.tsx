@@ -181,7 +181,7 @@ const TableManagerStatusChip = (props) => {
      */
     const [row, setRow] = useState(row)
     const [status, setStatus] = useState(row.status)
-    const [tasks, setTasks] = useState(JSON.parse(row._meta.tasks))
+    const [tasks, setTasks] = useState(JSON.parse(row.tasks))
     const [anchorEl, setAnchorEl] = useState(null)
     const [tasksText, setTasksText] = useState({
         BUY: {
@@ -252,7 +252,7 @@ const TableManagerStatusChip = (props) => {
     useEffect(() => {
         setRow(row)
         setStatus(row.status)
-        setTasks(JSON.parse(row._meta.tasks))
+        setTasks(JSON.parse(row.tasks))
     }, [tableData])
 
     /**

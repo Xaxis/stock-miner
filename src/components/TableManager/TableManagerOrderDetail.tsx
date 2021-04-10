@@ -58,11 +58,11 @@ const TableManagerOrderDetail = (props) => {
     useEffect(() => {
         let tmp_equity = toMoneyValue(row.equity)
         setEquity(toMoneyString(tmp_equity))
-        setCost('$' + parseFloat(row._meta.cost_basis).toFixed(2))
-        setTotalReturn(toMoneyString(calcTotalReturn(tmp_equity, row._meta.cost_basis)))
-        setQuantity(calcQuantity(tmp_equity, row._meta.price))
-        setPurchasePrice('$' + row._meta.purchase_price)
-        setTotalChange(toPercentString(calcTotalChange(row._meta.purchase_price, row._meta.price)))
+        setCost('$' + parseFloat(row.cost_basis).toFixed(2))
+        setTotalReturn(toMoneyString(calcTotalReturn(tmp_equity, row.cost_basis)))
+        setQuantity(calcQuantity(tmp_equity, row.price))
+        setPurchasePrice('$' + row.purchase_price)
+        setTotalChange(toPercentString(calcTotalChange(row.purchase_price, row.price)))
     }, [tableData])
 
     return (
