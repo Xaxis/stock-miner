@@ -27,7 +27,7 @@ class WebSocketServer {
                 if (config) {
                     this.init_wss(config.polling_frequency)
                 } else {
-                    this.init_wss(3000)
+                    this.init_wss(1000)
                 }
             })
     }

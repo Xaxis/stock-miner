@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS `Config` (
     `id`                INTEGER NOT NULL PRIMARY KEY,
     `active_profile`    TEXT DEFAULT 'noop',
-    `task_frequency`    TEXT DEFAULT '10000',
-    `polling_frequency` TEXT DEFAULT '3000'
+    `task_frequency`    TEXT DEFAULT '1000',
+    `polling_frequency` TEXT DEFAULT '1000'
 );
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,

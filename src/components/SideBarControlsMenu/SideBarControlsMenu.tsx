@@ -12,8 +12,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 export default function SideBarControlsMenu() {
     const [expandedPanel1, setExpandedPanel1] = useState(true)
-    const [taskFrequencyValue, setTaskFrequencyValue] = useState('10000')
-    const [pollingFrequencyValue, setPollingFrequencyValue] = useState('3000')
+    const [taskFrequencyValue, setTaskFrequencyValue] = useState('1000')
+    const [pollingFrequencyValue, setPollingFrequencyValue] = useState('1000')
     const taskFrequencyOptions = [
         {
             value: '1000',
