@@ -5,6 +5,9 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
+import {
+    toMoneyValue,
+} from '../../libs/value_conversions'
 
 const TableManagerOrderBasic = (props) => {
     const {
@@ -51,8 +54,8 @@ const TableManagerOrderBasic = (props) => {
         setSymbol(row.symbol)
         setName(row.name)
         setStatus(row.status)
-        setLimitBuy(row.limit_buy)
-        setLimitSell(row.limit_sell)
+        setLimitBuy('$' + toMoneyValue(row.limit_buy))
+        setLimitSell('$' + toMoneyValue(row.limit_sell))
         setMaxLoss(row.loss_perc)
     }, [tableData])
 

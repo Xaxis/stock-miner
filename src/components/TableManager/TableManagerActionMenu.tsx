@@ -70,7 +70,7 @@ const TableManagerActionMenu = (props) => {
         setRowUUID(row.uuid)
         setSymbol(row.symbol)
         setStockName(row.name)
-        setStockPrice('$' + row.price)
+        setStockPrice(row.price)
         setOrderPaused(row.paused === "true")
     }, [tableData])
 

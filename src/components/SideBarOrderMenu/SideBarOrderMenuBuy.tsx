@@ -159,12 +159,13 @@ const SideBarOrderMenuBuy = (props) => {
         let updater = null
         if (currentSelectedRow) {
             setCurrentSymbol(currentSelectedRow.symbol)
-            setCurrentEstimatedPrice('$' + currentSelectedRow.price)
+            setCurrentEstimatedPrice('$' + toMoneyValue(currentSelectedRow.price))
             setOrderQuantity(calcQuantity(orderAmount, currentEstimatedPrice))
             updater = setInterval(() => {
+                let current_price = toMoneyValue(currentSelectedRow.price)
 
                 // Update the estimated price
-                setCurrentEstimatedPrice('$' + currentSelectedRow.price)
+                setCurrentEstimatedPrice('$' + current_price)
 
                 // Update amount values in real time when percent limits are active
                 if (limitType === 'percent') {
@@ -175,7 +176,7 @@ const SideBarOrderMenuBuy = (props) => {
                             setLimitBuyPercentLabel,
                             'Buy Limit %',
                             setLimitBuyAmount,
-                            currentSelectedRow.price
+                            current_price
                         )
                     }
                     if (limitSellPercent) {
@@ -185,7 +186,7 @@ const SideBarOrderMenuBuy = (props) => {
                             setLimitSellPercentLabel,
                             'Sell Limit %',
                             setLimitSellAmount,
-                            currentSelectedRow.price
+                            current_price
                         )
                     }
                 }
@@ -453,8 +454,8 @@ const SideBarOrderMenuBuy = (props) => {
      * Creates the Limit Percent inputs' labels.
      */
     const calcUpdatLimitPercentLabelTranslation = (percent, labelUpdater, labelStr, amountUpdater, currentPrice) => {
-        let cleaned_percent = toPercentValue(percent)
-        let cleaned_price = currentPrice || toMoneyValue(currentEstimatedPrice)
+        let cleaned_percent = parseFloat(toPercentValue(percent))
+        let cleaned_price = parseFloat(currentPrice || toMoneyValue(currentEstimatedPrice))
         let target_diff = (cleaned_price * cleaned_percent) / 100
         let target_amount = cleaned_price + target_diff
         let decimal_parts = target_amount.toString().split(".")
@@ -472,7 +473,9 @@ const SideBarOrderMenuBuy = (props) => {
             new_label = `${labelStr} ($${target_amount})`
             amountUpdater('$' + target_amount)
         }
-        labelUpdater(new_label)
+        if (cleaned_percent !== '-') {
+            labelUpdater(new_label)
+        }
     }
 
     /**

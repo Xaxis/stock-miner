@@ -21,7 +21,11 @@ import FinishedIcon from '@material-ui/icons/CheckCircle'
 import DownArrowIcon from '@material-ui/icons/ArrowDropDownCircle'
 import PendingTaskIcon from '@material-ui/icons/Autorenew'
 import CompleteTaskIcon from '@material-ui/icons/Check'
-import {convertTemplateString} from '../../libs/value_conversions'
+import {
+    convertTemplateString,
+    toMoneyValue,
+    toPercentValue
+} from '../../libs/value_conversions'
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -277,15 +281,15 @@ const TableManagerStatusChip = (props) => {
     const getTaskEventValue = (event) => {
         switch (event) {
             case 'BUY':
-                return row.cost_basis
+                return toMoneyValue(row.cost_basis)
             case 'LIMIT_BUY':
-                return row.limit_buy
+                return toMoneyValue(row.limit_buy)
             case 'SELL':
-                return 0
+                return toMoneyValue(0)
             case 'LIMIT_SELL':
-                return row.limit_sell
+                return toMoneyValue(row.limit_sell)
             case 'LOSS_PREVENT':
-                return row.loss_perc
+                return toPercentValue(row.loss_perc)
             case 'REGISTERED':
                 return 0
         }
