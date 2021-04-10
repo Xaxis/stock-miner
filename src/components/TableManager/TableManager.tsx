@@ -172,6 +172,24 @@ const TableManager = (props) => {
             }
         },
         {
+            name: "cost_basis",
+            label: "cost_basis",
+            options: {
+                filter: true,
+                sort: true,
+                display: false
+            }
+        },
+        {
+            name: "purchase_price",
+            label: "purchase_price",
+            options: {
+                filter: true,
+                sort: true,
+                display: false
+            }
+        },
+        {
             name: "equity",
             label: "Equity",
             options: {
@@ -209,15 +227,35 @@ const TableManager = (props) => {
             options: {
                 filter: true,
                 sort: true,
-                customBodyRender: (value, tableMeta) => {
+                customBodyRender: (value, tableMeta, test) => {
                     let uuid = tableMeta.rowData[0]
                     let row = getRowDataByUUID(uuid, tableData)
-                    if (!row) row = Object.assign(getRowTemplateObject(), makeRowObject(tableMeta.rowData))
+                    if (!row) {
+                        row = Object.assign(getRowTemplateObject(), makeRowObject(tableMeta.rowData))
+                    }
                     return (
                         <TableManagerStatusChip row={row}/>
                     )
                 }
             },
+        },
+        {
+            name: "paused",
+            label: "paused",
+            options: {
+                filter: true,
+                sort: true,
+                display: false
+            }
+        },
+        {
+            name: "tasks",
+            label: "tasks",
+            options: {
+                filter: true,
+                sort: true,
+                display: false
+            }
         },
         {
             name: "",

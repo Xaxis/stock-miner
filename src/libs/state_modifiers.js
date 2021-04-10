@@ -28,6 +28,7 @@ export const getRowDataByUUID = (uuid, data) => {
 
 /**
  * Returns a list of default key value pairs in the mui datatable columns.
+ * Note - These values must be in the same order as the mui datatable columns.
  */
 export const getTableColumnsDefaultValues = () => {
     return [
@@ -36,6 +37,8 @@ export const getTableColumnsDefaultValues = () => {
         ['symbol', ''],
         ['name', ''],
         ['price', 0],
+        ['cost_basis', 0],
+        ['purchase_price', 0],
         ['equity', 0],
         ['limit_buy', 0],
         ['limit_sell', 0],
@@ -61,9 +64,7 @@ export const getRowTemplateObject = () => {
  */
 export const makeRowObject = (row_arr) => {
     let key_values = getTableColumnsDefaultValues().map((pair, index) => {
-        if (typeof(row_arr[index]) !== 'undefined') {
-            pair[1] = row_arr[index]
-        }
+        pair[1] = row_arr[index]
         return pair
     })
     return Object.fromEntries(key_values)

@@ -179,7 +179,6 @@ const TableManagerStatusChip = (props) => {
     /**
      * Component states.
      */
-    const [row, setRow] = useState(row)
     const [status, setStatus] = useState(row.status)
     const [tasks, setTasks] = useState(JSON.parse(row.tasks))
     const [anchorEl, setAnchorEl] = useState(null)
@@ -250,7 +249,6 @@ const TableManagerStatusChip = (props) => {
      * Re-set state when tableData changes.
      */
     useEffect(() => {
-        setRow(row)
         setStatus(row.status)
         setTasks(JSON.parse(row.tasks))
     }, [tableData])

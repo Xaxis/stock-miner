@@ -269,11 +269,6 @@ class DataTransducer {
                     // Merge database results with their corresponding stream data objects
                     stream_data.rows = stream_data.rows.map((data_obj, index) => {
                         let row = results_to_merge[index]
-
-                        // console.log(Object.assign(row, data_obj, {
-                        //     status: row.paused === 'true' ? 'Paused' : row.status,
-                        // }))
-
                         return Object.assign(row, data_obj, {
                             status: row.paused === 'true' ? 'Paused' : row.status,
                         })
