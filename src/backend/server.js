@@ -86,7 +86,6 @@ app.get('/app/get/config', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/set/taskfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({task_frequency: req.params.ms})
         .then(() => {
@@ -103,7 +102,6 @@ app.get('/app/set/taskfrequency/:ms', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/set/pollingfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({polling_frequency: req.params.ms})
         .then(() => {
@@ -158,7 +156,6 @@ app.get('/app/get/profiles/history/:profile', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/add/profiles/:profile', (req, res) => {
     let profile = req.params.profile
     DBM.add_profile_entry(profile)
@@ -206,7 +203,6 @@ app.get('/app/delete/profiles/:profile', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
     DBM.rename_profile(req.params.oldprofile, req.params.newprofile)
         .then(() => {
@@ -222,7 +218,6 @@ app.get('/app/rename/profiles/:oldprofile/:newprofile', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/set/profiles/status/:profile/:status', (req, res) => {
     let profile = req.params.profile
     DBM.set_profile_status(profile, req.params.status)
@@ -324,7 +319,6 @@ app.get('/app/get/orders/history/:uuid', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/set/orders/status/:uuid/:paused', (req, res) => {
     let uuid = req.params.uuid
     let paused = req.params.paused === 'true' ? 'true' : 'false'
@@ -344,7 +338,6 @@ app.get('/app/set/orders/status/:uuid/:paused', (req, res) => {
     })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/register/orders/:profile/:type/:uuid/:market/:symbol/:name', (req, res) => {
     let profile, type, uuid, market, symbol, name;
     ({profile, type, uuid, market, symbol, name} = req.params)
@@ -408,7 +401,6 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
         })
 })
 
-//@todo - Order/Status/History refactor
 app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
     let uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc;
     ({uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc} = {
@@ -437,7 +429,6 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                         limit_sell: limit_sell || 0,
                         loss_perc: loss_perc || 0,
                         purchase_price: purchase_price || 0,
-                        order_type: 'buy',
                         status: 'Running',
                         paused: paused
                     }

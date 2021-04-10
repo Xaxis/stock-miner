@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `limit_buy`         NUMERIC,
     `limit_sell`        NUMERIC,
     `loss_perc`         NUMERIC,
-    `order_type`        TEXT NOT NULL DEFAULT 'undefined',
     `order_date`        DATE,
     `exec_date`         DATE,
     `tasks`             TEXT NOT NULL DEFAULT '[]'
@@ -53,7 +52,6 @@ CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
     `limit_buy`         NUMERIC,
     `limit_sell`        NUMERIC,
     `loss_perc`         NUMERIC,
-    `order_type`        TEXT NOT NULL DEFAULT 'undefined',
     `order_date`        DATE,
     `exec_date`         DATE,
     `tasks`             TEXT NOT NULL DEFAULT '[]'
