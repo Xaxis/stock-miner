@@ -101,6 +101,23 @@ export const calcTotalChange = (purchase_price, current_price) => {
 }
 
 /**
+ * Calculate the price of a stock with a percentage change added to it.
+ */
+export const calcStockSumWithPercentageChange = (percent, price) => {
+    let float_percent = parseFloat(percent)
+    let float_price = parseFloat(price)
+    let target_diff = (float_price * float_percent) / 100
+    let target_amount = float_price + target_diff
+    let decimal_parts = target_amount.toString().split('.')
+    if (decimal_parts.length === 2) {
+        if (decimal_parts[1].length > 6) {
+            return parseFloat(target_amount + decimal_parts[1]).toFixed(8)
+        }
+    }
+    return target_amount
+}
+
+/**
  * Takes array of DataTable rows and prepares/parses them further for display in a DataTable.
  */
 export const prepareDataTableValues = (rows) => {

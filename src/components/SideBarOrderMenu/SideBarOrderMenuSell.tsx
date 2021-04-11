@@ -20,6 +20,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/value_conversions'
 import SideBarOrderSubmit from "./SideBarOrderSubmit";
+import SideBarOrderLimit from "./SideBarOrderLimit";
 
 const SideBarOrderMenuSell = (props) => {
     const {
@@ -48,6 +49,8 @@ const SideBarOrderMenuSell = (props) => {
     const [currentSymbol, setCurrentSymbol] = useState("")
     const [currentEstimatedPrice, setCurrentEstimatedPrice] = useState("$0.00")
     const [orderAmount, setOrderAmount] = useState("")
+    const [limitBuyAmount, setLimitBuyAmount] = useState("")
+    const [limitSellAmount, setLimitSellAmount] = useState("")
 
     /**
      * Input validation, error handling flags and condition state values.
@@ -79,6 +82,18 @@ const SideBarOrderMenuSell = (props) => {
                 }}
                 InputLabelProps={{shrink: true}}
                 required
+            />
+
+            <SideBarOrderLimit
+                disabled={false}
+                variant="sell"
+                currentPrice={currentEstimatedPrice}
+                getLimitBuyAmount={(amount) => {
+                    setLimitBuyAmount(amount)
+                }}
+                getLimitSellAmount={(amount) => {
+                    setLimitSellAmount(amount)
+                }}
             />
 
             <SideBarOrderTotalBox symbol={currentSymbol} orderAmount={orderAmount} currentPrice={currentEstimatedPrice}/>

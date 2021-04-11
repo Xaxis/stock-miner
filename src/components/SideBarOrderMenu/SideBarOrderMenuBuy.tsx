@@ -4,6 +4,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
+import SideBarOrderLimit from './SideBarOrderLimit'
 import SideBarOrderTotalBox from './SideBarOrderTotalBox'
 import SideBarOrderSubmit from './SideBarOrderSubmit'
 import FormGroup from '@material-ui/core/FormGroup'
@@ -45,7 +46,6 @@ const SideBarOrderMenuBuy = (props) => {
     /**
      * Inner Accordion panels
      */
-    const [expandedInnerPanel1, setExpandedInnerPanel1] = useState(false)
     const [expandedInnerPanel2, setExpandedInnerPanel2] = useState(false)
 
     /**
@@ -54,17 +54,8 @@ const SideBarOrderMenuBuy = (props) => {
     const [currentSymbol, setCurrentSymbol] = useState("")
     const [currentEstimatedPrice, setCurrentEstimatedPrice] = useState("$0.00")
     const [orderAmount, setOrderAmount] = useState("")
-    const [limitType, setLimitType] = useState("price")
     const [limitBuyAmount, setLimitBuyAmount] = useState("")
-    const [limitBuyAmountPlaceholder, setLimitBuyAmountPlaceholder] = useState("$0.00")
     const [limitSellAmount, setLimitSellAmount] = useState("")
-    const [limitSellAmountPlaceholder, setLimitSellAmountPlaceholder] = useState("$0.00")
-    const [limitBuyPercent, setLimitBuyPercent] = useState("")
-    const [limitBuyPercentLabel, setLimitBuyPercentLabel] = useState("Buy Limit % ($0.00)")
-    const [limitBuyPercentPlaceholder, setLimitBuyPercentPlaceholder] = useState("0.00")
-    const [limitSellPercent, setLimitSellPercent] = useState("")
-    const [limitSellPercentLabel, setLimitSellPercentLabel] = useState("Sell Limit % ($0.00)")
-    const [limitSellPercentPlaceholder, setLimitSellPercentPlaceholder] = useState("0.00")
 
     /**
      * Loss prevention values.
@@ -86,26 +77,10 @@ const SideBarOrderMenuBuy = (props) => {
         default: "",
         error: "Please provide an appropriate value."
     })
-    const [limitBuyAmountError, setLimitBuyAmountError] = useState(false)
-    const [limitBuyAmountHelperText, setLimitBuyAmountHelperText] = useState({
-        default: "Will attempt to buy at specified price.",
-        error: "Please provide an appropriate value."
-    })
-    const [limitSellAmountError, setLimitSellAmountError] = useState(false)
-    const [limitSellAmountHelperText, setLimitSellAmountHelperText] = useState({
-        default: "Will attempt to sell at specified price.",
-        error: "Please provide an appropriate value."
-    })
-    const [limitBuyPercentError, setLimitBuyPercentError] = useState(false)
-    const [limitBuyPercentHelperText, setLimitBuyPercentHelperText] = useState({
-        default: "Will attempt to buy at specified % change.",
-        error: "Please provide an appropriate value."
-    })
-    const [limitSellPercentError, setLimitSellPercentError] = useState(false)
-    const [limitSellPercentHelperText, setLimitSellPercentHelperText] = useState({
-        default: "Will attempt to buy at specified % change.",
-        error: "Please provide an appropriate value."
-    })
+
+    /**
+     * Loss Prevent TextField helper text and error messages.
+     */
     const [lossPreventError, setLossPreventError] = useState(false)
     const [lossPreventAmountHelperText, setLossPreventAmountHelperText] = useState({
         default: "Will auto sell at amount ($) decrease.",
@@ -123,9 +98,6 @@ const SideBarOrderMenuBuy = (props) => {
     /**
      * Toggle handler sets state on menu's inner accordion panels.
      */
-    const handleInnerAccordionPanelExpand1 = (panel) => (event) => {
-        setExpandedInnerPanel1(expandedInnerPanel1 ? false : true)
-    }
     const handleInnerAccordionPanelExpand2 = (panel) => (event) => {
         setExpandedInnerPanel2(expandedInnerPanel2 ? false : true)
     }
@@ -143,37 +115,13 @@ const SideBarOrderMenuBuy = (props) => {
 
                 // Update the estimated price
                 setCurrentEstimatedPrice('$' + current_price)
-
-                // Update amount values in real time when percent limits are active
-                if (limitType === 'percent') {
-                    if (limitBuyPercent) {
-                        let buy_percent = toPercentValue(limitBuyPercent)
-                        calcUpdatLimitPercentLabelTranslation(
-                            buy_percent,
-                            setLimitBuyPercentLabel,
-                            'Buy Limit %',
-                            setLimitBuyAmount,
-                            current_price
-                        )
-                    }
-                    if (limitSellPercent) {
-                        let sell_percent = toPercentValue(limitSellPercent)
-                        calcUpdatLimitPercentLabelTranslation(
-                            sell_percent,
-                            setLimitSellPercentLabel,
-                            'Sell Limit %',
-                            setLimitSellAmount,
-                            current_price
-                        )
-                    }
-                }
             }, 1000)
         } else {
             resetBuyInputs()
         }
 
         return () => clearInterval(updater)
-    }, [currentSelectedRow, limitType, limitBuyPercent, limitSellPercent])
+    }, [currentSelectedRow])
 
     /**
      * Reset the inputs when the table ID active changes.
@@ -194,16 +142,6 @@ const SideBarOrderMenuBuy = (props) => {
         setCurrentSymbol("")
         setOrderAmount("")
         setCurrentEstimatedPrice("$0.00")
-        setLimitBuyAmount('')
-        setLimitBuyAmountPlaceholder('$0.00')
-        setLimitSellAmount('')
-        setLimitSellAmountPlaceholder('$0.00')
-        setLimitBuyPercent('')
-        setLimitBuyPercentPlaceholder('0.00')
-        setLimitSellPercent('')
-        setLimitSellPercentPlaceholder('0.00')
-        setLimitBuyPercentLabel('Buy Limit % ($0.00)')
-        setLimitSellPercentLabel('Sell Limit % ($0.00)')
 
         // Reset loss prevention values
         setLossPreventAmount('')
@@ -212,111 +150,13 @@ const SideBarOrderMenuBuy = (props) => {
 
         // Reset error flags
         setOrderAmountError(false)
-        setLimitBuyAmountError(false)
-        setLimitSellAmountError(false)
-        setLimitBuyPercentError(false)
-        setLimitSellPercentError(false)
 
         // Reset buttons and states
         setReviewOrderClicked(false)
         setOrderProcessing(false)
 
         // Reset accordions
-        setExpandedInnerPanel1(false)
         setExpandedInnerPanel2(false)
-    }
-
-    /**
-     * Conditionally renders Limit fields based on the 'Limit Type' value selected.
-     */
-    const renderLimitFields = () => {
-        if (limitType === 'price') {
-            return (
-                <>
-                    <TextField
-                        label="Buy Limit $"
-                        placeholder={limitBuyAmountPlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={limitBuyAmount}
-                        disabled={!currentSelectedRow}
-                        helperText={limitBuyAmountError ? limitBuyAmountHelperText.error : limitBuyAmountHelperText.default}
-                        error={limitBuyAmountError}
-                        onChange={(e) => {
-                            if (e.target.value) {
-                                setLimitBuyAmount('$' + toMoneyValue(e.target.value))
-                            } else {
-                                setLimitBuyAmount('')
-                            }
-                        }}
-                    />
-                    <TextField
-                        label="Sell Limit $"
-                        placeholder={limitSellAmountPlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={limitSellAmount}
-                        disabled={!currentSelectedRow}
-                        helperText={limitSellAmountError ? limitSellAmountHelperText.error : limitSellAmountHelperText.default}
-                        error={limitSellAmountError}
-                        onChange={(e) => {
-                            if (e.target.value) {
-                                setLimitSellAmount('$' + toMoneyValue(e.target.value))
-                            } else {
-                                setLimitSellAmount('')
-                            }
-                        }}
-                    />
-                </>
-            )
-        } else if (limitType === 'percent') {
-            return (
-                <>
-                    <TextField
-                        label={limitBuyPercentLabel}
-                        placeholder={limitBuyPercentPlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={limitBuyPercent}
-                        disabled={!currentSelectedRow}
-                        helperText={limitBuyPercentError ? limitBuyPercentHelperText.error : limitBuyPercentHelperText.default}
-                        error={limitBuyPercentError}
-                        onChange={(e) => {
-                            let semi_cleaned_value = toPercentValue(e.target.value)
-                            setLimitBuyPercent(semi_cleaned_value)
-                            calcUpdatLimitPercentLabelTranslation(
-                                semi_cleaned_value,
-                                setLimitBuyPercentLabel,
-                                'Buy Limit %',
-                                setLimitBuyAmount,
-                                false
-                            )
-                        }}
-                    />
-                    <TextField
-                        label={limitSellPercentLabel}
-                        placeholder={limitSellPercentPlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={limitSellPercent}
-                        disabled={!currentSelectedRow}
-                        helperText={limitSellPercentError ? limitSellPercentHelperText.error : limitSellPercentHelperText.default}
-                        error={limitSellPercentError}
-                        onChange={(e) => {
-                            let semi_cleaned_value = toPercentValue(e.target.value)
-                            setLimitSellPercent(semi_cleaned_value)
-                            calcUpdatLimitPercentLabelTranslation(
-                                semi_cleaned_value,
-                                setLimitSellPercentLabel,
-                                'Sell Limit %',
-                                setLimitSellAmount,
-                                false
-                            )
-                        }}
-                    />
-                </>
-            )
-        }
     }
 
     /**
@@ -350,34 +190,6 @@ const SideBarOrderMenuBuy = (props) => {
     }
 
     /**
-     * Creates the Limit Percent inputs' labels.
-     */
-    const calcUpdatLimitPercentLabelTranslation = (percent, labelUpdater, labelStr, amountUpdater, currentPrice) => {
-        let cleaned_percent = parseFloat(toPercentValue(percent))
-        let cleaned_price = parseFloat(currentPrice || toMoneyValue(currentEstimatedPrice))
-        let target_diff = (cleaned_price * cleaned_percent) / 100
-        let target_amount = cleaned_price + target_diff
-        let decimal_parts = target_amount.toString().split(".")
-        if (decimal_parts.length === 2) {
-            if (decimal_parts[1].length > 6) {
-                target_amount = parseFloat(target_amount + decimal_parts[1]).toFixed(8)
-            }
-        }
-
-        // Update the label string
-        let new_label = ''
-        if (!target_amount) {
-            new_label = `${labelStr} ($0.00)`
-        } else {
-            new_label = `${labelStr} ($${target_amount})`
-            amountUpdater('$' + target_amount)
-        }
-        if (cleaned_percent !== '-') {
-            labelUpdater(new_label)
-        }
-    }
-
-    /**
      * Send the Buy Order to the server.
      */
     const handleOrderBuySubmit = () => {
@@ -387,8 +199,8 @@ const SideBarOrderMenuBuy = (props) => {
             let uuid = currentSelectedRow.uuid
             let cost_basis = toMoneyValue(orderAmount)
             let purchase_price = toMoneyValue(currentEstimatedPrice)
-            let limit_buy = toMoneyValue(limitBuyAmount) || 0
-            let limit_sell = toMoneyValue(limitSellAmount) || 0
+            let limit_buy = limitBuyAmount || 0
+            let limit_sell = limitSellAmount || 0
             let loss_perc = lossPreventPercent || 0
             const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${purchase_price}/${limit_buy}/${limit_sell}/${loss_perc}`)
             let order_result = await order_response.json()
@@ -407,7 +219,7 @@ const SideBarOrderMenuBuy = (props) => {
     }
 
     return (
-        <FormGroup className={classes.buy}>
+        <FormGroup>
             <TextField
                 label="Amount in USD"
                 placeholder="$0.00"
@@ -428,41 +240,17 @@ const SideBarOrderMenuBuy = (props) => {
                 required
             />
 
-            <Accordion
-                square
-                expanded={expandedInnerPanel1}
-                onChange={handleInnerAccordionPanelExpand1()}
-                disabled={!currentSelectedRow}
-            >
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                    <FormControlLabel
-                        control={<CheckBox checked={expandedInnerPanel1} disabled={!currentSelectedRow}/>}
-                        label={"Limit Order"}
-                    />
-                </AccordionSummary>
-                <AccordionDetails>
-                    <TextField
-                        select
-                        label="Limit Type"
-                        variant="outlined"
-                        value={limitType}
-                        InputLabelProps={{shrink: true}}
-                        disabled={!currentSelectedRow}
-                        onChange={(e) => {
-                            setLimitType(e.target.value)
-                            if (e.target.value === 'percent') {
-                                setLimitBuyAmount('')
-                                setLimitSellAmount('')
-                            }
-                        }}
-                    >
-                        <MenuItem key="price" value="price">Price Based</MenuItem>
-                        <MenuItem key="percent" value="percent">Percentage Based</MenuItem>
-                    </TextField>
-
-                    {renderLimitFields()}
-                </AccordionDetails>
-            </Accordion>
+            <SideBarOrderLimit
+                disabled={false}
+                variant="both"
+                currentPrice={currentEstimatedPrice}
+                getLimitBuyAmount={(amount) => {
+                    setLimitBuyAmount(amount)
+                }}
+                getLimitSellAmount={(amount) => {
+                    setLimitSellAmount(amount)
+                }}
+            />
 
             <Accordion
                 square
@@ -537,7 +325,11 @@ const SideBarOrderMenuBuy = (props) => {
                 </AccordionDetails>
             </Accordion>
 
-            <SideBarOrderTotalBox symbol={currentSymbol} orderAmount={orderAmount} currentPrice={currentEstimatedPrice}/>
+            <SideBarOrderTotalBox
+                symbol={currentSymbol}
+                orderAmount={orderAmount}
+                currentPrice={currentEstimatedPrice}
+            />
 
             {currentSelectedRow
                 ?
