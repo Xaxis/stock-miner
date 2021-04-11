@@ -5,16 +5,15 @@ import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
 import SideBarOrderTotalBox from './SideBarOrderTotalBox'
+import SideBarOrderSubmit from './SideBarOrderSubmit'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
 import MenuItem from '@material-ui/core/MenuItem'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import CheckBox from '@material-ui/core/CheckBox'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import {toMoneyValue, toPercentValue} from '../../libs/value_conversions'
 
@@ -32,11 +31,6 @@ const SideBarOrderMenuBuy = (props) => {
      * Component style overrides.
      */
     const classes = makeStyles(theme => ({
-        buy: {
-            '& .MuiButtonBase-root.StockMiner-BigButton:first-of-type': {
-                marginTop: '36px'
-            }
-        },
         button_progress: {
             color: theme.palette.text.primary,
             position: 'absolute',
@@ -326,83 +320,6 @@ const SideBarOrderMenuBuy = (props) => {
     }
 
     /**
-     * Renders the correct sequence of buttons based on state of the app.
-     */
-    const renderOrderButtons = () => {
-        if (currentSelectedRow) {
-
-            if (!reviewOrderClicked) {
-                return (
-                    <>
-                        <Button
-                            className="StockMiner-BigButton"
-                            size="large"
-                            onClick={() => {
-                                if (handleInputValidation()) {
-                                    setReviewOrderClicked(true)
-                                }
-                            }}
-                        >
-                            Review Order
-                        </Button>
-                    </>
-                )
-            } else {
-                return (
-                    <>
-                        <Button
-                            className="StockMiner-BigButton"
-                            size="large"
-                            disabled={orderProcessing}
-                            onClick={() => {
-                                setOrderProcessing(true)
-                                handleOrderBuySubmit()
-                            }}
-                        >
-                            <span>Submit Order</span>
-                            {orderProcessing && <CircularProgress size={24} className={classes.button_progress}/>}
-                        </Button>
-                        <Button
-                            className="StockMiner-BigButton"
-                            variant="outlined"
-                            size="large"
-                            disabled={orderProcessing}
-                            onClick={() => {
-                                setReviewOrderClicked(false)
-                            }}
-                        >
-                            Edit
-                        </Button>
-                    </>
-                )
-            }
-        }
-    }
-
-    /**
-     * Basic input handling for order field inputs.
-     * @todo - Add more input validator conditions as needed.
-     */
-    const handleInputValidation = () => {
-
-        // Check if any required fields are left empty
-        if (!orderAmount) {
-            setOrderAmountError(true)
-            return false
-        } else {
-            setOrderAmountError(false)
-        }
-
-        // @todo - If Sell Limit exists, a Buy Limit must also be given
-
-        // @todo - Assume Buy Limit must be less than current estimated price
-
-        // @todo - Assume Sell Limit must be greater than current estimated price (and buy limit)
-
-        return true
-    }
-
-    /**
      * Handle input of any/all the loss prevention fields. All of the loss prevention fields
      * are updated when any of them are changed, as they all contain equivalent values.
      */
@@ -484,7 +401,6 @@ const SideBarOrderMenuBuy = (props) => {
             }
 
             // Reset order processing flag and input fields
-            // @todo - Eventually this should only reset if the above was sucessful
             setOrderProcessing(false)
             resetBuyInputs()
         })()
@@ -623,7 +539,32 @@ const SideBarOrderMenuBuy = (props) => {
 
             <SideBarOrderTotalBox symbol={currentSymbol} orderAmount={orderAmount} currentPrice={currentEstimatedPrice}/>
 
-            {renderOrderButtons()}
+            {currentSelectedRow
+                ?
+                <SideBarOrderSubmit
+                    handleSubmit={() => {
+                        setOrderProcessing(true)
+                        handleOrderBuySubmit()
+                    }}
+                    handleInputValidation={() => {
+
+                        // Check if any required fields are left empty
+                        if (!orderAmount) {
+                            setOrderAmountError(true)
+                            return false
+                        } else {
+                            setOrderAmountError(false)
+                        }
+
+                        // @todo - If Sell Limit exists, a Buy Limit must also be given
+                        // @todo - Assume Buy Limit must be less than current estimated price
+                        // @todo - Assume Sell Limit must be greater than current estimated price (and buy limit)
+
+                        return true
+                    }}
+                    orderProcessing={orderProcessing}
+                /> : ''
+            }
         </FormGroup>
     )
 }

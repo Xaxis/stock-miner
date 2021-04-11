@@ -19,6 +19,7 @@ import fetch from 'cross-fetch'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/value_conversions'
+import SideBarOrderSubmit from "./SideBarOrderSubmit";
 
 const SideBarOrderMenuSell = (props) => {
     const {
@@ -38,15 +39,6 @@ const SideBarOrderMenuSell = (props) => {
             '& .MuiButtonBase-root.StockMiner-BigButton:first-of-type': {
                 marginTop: '36px'
             }
-        },
-        button_progress: {
-            color: theme.palette.text.primary,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginTop: '-12px',
-            marginLeft: '-12px',
-            zIndex: 1
         }
     }))()
 
@@ -61,7 +53,6 @@ const SideBarOrderMenuSell = (props) => {
      * Input validation, error handling flags and condition state values.
      */
     const [orderProcessing, setOrderProcessing] = useState(false)
-    const [reviewOrderClicked, setReviewOrderClicked] = useState(false)
     const [orderAmountError, setOrderAmountError] = useState(false)
     const [orderAmountHelperText, setOrderAmountHelperText] = useState({
         default: "",
@@ -91,6 +82,19 @@ const SideBarOrderMenuSell = (props) => {
             />
 
             <SideBarOrderTotalBox symbol={currentSymbol} orderAmount={orderAmount} currentPrice={currentEstimatedPrice}/>
+
+            {currentSelectedRow
+                ?
+                <SideBarOrderSubmit
+                    handleSubmit={() => {
+                        setOrderProcessing(true)
+                    }}
+                    handleInputValidation={() => {
+                        return true
+                    }}
+                    orderProcessing={orderProcessing}
+                /> : ''
+            }
         </FormGroup>
     )
 }
