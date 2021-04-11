@@ -8,6 +8,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails'
 import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import SideBarOrderMenuBuy from './SideBarOrderMenuBuy'
+import SideBarOrderMenuSell from './SideBarOrderMenuSell'
 
 const SideBarOrderMenu = ({currentSelectedRow}) => {
 
@@ -83,9 +84,7 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography>
-                        ...
-                    </Typography>
+                    {<SideBarOrderMenuSell/>}
                 </AccordionDetails>
             </Accordion>
 

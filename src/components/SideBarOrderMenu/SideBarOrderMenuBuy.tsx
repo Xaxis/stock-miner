@@ -3,21 +3,20 @@ import {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
+import fetch from 'cross-fetch'
+import SideBarOrderTotalBox from './SideBarOrderTotalBox'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
 import MenuItem from '@material-ui/core/MenuItem'
-import Grid from '@material-ui/core/Grid'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import CheckBox from '@material-ui/core/CheckBox'
-import fetch from 'cross-fetch'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/value_conversions'
+import {toMoneyValue, toPercentValue} from '../../libs/value_conversions'
 
 const SideBarOrderMenuBuy = (props) => {
     const {
@@ -36,20 +35,6 @@ const SideBarOrderMenuBuy = (props) => {
         buy: {
             '& .MuiButtonBase-root.StockMiner-BigButton:first-of-type': {
                 marginTop: '36px'
-            }
-        },
-        grid_box: {
-            color: theme.palette.text.secondary,
-            '& .MuiGrid-item:first-child': {},
-            '& .MuiGrid-item:last-child': {
-                textAlign: 'right',
-                overflow: 'hidden'
-            },
-            '& + *': {
-                marginTop: '16px'
-            },
-            '&:not(:first-child)': {
-                marginTop: '16px'
             }
         },
         button_progress: {
@@ -75,7 +60,6 @@ const SideBarOrderMenuBuy = (props) => {
     const [currentSymbol, setCurrentSymbol] = useState("")
     const [currentEstimatedPrice, setCurrentEstimatedPrice] = useState("$0.00")
     const [orderAmount, setOrderAmount] = useState("")
-    const [orderQuantity, setOrderQuantity] = useState(0.00)
     const [limitType, setLimitType] = useState("price")
     const [limitBuyAmount, setLimitBuyAmount] = useState("")
     const [limitBuyAmountPlaceholder, setLimitBuyAmountPlaceholder] = useState("$0.00")
@@ -160,7 +144,6 @@ const SideBarOrderMenuBuy = (props) => {
         if (currentSelectedRow) {
             setCurrentSymbol(currentSelectedRow.symbol)
             setCurrentEstimatedPrice('$' + toMoneyValue(currentSelectedRow.price))
-            setOrderQuantity(calcQuantity(orderAmount, currentEstimatedPrice))
             updater = setInterval(() => {
                 let current_price = toMoneyValue(currentSelectedRow.price)
 
@@ -225,7 +208,6 @@ const SideBarOrderMenuBuy = (props) => {
         setLimitBuyPercentPlaceholder('0.00')
         setLimitSellPercent('')
         setLimitSellPercentPlaceholder('0.00')
-        setOrderQuantity(0)
         setLimitBuyPercentLabel('Buy Limit % ($0.00)')
         setLimitSellPercentLabel('Sell Limit % ($0.00)')
 
@@ -522,7 +504,6 @@ const SideBarOrderMenuBuy = (props) => {
                     if (e.target.value) {
                         let cleaned_amount = toMoneyValue(e.target.value)
                         setOrderAmount('$' + cleaned_amount)
-                        setOrderQuantity(calcQuantity(cleaned_amount, currentEstimatedPrice))
                     } else {
                         setOrderAmount('')
                     }
@@ -640,31 +621,7 @@ const SideBarOrderMenuBuy = (props) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Grid container spacing={0} className={classes.grid_box}>
-                <Grid item xs={6}>
-                    <Typography>
-                        Estimated Price
-                    </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography>
-                        {currentEstimatedPrice}
-                    </Typography>
-                </Grid>
-            </Grid>
-
-            <Grid container spacing={0} className={classes.grid_box}>
-                <Grid item xs={6}>
-                    <Typography>
-                        Estimated {currentSymbol}
-                    </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography>
-                        {orderQuantity}
-                    </Typography>
-                </Grid>
-            </Grid>
+            <SideBarOrderTotalBox symbol={currentSymbol} orderAmount={orderAmount} currentPrice={currentEstimatedPrice}/>
 
             {renderOrderButtons()}
         </FormGroup>
