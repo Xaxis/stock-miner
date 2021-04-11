@@ -5,18 +5,12 @@ import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import fetch from 'cross-fetch'
 import SideBarOrderLimit from './SideBarOrderLimit'
+import SideBarOrderLossPrevent from './SideBarOrderLossPrevent'
 import SideBarOrderTotalBox from './SideBarOrderTotalBox'
 import SideBarOrderSubmit from './SideBarOrderSubmit'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import Accordion from '@material-ui/core/Accordion'
-import AccordionSummary from '@material-ui/core/AccordionSummary'
-import AccordionDetails from '@material-ui/core/AccordionDetails'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import CheckBox from '@material-ui/core/CheckBox'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import {toMoneyValue, toPercentValue} from '../../libs/value_conversions'
+import {toMoneyValue} from '../../libs/value_conversions'
 
 const SideBarOrderMenuBuy = (props) => {
     const {
@@ -44,11 +38,6 @@ const SideBarOrderMenuBuy = (props) => {
     }))()
 
     /**
-     * Inner Accordion panels
-     */
-    const [expandedInnerPanel2, setExpandedInnerPanel2] = useState(false)
-
-    /**
      * Order field values.
      */
     const [currentSymbol, setCurrentSymbol] = useState("")
@@ -56,51 +45,17 @@ const SideBarOrderMenuBuy = (props) => {
     const [orderAmount, setOrderAmount] = useState("")
     const [limitBuyAmount, setLimitBuyAmount] = useState("")
     const [limitSellAmount, setLimitSellAmount] = useState("")
-
-    /**
-     * Loss prevention values.
-     */
-    const [lossPreventAmount, setLossPreventAmount] = useState("")
     const [lossPreventPercent, setLossPreventPercent] = useState("")
-    const [lossPreventPrice, setLossPreventPrice] = useState("")
-    const [lossPreventAmountPlaceholder, setLossPreventAmountPlaceholder] = useState("$0.00")
-    const [lossPreventPercentPlaceholder, setLossPreventPercentPlaceholder] = useState("0.00")
-    const [lossPreventPricePlaceholder, setLossPreventPricePlaceholder] = useState("$0.00")
 
     /**
      * Input validation, error handling flags and condition state values.
      */
     const [orderProcessing, setOrderProcessing] = useState(false)
-    const [reviewOrderClicked, setReviewOrderClicked] = useState(false)
     const [orderAmountError, setOrderAmountError] = useState(false)
     const [orderAmountHelperText, setOrderAmountHelperText] = useState({
         default: "",
         error: "Please provide an appropriate value."
     })
-
-    /**
-     * Loss Prevent TextField helper text and error messages.
-     */
-    const [lossPreventError, setLossPreventError] = useState(false)
-    const [lossPreventAmountHelperText, setLossPreventAmountHelperText] = useState({
-        default: "Will auto sell at amount ($) decrease.",
-        error: "Please provide an appropriate value."
-    })
-    const [lossPreventPercentHelperText, setLossPreventPercentHelperText] = useState({
-        default: "Will auto sell at percent (%) decrease.",
-        error: "Please provide an appropriate value."
-    })
-    const [lossPreventPriceHelperText, setLossPreventPriceHelperText] = useState({
-        default: "Will auto sell at stock price ($) value.",
-        error: "Please provide an appropriate value."
-    })
-
-    /**
-     * Toggle handler sets state on menu's inner accordion panels.
-     */
-    const handleInnerAccordionPanelExpand2 = (panel) => (event) => {
-        setExpandedInnerPanel2(expandedInnerPanel2 ? false : true)
-    }
 
     /**
      * Updates values in the trade/order menu when a row is selected.
@@ -112,8 +67,6 @@ const SideBarOrderMenuBuy = (props) => {
             setCurrentEstimatedPrice('$' + toMoneyValue(currentSelectedRow.price))
             updater = setInterval(() => {
                 let current_price = toMoneyValue(currentSelectedRow.price)
-
-                // Update the estimated price
                 setCurrentEstimatedPrice('$' + current_price)
             }, 1000)
         } else {
@@ -135,58 +88,16 @@ const SideBarOrderMenuBuy = (props) => {
      */
     const resetBuyInputs = () => {
 
-        // @todo - Do we need to reset the selected row?
-        // setSelectedRow(null, [])
-
         // Reset input values
         setCurrentSymbol("")
         setOrderAmount("")
         setCurrentEstimatedPrice("$0.00")
 
-        // Reset loss prevention values
-        setLossPreventAmount('')
-        setLossPreventPercent('')
-        setLossPreventPrice('')
-
         // Reset error flags
         setOrderAmountError(false)
 
         // Reset buttons and states
-        setReviewOrderClicked(false)
         setOrderProcessing(false)
-
-        // Reset accordions
-        setExpandedInnerPanel2(false)
-    }
-
-    /**
-     * Handle input of any/all the loss prevention fields. All of the loss prevention fields
-     * are updated when any of them are changed, as they all contain equivalent values.
-     */
-    const handleLossPreventionTranslation = (value, type) => {
-        let amount_loss = ''
-        let percent_loss = ''
-        let price_loss = ''
-        switch (type) {
-            case 'amount':
-                amount_loss = toMoneyValue(value)
-                percent_loss = ((amount_loss / toMoneyValue(currentEstimatedPrice)) * 100).toFixed(2)
-                price_loss = (toMoneyValue(currentEstimatedPrice) - amount_loss).toFixed(8)
-                break
-            case 'percent':
-                percent_loss = toPercentValue(value)
-                amount_loss = ((toMoneyValue(currentEstimatedPrice) * parseFloat(percent_loss)) / 100).toFixed(8)
-                price_loss = (toMoneyValue(currentEstimatedPrice) - amount_loss).toFixed(8)
-                break
-            case 'price':
-                price_loss = toMoneyValue(value)
-                percent_loss = Math.abs((price_loss / toMoneyValue(currentEstimatedPrice) * 100) - 100).toFixed(8)
-                amount_loss = (toMoneyValue(currentEstimatedPrice) - price_loss).toFixed(8)
-                break
-        }
-        setLossPreventAmount('$' + (isNaN(amount_loss) ? '' : amount_loss))
-        setLossPreventPercent(percent_loss)
-        setLossPreventPrice('$' + (isNaN(price_loss) ? '' : price_loss))
     }
 
     /**
@@ -241,7 +152,7 @@ const SideBarOrderMenuBuy = (props) => {
             />
 
             <SideBarOrderLimit
-                disabled={false}
+                disabled={!currentSelectedRow}
                 variant="both"
                 currentPrice={currentEstimatedPrice}
                 getLimitBuyAmount={(amount) => {
@@ -252,78 +163,13 @@ const SideBarOrderMenuBuy = (props) => {
                 }}
             />
 
-            <Accordion
-                square
-                expanded={expandedInnerPanel2}
-                onChange={handleInnerAccordionPanelExpand2()}
+            <SideBarOrderLossPrevent
                 disabled={!currentSelectedRow}
-            >
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                    <FormControlLabel
-                        control={<CheckBox checked={expandedInnerPanel2} disabled={!currentSelectedRow}/>}
-                        label={"Loss Prevention"}
-                    />
-                </AccordionSummary>
-                <AccordionDetails>
-                    <TextField
-                        label="Max Stock Amount Loss"
-                        placeholder={lossPreventAmountPlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={lossPreventAmount}
-                        disabled={!currentSelectedRow}
-                        helperText={lossPreventError ? lossPreventAmountHelperText.error : lossPreventAmountHelperText.default}
-                        error={lossPreventError}
-                        onChange={(e) => {
-                            if (e.target.value) {
-                                handleLossPreventionTranslation(e.target.value, 'amount')
-                            } else {
-                                setLossPreventAmount('')
-                                setLossPreventPercent('')
-                                setLossPreventPrice('')
-                            }
-                        }}
-                    />
-                    <TextField
-                        label="Max Stock Percent Loss"
-                        placeholder={lossPreventPercentPlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={lossPreventPercent}
-                        disabled={!currentSelectedRow}
-                        helperText={lossPreventError ? lossPreventPercentHelperText.error : lossPreventPercentHelperText.default}
-                        error={lossPreventError}
-                        onChange={(e) => {
-                            if (e.target.value) {
-                                handleLossPreventionTranslation(e.target.value, 'percent')
-                            } else {
-                                setLossPreventAmount('')
-                                setLossPreventPercent('')
-                                setLossPreventPrice('')
-                            }
-                        }}
-                    />
-                    <TextField
-                        label="Max Stock Price Loss"
-                        placeholder={lossPreventPricePlaceholder}
-                        variant="outlined"
-                        InputLabelProps={{shrink: true}}
-                        value={lossPreventPrice}
-                        disabled={!currentSelectedRow}
-                        helperText={lossPreventError ? lossPreventPriceHelperText.error : lossPreventPriceHelperText.default}
-                        error={lossPreventError}
-                        onChange={(e) => {
-                            if (e.target.value) {
-                                handleLossPreventionTranslation(e.target.value, 'price')
-                            } else {
-                                setLossPreventAmount('')
-                                setLossPreventPercent('')
-                                setLossPreventPrice('')
-                            }
-                        }}
-                    />
-                </AccordionDetails>
-            </Accordion>
+                currentPrice={currentEstimatedPrice}
+                getLossPreventPercent={(percent) => {
+                    setLossPreventPercent(percent)
+                }}
+            />
 
             <SideBarOrderTotalBox
                 symbol={currentSymbol}
@@ -347,11 +193,6 @@ const SideBarOrderMenuBuy = (props) => {
                         } else {
                             setOrderAmountError(false)
                         }
-
-                        // @todo - If Sell Limit exists, a Buy Limit must also be given
-                        // @todo - Assume Buy Limit must be less than current estimated price
-                        // @todo - Assume Sell Limit must be greater than current estimated price (and buy limit)
-
                         return true
                     }}
                     orderProcessing={orderProcessing}
