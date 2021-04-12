@@ -26,7 +26,7 @@ class OrderProcessor {
                         !this.is_order_task_done(buy)
                         && !limit_buy
                         && !this.is_order_task_done(sell)
-                        && this.is_exec_price_within_margin(order.purchase_price, order.price)
+                        && this.is_exec_price_within_margin(order.buy_price, order.price)
                     ) {
                         // @todo - Build complete execution steps
                         this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
@@ -131,7 +131,7 @@ class OrderProcessor {
                         !this.is_order_task_done(loss_prevent)
                         && (this.is_order_task_done(buy) || this.is_order_task_done(limit_buy))
                         && this.is_order_task_done(sell)
-                        && this.is_loss_prevent_point_hit(order.purchase_price, order.price, order.loss_perc)
+                        && this.is_loss_prevent_point_hit(order.buy_price, order.price, order.loss_perc)
                     ) {
                         // @todo - Build complete execution steps
                         this.update_order_task_by_event(tasks_obj, 'SELL', {done: true})
@@ -210,11 +210,11 @@ class OrderProcessor {
     /**
      * Returns true when a loss prevent percent point has been hit.
      */
-    is_loss_prevent_point_hit = (purchase_price, current_price, loss_percent) => {
-        let clean_purchase_price = parseFloat(purchase_price)
+    is_loss_prevent_point_hit = (buy_price, current_price, loss_percent) => {
+        let clean_buy_price = parseFloat(buy_price)
         let clean_current_price = parseFloat(current_price)
-        let change = clean_current_price - clean_purchase_price
-        let percent_change = ((change / clean_purchase_price) * 100)
+        let change = clean_current_price - clean_buy_price
+        let percent_change = ((change / clean_buy_price) * 100)
         return Math.abs(percent_change) >= Math.abs(loss_percent)
     }
 
@@ -235,15 +235,15 @@ class OrderProcessor {
     /**
      * Is acceptable execution margin percent? When an order is being executed, it is
      * intended to execute (buy or sell) at a given price. The price it actually executes
-     * at will rarely if ever be that 'purchase_price' due to the ever changing volatility
+     * at will rarely if ever be that 'buy_price' due to the ever changing volatility
      * of the market. To overcome this orders must be executed within an acceptable margin
-     * +/- % of the intended purchase price.
+     * +/- % of the intended buy price.
      */
-    is_exec_price_within_margin = (purchase_price, current_price, margin=0.99) => {
+    is_exec_price_within_margin = (buy_price, current_price, margin=0.99) => {
         let clean_current_price = parseFloat(current_price)
-        let clean_purchase_price = parseFloat(purchase_price)
-        let change = clean_current_price - clean_purchase_price
-        let percent_change = Math.abs(((change / clean_purchase_price) * 100))
+        let clean_buy_price = parseFloat(buy_price)
+        let change = clean_current_price - clean_buy_price
+        let percent_change = Math.abs(((change / clean_buy_price) * 100))
         return percent_change <= margin
     }
 }

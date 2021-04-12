@@ -6,18 +6,7 @@ import * as ActionTypes from '../../store/actions'
 import SideBarOrderTotalBox from './SideBarOrderTotalBox'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
-import MenuItem from '@material-ui/core/MenuItem'
-import Grid from '@material-ui/core/Grid'
-import Accordion from '@material-ui/core/Accordion'
-import AccordionSummary from '@material-ui/core/AccordionSummary'
-import AccordionDetails from '@material-ui/core/AccordionDetails'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import CheckBox from '@material-ui/core/CheckBox'
 import fetch from 'cross-fetch'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/value_conversions'
 import SideBarOrderSubmit from "./SideBarOrderSubmit";
 import SideBarOrderLimit from "./SideBarOrderLimit";
@@ -35,13 +24,7 @@ const SideBarOrderMenuSell = (props) => {
     /**
      * Component style overrides.
      */
-    const classes = makeStyles(theme => ({
-        sell: {
-            '& .MuiButtonBase-root.StockMiner-BigButton:first-of-type': {
-                marginTop: '36px'
-            }
-        }
-    }))()
+    // const classes = makeStyles(theme => ({}))()
 
     /**
      * Order field values.
@@ -62,8 +45,30 @@ const SideBarOrderMenuSell = (props) => {
         error: "Please provide an appropriate value."
     })
 
+    /**
+     * Send the Sell Order to the server.
+     */
+    const handleOrderSellSubmit = () => {
+        // let uuid = currentSelectedRow.uuid
+        // let cost_basis = toMoneyValue(orderAmount)
+        // let sell_price = toMoneyValue(currentEstimatedPrice)
+        // let limit_sell = limitSellAmount || 0
+        // const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${sell_price}/${limit_sell}`)
+        // let order_result = await order_response.json()
+        //
+        // // Retrieve update row from DB
+        // const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}`)
+        // let row_result = await row_response.json()
+        // if (row_result.length) {
+        //     updateTableRows(profileActive[0], tableIDActive, row_result)
+        // }
+        //
+        // // Reset order processing flag and input fields
+        // setOrderProcessing(false)
+    }
+
     return (
-        <FormGroup className={classes.sell}>
+        <FormGroup>
             <TextField
                 label="Amount in USD"
                 placeholder="$0.00"

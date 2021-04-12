@@ -401,12 +401,12 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
         })
 })
 
-app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
-    let uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc;
-    ({uuid, cost_basis, purchase_price, limit_buy, limit_sell, loss_perc} = {
+app.get('/app/order/buy/:uuid/:cost_basis/:buy_price/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
+    let uuid, cost_basis, buy_price, limit_buy, limit_sell, loss_perc;
+    ({uuid, cost_basis, buy_price, limit_buy, limit_sell, loss_perc} = {
         uuid: req.params.uuid,
         cost_basis: parseFloat(req.params.cost_basis),
-        purchase_price: parseFloat(req.params.purchase_price),
+        buy_price: parseFloat(req.params.buy_price),
         limit_buy: parseFloat(req.params.limit_buy),
         limit_sell: parseFloat(req.params.limit_sell),
         loss_perc: parseFloat(req.params.loss_perc)
@@ -428,7 +428,7 @@ app.get('/app/order/buy/:uuid/:cost_basis/:purchase_price/:limit_buy/:limit_sell
                         limit_buy: limit_buy || 0,
                         limit_sell: limit_sell || 0,
                         loss_perc: loss_perc || 0,
-                        purchase_price: purchase_price || 0,
+                        buy_price: buy_price || 0,
                         status: 'Running',
                         paused: paused
                     }

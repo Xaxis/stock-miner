@@ -109,11 +109,11 @@ const SideBarOrderMenuBuy = (props) => {
             // Process order inputs and order
             let uuid = currentSelectedRow.uuid
             let cost_basis = toMoneyValue(orderAmount)
-            let purchase_price = toMoneyValue(currentEstimatedPrice)
+            let buy_price = toMoneyValue(currentEstimatedPrice)
             let limit_buy = limitBuyAmount || 0
             let limit_sell = limitSellAmount || 0
             let loss_perc = lossPreventPercent || 0
-            const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${purchase_price}/${limit_buy}/${limit_sell}/${loss_perc}`)
+            const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${buy_price}/${limit_buy}/${limit_sell}/${loss_perc}`)
             let order_result = await order_response.json()
 
             // Retrieve update row from DB

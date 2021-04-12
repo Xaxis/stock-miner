@@ -61,8 +61,8 @@ export const calcPercent = (x, y) => {
  * Calculate equity. The 'equity' is the total 'cost_basis' +/- the change of
  * value of a given stock.
  */
-export const calcEquity = (cost_basis, purchase_price, current_price) => {
-    let percent_change = (calcPercent(current_price, purchase_price) - 100)
+export const calcEquity = (cost_basis, buy_price, current_price) => {
+    let percent_change = (calcPercent(current_price, buy_price) - 100)
     let amount_change = parseFloat(cost_basis) * (percent_change / 100)
     return (cost_basis + amount_change)
 }
@@ -80,18 +80,18 @@ export const calcQuantity = (equity_val, current_price) => {
 
 /**
  * Calculate total return. The 'total return' is the difference in equity and the
- * purchase price.
+ * buy price.
  */
 export const calcTotalReturn = (equity_val, cost_basis) => {
     return (equity_val - parseFloat(cost_basis)).toFixed(2)
 }
 
 /**
- * Calculate the total percent change of the purchase price relative to the current price
+ * Calculate the total percent change of the buy price relative to the current price
  * of a share.
  */
-export const calcTotalChange = (purchase_price, current_price) => {
-    let percent_change = calcPercent(current_price, purchase_price)
+export const calcTotalChange = (buy_price, current_price) => {
+    let percent_change = calcPercent(current_price, buy_price)
     if (percent_change === 0) {
         return 0
     } else {
@@ -124,7 +124,7 @@ export const prepareDataTableValues = (rows) => {
     return rows.map((row) => {
         return Object.assign(row, {
             price: toMoneyString(row.price),
-            equity: toMoneyString(calcEquity(row.cost_basis, row.purchase_price, row.price).toFixed(2)),
+            equity: toMoneyString(calcEquity(row.cost_basis, row.buy_price, row.price).toFixed(2)),
             limit_buy: toMoneyString(row.limit_buy),
             limit_sell: toMoneyString(row.limit_sell),
             loss_perc: row.loss_perc + '%'
