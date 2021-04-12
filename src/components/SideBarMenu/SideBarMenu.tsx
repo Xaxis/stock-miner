@@ -66,8 +66,8 @@ const SideBarMenu = ({
     const classes = makeStyles(theme => ({
         root: {
             display: 'flex',
-            height: 'calc(100vh - 68px)',
-            borderRight: `1px solid ${theme.palette.secondary.main}`,
+            height: 'calc(100vh - 48px)',
+            borderRight: `1px solid ${theme.palette.secondary.main}`
         },
         controls: {
             maxWidth: '68px',

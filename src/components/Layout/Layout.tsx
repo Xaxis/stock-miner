@@ -10,7 +10,6 @@ import Drawer from '@material-ui/core/Drawer'
 import MainMenu from '../MainMenu/MainMenu'
 import TabManager from '../TabManager/TabManager'
 import SideBarMenu from '../SideBarMenu/SideBarMenu'
-import StatusBar from '../StatusBar/StatusBar'
 
 const Layout = ({
                     ui,
@@ -29,7 +28,7 @@ const Layout = ({
      */
     const classes = makeStyles(theme => ({
         wrapper: {
-            height: 'calc(100% - 66px)',
+            height: 'calc(100% - 48px)',
             display: 'flex'
         },
         drawer: {
@@ -39,7 +38,7 @@ const Layout = ({
             overflowX: 'hidden',
             '& > .MuiPaper-root': {
                 top: '48px',
-                height: 'calc(100vh - 68px)',
+                height: 'calc(100vh - 48px)',
             }
         },
         drawerOpen: {
@@ -57,7 +56,8 @@ const Layout = ({
         },
         main: {
             zIndex: '510',
-            flexGrow: 1
+            flexGrow: 1,
+            height: '100%'
         }
     }))()
 
@@ -120,7 +120,6 @@ const Layout = ({
                     <TabManager/>
                 </div>
             </div>
-            <StatusBar/>
         </>
     )
 }

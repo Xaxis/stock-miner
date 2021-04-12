@@ -425,7 +425,7 @@ const TableManager = (props) => {
                             enabled: false
                         },
                         fixedSelectColumn: true,
-                        tableBodyHeight: 'calc(100vh - 237px)',
+                        tableBodyHeight: 'calc(100vh - 217px)',
                         onRowSelectionChange: handleRowSelectionChange,
                         expandableRowsHeader: false,
                         expandableRows: true,

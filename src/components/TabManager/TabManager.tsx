@@ -54,7 +54,7 @@ export default function TabManager() {
             overflow: 'hidden',
             backgroundColor: theme.palette.secondary.darkAlt,
             '& [role="tabpanel"]': {
-                height: 'calc(100vh - 116px)',
+                height: 'calc(100vh - 96px)',
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 borderTop: `1px solid ${theme.palette.secondary.main}`
