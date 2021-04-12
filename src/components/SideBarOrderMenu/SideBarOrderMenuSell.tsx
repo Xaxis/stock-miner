@@ -46,25 +46,69 @@ const SideBarOrderMenuSell = (props) => {
     })
 
     /**
+     * Updates values in the trade/order menu when a row is selected.
+     */
+    useEffect(() => {
+        let updater = null
+        if (currentSelectedRow) {
+            setCurrentSymbol(currentSelectedRow.symbol)
+            setCurrentEstimatedPrice('$' + toMoneyValue(currentSelectedRow.price))
+            updater = setInterval(() => {
+                let current_price = toMoneyValue(currentSelectedRow.price)
+                setCurrentEstimatedPrice('$' + current_price)
+            }, 1000)
+        } else {
+            resetBuyInputs()
+        }
+        return () => clearInterval(updater)
+    }, [currentSelectedRow])
+
+    /**
+     * Reset the inputs when the table ID active changes.
+     */
+    useEffect(() => {
+        resetBuyInputs()
+    }, [tableIDActive])
+
+    /**
+     * Resets the Buy Inputs with their initial values.
+     */
+    const resetBuyInputs = () => {
+
+        // Reset input values
+        setCurrentSymbol("")
+        setOrderAmount("")
+        setCurrentEstimatedPrice("$0.00")
+
+        // Reset error flags
+        setOrderAmountError(false)
+
+        // Reset buttons and states
+        setOrderProcessing(false)
+    }
+
+    /**
      * Send the Sell Order to the server.
      */
     const handleOrderSellSubmit = () => {
-        // let uuid = currentSelectedRow.uuid
-        // let cost_basis = toMoneyValue(orderAmount)
-        // let sell_price = toMoneyValue(currentEstimatedPrice)
-        // let limit_sell = limitSellAmount || 0
-        // const order_response = await fetch(`http://localhost:2222/app/order/buy/${uuid}/${cost_basis}/${sell_price}/${limit_sell}`)
-        // let order_result = await order_response.json()
-        //
-        // // Retrieve update row from DB
-        // const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}`)
-        // let row_result = await row_response.json()
-        // if (row_result.length) {
-        //     updateTableRows(profileActive[0], tableIDActive, row_result)
-        // }
-        //
-        // // Reset order processing flag and input fields
-        // setOrderProcessing(false)
+        (async () => {
+            let uuid = currentSelectedRow.uuid
+            let sale_basis = toMoneyValue(orderAmount)
+            let sell_price = toMoneyValue(currentEstimatedPrice)
+            let limit_sell = limitSellAmount || 0
+            const order_response = await fetch(`http://localhost:2222/app/order/sell/${uuid}/${sale_basis}/${sell_price}/${limit_sell}`)
+            let order_result = await order_response.json()
+
+            // Retrieve update row from DB
+            const row_response = await fetch(`http://localhost:2222/app/get/orders/uuid/${profileActive[0]}/${uuid}`)
+            let row_result = await row_response.json()
+            if (row_result.length) {
+                updateTableRows(profileActive[0], tableIDActive, row_result)
+            }
+
+            // Reset order processing flag and input fields
+            setOrderProcessing(false)
+        })()
     }
 
     return (
@@ -90,7 +134,7 @@ const SideBarOrderMenuSell = (props) => {
             />
 
             <SideBarOrderLimit
-                disabled={false}
+                disabled={!currentSelectedRow}
                 variant="sell"
                 currentPrice={currentEstimatedPrice}
                 getLimitBuyAmount={(amount) => {
@@ -101,15 +145,28 @@ const SideBarOrderMenuSell = (props) => {
                 }}
             />
 
-            <SideBarOrderTotalBox symbol={currentSymbol} orderAmount={orderAmount} currentPrice={currentEstimatedPrice}/>
+            <SideBarOrderTotalBox
+                symbol={currentSymbol}
+                orderAmount={orderAmount}
+                currentPrice={currentEstimatedPrice}
+            />
 
             {currentSelectedRow
                 ?
                 <SideBarOrderSubmit
                     handleSubmit={() => {
                         setOrderProcessing(true)
+                        handleOrderSellSubmit()
                     }}
                     handleInputValidation={() => {
+
+                        // Check if any required fields are left empty
+                        if (!orderAmount) {
+                            setOrderAmountError(true)
+                            return false
+                        } else {
+                            setOrderAmountError(false)
+                        }
                         return true
                     }}
                     orderProcessing={orderProcessing}

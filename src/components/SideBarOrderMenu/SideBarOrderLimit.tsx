@@ -55,11 +55,6 @@ const SideBarOrderLimit = (props) => {
     /**
      * Limit TextField component helper text and error messages.
      */
-    const [orderAmountError, setOrderAmountError] = useState(false)
-    const [orderAmountHelperText, setOrderAmountHelperText] = useState({
-        default: "",
-        error: "Please provide an appropriate value."
-    })
     const [limitBuyAmountError, setLimitBuyAmountError] = useState(false)
     const [limitBuyAmountHelperText, setLimitBuyAmountHelperText] = useState({
         default: "Will attempt to buy at specified price.",
@@ -77,7 +72,7 @@ const SideBarOrderLimit = (props) => {
     })
     const [limitSellPercentError, setLimitSellPercentError] = useState(false)
     const [limitSellPercentHelperText, setLimitSellPercentHelperText] = useState({
-        default: "Will attempt to buy at specified % change.",
+        default: "Will attempt to sell at specified % change.",
         error: "Please provide an appropriate value."
     })
 
@@ -88,7 +83,7 @@ const SideBarOrderLimit = (props) => {
         let stockBuyChangeAmount = calcStockSumWithPercentageChange(toPercentValue(limitBuyPercent), toMoneyValue(currentPrice))
         let stockSellChangeAmount = calcStockSumWithPercentageChange(toPercentValue(limitSellPercent), toMoneyValue(currentPrice))
         setLimitBuyPercentLabel(convertTemplateString(limitBuyPercentLabelTemplate, [isNaN(stockBuyChangeAmount) ? '0.00' : stockBuyChangeAmount]))
-        setLimitSellPercentLabel(convertTemplateString(limitBuyPercentLabelTemplate, [isNaN(stockSellChangeAmount) ? '0.00' : stockSellChangeAmount]))
+        setLimitSellPercentLabel(convertTemplateString(limitSellPercentLabelTemplate, [isNaN(stockSellChangeAmount) ? '0.00' : stockSellChangeAmount]))
     }, [currentPrice])
 
     /**
@@ -175,7 +170,7 @@ const SideBarOrderLimit = (props) => {
                     let cleanLimitSellPercent = toPercentValue(e.target.value)
                     let stockChangeAmount = calcStockSumWithPercentageChange(cleanLimitSellPercent, toMoneyValue(currentPrice))
                     setLimitSellPercent(cleanLimitSellPercent)
-                    setLimitSellPercentLabel(convertTemplateString(limitBuyPercentLabelTemplate, [isNaN(stockChangeAmount) ? '0.00' : stockChangeAmount]))
+                    setLimitSellPercentLabel(convertTemplateString(limitSellPercentLabelTemplate, [isNaN(stockChangeAmount) ? '0.00' : stockChangeAmount]))
                 }}
             />
         )

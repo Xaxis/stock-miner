@@ -72,7 +72,6 @@ const SideBarOrderMenuBuy = (props) => {
         } else {
             resetBuyInputs()
         }
-
         return () => clearInterval(updater)
     }, [currentSelectedRow])
 
