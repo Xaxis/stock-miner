@@ -116,7 +116,7 @@ const SideBarOrderLossPrevent = (props) => {
                     onChange={(e) => {
                         if (e.target.value) {
                             handleLossPreventionTranslation(e.target.value, 'amount')
-                            getLossPreventPercent(toPercentValue(lossPreventPercent))
+                            getLossPreventPercent(toPercentValue(e.target.value))
                         } else {
                             setLossPreventAmount('')
                             setLossPreventPercent('')
@@ -136,7 +136,7 @@ const SideBarOrderLossPrevent = (props) => {
                     onChange={(e) => {
                         if (e.target.value) {
                             handleLossPreventionTranslation(e.target.value, 'percent')
-                            getLossPreventPercent(toPercentValue(lossPreventPercent))
+                            getLossPreventPercent(toPercentValue(e.target.value))
                         } else {
                             setLossPreventAmount('')
                             setLossPreventPercent('')
@@ -156,7 +156,7 @@ const SideBarOrderLossPrevent = (props) => {
                     onChange={(e) => {
                         if (e.target.value) {
                             handleLossPreventionTranslation(e.target.value, 'price')
-                            getLossPreventPercent(toPercentValue(lossPreventPercent))
+                            getLossPreventPercent(toPercentValue(e.target.value))
                         } else {
                             setLossPreventAmount('')
                             setLossPreventPercent('')
