@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
@@ -32,6 +32,7 @@ const TableManagerOrderHistory = (props) => {
     /**
      * Component style overrides.
      */
+    const unmounted = useRef(false)
     const classes = makeStyles(theme => ({
         grid_box: {
             color: theme.palette.text.secondary,
@@ -103,6 +104,9 @@ const TableManagerOrderHistory = (props) => {
     /**
      * Update data whenever tableData is modified.
      */
+    useEffect(() => {
+        return () => { unmounted.current = true}
+    }, [])
     useEffect(() => {
         renderTimeline(uuid)
     }, [tableData])
@@ -185,7 +189,9 @@ const TableManagerOrderHistory = (props) => {
                         </TimelineItem>
                     )
                 })
-                setTimelineItems(items)
+                if (!unmounted.current) {
+                    setTimelineItems(items)
+                }
             }
         })()
     }
