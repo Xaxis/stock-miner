@@ -276,26 +276,6 @@ const TableManagerStatusChip = (props) => {
     }
 
     /**
-     * Return the value for a task event.
-     */
-    const getTaskEventValue = (event) => {
-        switch (event) {
-            case 'BUY':
-                return toMoneyValue(row.cost_basis)
-            case 'LIMIT_BUY':
-                return toMoneyValue(row.limit_buy)
-            case 'SELL':
-                return toMoneyValue(0)
-            case 'LIMIT_SELL':
-                return toMoneyValue(row.limit_sell)
-            case 'LOSS_PREVENT':
-                return toPercentValue(row.loss_perc)
-            case 'REGISTERED':
-                return 0
-        }
-    }
-
-    /**
      * Render avatar based on status of sub tasks and status in general.
      */
     const renderAvatar = (task) => {
@@ -347,8 +327,8 @@ const TableManagerStatusChip = (props) => {
                                     : tasksText[task.event].pending.primary
                                 }
                                 secondary={task.done
-                                    ? convertTemplateString(tasksText[task.event].complete.secondary, [getTaskEventValue(task.event)])
-                                    : convertTemplateString(tasksText[task.event].pending.secondary, [getTaskEventValue(task.event)])
+                                    ? convertTemplateString(tasksText[task.event].complete.secondary, [task.value])
+                                    : convertTemplateString(tasksText[task.event].pending.secondary, [task.value])
                                 }
                             />
                         </ListItem>

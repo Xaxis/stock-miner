@@ -12,7 +12,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Divider from '@material-ui/core/Divider'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import ModifyIcon from '@material-ui/icons/Edit'
 import PauseIcon from '@material-ui/icons/Pause'
 import PlayIcon from '@material-ui/icons/PlayCircleFilled'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
@@ -162,14 +161,6 @@ const TableManagerActionMenu = (props) => {
                 }}
                 onClose={handleMenuClose}
             >
-                <MenuItem>
-                    <ListItemIcon>
-                        <ModifyIcon size="small"/>
-                    </ListItemIcon>
-                    <ListItemText primary="Modify Order"/>
-                </MenuItem>
-
-                <Divider/>
 
                 <MenuItem
                     onClick={(e) => {
