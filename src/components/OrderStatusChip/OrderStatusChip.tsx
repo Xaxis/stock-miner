@@ -7,7 +7,6 @@ import {connect} from 'react-redux'
 import * as ActionTypes from '../../store/actions'
 import Chip from '@material-ui/core/Chip'
 import Popover from '@material-ui/core/Popover'
-import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -54,7 +53,7 @@ const StyledBadge = withStyles((theme) => ({
     },
 }))(Badge)
 
-const TableManagerStatusChip = (props) => {
+const OrderStatusChip = (props) => {
     const {
         row,
         tableData,
@@ -404,7 +403,7 @@ const TableManagerStatusChip = (props) => {
     )
 }
 
-TableManagerStatusChip.propTypes = {
+OrderStatusChip.propTypes = {
     row: PropTypes.any.isRequired,
 }
 
@@ -418,4 +417,4 @@ const mapDispatchToProps = (dispatch) => {
     return {}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TableManagerStatusChip)
+export default connect(mapStateToProps, mapDispatchToProps)(OrderStatusChip)
