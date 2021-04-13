@@ -96,6 +96,7 @@ const SideBarOrderMenuSell = (props) => {
             let sale_basis = toMoneyValue(orderAmount)
             let sell_price = toMoneyValue(currentEstimatedPrice)
             let limit_sell = limitSellAmount || 0
+
             const order_response = await fetch(`http://localhost:2222/app/order/sell/${uuid}/${sale_basis}/${sell_price}/${limit_sell}`)
             let order_result = await order_response.json()
 

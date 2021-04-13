@@ -402,7 +402,7 @@ app.get('/app/deregister/orders/:simulated/:uuid', (req, res) => {
 })
 
 app.get('/app/order/buy/:uuid/:cost_basis/:buy_price/:limit_buy/:limit_sell/:loss_perc', (req, res) => {
-    let uuid, cost_basis, buy_price, limit_buy, limit_sell, loss_perc;
+    let uuid, cost_basis, buy_price, limit_buy, limit_sell, loss_perc
     ({uuid, cost_basis, buy_price, limit_buy, limit_sell, loss_perc} = {
         uuid: req.params.uuid,
         cost_basis: parseFloat(req.params.cost_basis),
@@ -420,7 +420,9 @@ app.get('/app/order/buy/:uuid/:cost_basis/:buy_price/:limit_buy/:limit_sell/:los
             // Retrieve row before updating it
             DBM.get_all_stock_orders_where_multi_field_values({uuid: uuid})
                 .then((row) => {
-                    let order_tasks = JSON.parse(row[0].tasks)
+                    let order = row[0]
+                    let new_order_tasks = []
+                    let order_tasks = JSON.parse(order.tasks)
 
                     // Build field/value object to put into database
                     let set_data = {
@@ -434,8 +436,8 @@ app.get('/app/order/buy/:uuid/:cost_basis/:buy_price/:limit_buy/:limit_sell/:los
                     }
 
                     // Add order tasks & history entries
-                    if (cost_basis) {
-                        order_tasks.push({
+                    if (cost_basis > 0) {
+                        new_order_tasks.push({
                             event: 'BUY',
                             value: cost_basis,
                             done: false
@@ -446,39 +448,53 @@ app.get('/app/order/buy/:uuid/:cost_basis/:buy_price/:limit_buy/:limit_sell/:los
                             info: `Order BUY registered with $${cost_basis} cost basis.`
                         })
                     }
-                    if (limit_buy || limit_sell) {
+                    if (limit_buy > 0 || limit_sell > 0) {
                         DBM.add_stock_orders_history_entry({
                             uuid: uuid,
                             event: 'LIMIT',
                             info: `Order augmented with LIMIT values: (BUY: $${limit_buy}/SELL: $${limit_sell}).`
                         })
-                        if (limit_buy) {
-                            order_tasks.push({
+                        if (limit_buy > 0) {
+                            new_order_tasks.push({
                                 event: 'LIMIT_BUY',
                                 value: limit_buy,
                                 done: false
                             })
                         }
-                        if (limit_sell) {
-                            order_tasks.push({
+                        if (limit_sell > 0) {
+                            new_order_tasks.push({
                                 event: 'LIMIT_SELL',
                                 value: limit_sell,
                                 done: false
                             })
                         }
                     }
-                    if (loss_perc) {
+                    if (loss_perc > 0) {
                         DBM.add_stock_orders_history_entry({
                             uuid: uuid,
                             event: 'LOSS_PREVENT',
                             info: `Order augmented with LOSS_PREVENT value: (${loss_perc}%).`
                         })
-                        order_tasks.push({
+                        new_order_tasks.push({
                             event: 'LOSS_PREVENT',
                             value: loss_perc,
                             done: false
                         })
                     }
+
+                    // Build the updated tasks objects, overriding existing tasks of same event type
+                    new_order_tasks.forEach((new_task) => {
+                        let existing_task_index = null
+                        let existing_task = order_tasks.filter((exist_task, index) => {
+                            existing_task_index = index
+                            return new_task.event === exist_task.event
+                        })
+                        if (existing_task.length) {
+                            order_tasks[existing_task_index] = Object.assign(existing_task[0], new_task)
+                        } else {
+                            order_tasks.push(new_task)
+                        }
+                    })
 
                     // Add tasks to data set
                     set_data.tasks = order_tasks
@@ -495,6 +511,83 @@ app.get('/app/order/buy/:uuid/:cost_basis/:buy_price/:limit_buy/:limit_sell/:los
         })
 })
 
+// @todo - Under consturction
+app.get('/app/order/sell/:uuid/:sale_basis/:sell_price/:limit_sell', (req, res) => {
+    let uuid, sale_basis, sell_price, limit_sell
+    ({uuid, sale_basis, sell_price, limit_sell} = {
+        uuid: req.params.uuid,
+        sale_basis: parseFloat(req.params.sale_basis),
+        sell_price: parseFloat(req.params.sell_price),
+        limit_sell: parseFloat(req.params.limit_sell),
+    })
+
+    // Retrieve row before updating it
+    DBM.get_all_stock_orders_where_multi_field_values({uuid: uuid})
+        .then((row) => {
+            let order = row[0]
+            let new_order_tasks = []
+            let order_tasks = JSON.parse(order.tasks)
+
+            // Build field/value object to put into database
+            let set_data = {
+                sale_basis: sale_basis,
+                limit_sell: limit_sell || order.limit_sell,
+                sell_price: sell_price || order.sell_price
+            }
+
+            // Add order tasks & history entries
+            if (sale_basis > 0) {
+                new_order_tasks.push({
+                    event: 'SELL',
+                    value: sale_basis,
+                    done: false
+                })
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'SELL',
+                    info: `Order SELL registered with $${sale_basis} sale basis.`
+                })
+            }
+            if (limit_sell) {
+                DBM.add_stock_orders_history_entry({
+                    uuid: uuid,
+                    event: 'LIMIT',
+                    info: `Order augmented with LIMIT values: (BUY: $${order.limit_buy}/SELL: $${limit_sell}).`
+                })
+                new_order_tasks.push({
+                    event: 'LIMIT_SELL',
+                    value: limit_sell,
+                    done: false
+                })
+            }
+
+            // Build the updated tasks objects, overriding existing tasks of same event type
+            new_order_tasks.forEach((new_task) => {
+                let existing_task_index = null
+                let existing_task = order_tasks.filter((exist_task, index) => {
+                    existing_task_index = index
+                    return new_task.event === exist_task.event
+                })
+                if (existing_task.length) {
+                    order_tasks[existing_task_index] = Object.assign(existing_task[0], new_task)
+                } else {
+                    order_tasks.push(new_task)
+                }
+            })
+
+            // Add tasks to data set
+            set_data.tasks = order_tasks
+
+            // Update orders by UUID wherever they exist (Stock_Simulations or Stock_Orders)
+            DBM.update_all_stock_orders_by_uuid_with_multi_field_values(uuid, set_data)
+                .then(() => {
+                    res.send({success: true})
+
+                    // Re-build all profile tasks
+                    DT.build_all_active_tasks_from_db()
+                })
+        })
+})
 
 /**
  * API Routes - Routes that can be used outside of the application as standalone

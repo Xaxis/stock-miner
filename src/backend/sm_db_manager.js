@@ -182,6 +182,7 @@ class DBManager {
                 name = options.name,
                 price = options.price || 0,
                 buy_price = options.buy_price || 0,
+                sell_price = options.sell_price || 0,
                 shares = options.shares || 0,
                 cost_basis = options.cost_basis || 0,
                 sale_basis = options.sale_basis || 0,
@@ -191,9 +192,9 @@ class DBManager {
                 order_date = options.order_date,
                 exec_date = options.exec_date || 0,
                 tasks = options.tasks ? JSON.stringify(options.tasks) : '[]'
-            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, buy_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, tasks) `
-            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, buy_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, tasks], function (err) {
+            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, buy_price, sell_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, tasks) `
+            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, buy_price, sell_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, tasks], function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})
