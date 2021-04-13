@@ -50,6 +50,25 @@ export const toPercentValue = (string) => {
 }
 
 /**
+ * Returns a float with a "reasonable" amount of decimals after the point '.'. This helps with
+ * displaying non-overwhelming monetary values.
+ */
+export const toSmartFixed = (string) => {
+    let result = ''
+    let split_string = string.toString().split('.')
+    if (split_string.length === 2) {
+        let pre = split_string[0]
+        let post = split_string[1]
+        if (pre === "0" || pre === "" || Math.abs(parseFloat(pre)) < 1) {
+            result += parseFloat(pre + '.' + post).toFixed(8)
+        } else {
+            result += parseFloat(pre + '.' + post).toFixed(2)
+        }
+    }
+    return result || string
+}
+
+/**
  * Calculate percentage of one value into another.
  */
 export const calcPercent = (x, y) => {

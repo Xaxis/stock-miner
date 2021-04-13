@@ -10,7 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import CheckBox from '@material-ui/core/CheckBox'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MenuItem from '@material-ui/core/MenuItem'
-import {toMoneyValue, toPercentValue, convertTemplateString, calcStockSumWithPercentageChange} from '../../libs/value_conversions'
+import {toMoneyValue, toPercentValue, toSmartFixed, convertTemplateString, calcPercent, calcStockSumWithPercentageChange} from '../../libs/value_conversions'
 
 const SideBarOrderLimit = (props) => {
     const {
@@ -82,8 +82,8 @@ const SideBarOrderLimit = (props) => {
     useEffect(() => {
         let stockBuyChangeAmount = calcStockSumWithPercentageChange(toPercentValue(limitBuyPercent), toMoneyValue(currentPrice))
         let stockSellChangeAmount = calcStockSumWithPercentageChange(toPercentValue(limitSellPercent), toMoneyValue(currentPrice))
-        setLimitBuyPercentLabel(convertTemplateString(limitBuyPercentLabelTemplate, [isNaN(stockBuyChangeAmount) ? '0.00' : stockBuyChangeAmount]))
-        setLimitSellPercentLabel(convertTemplateString(limitSellPercentLabelTemplate, [isNaN(stockSellChangeAmount) ? '0.00' : stockSellChangeAmount]))
+        setLimitBuyPercentLabel(convertTemplateString(limitBuyPercentLabelTemplate, [isNaN(stockBuyChangeAmount) ? '0.00' : toSmartFixed(stockBuyChangeAmount)]))
+        setLimitSellPercentLabel(convertTemplateString(limitSellPercentLabelTemplate, [isNaN(stockSellChangeAmount) ? '0.00' : toSmartFixed(stockSellChangeAmount)]))
     }, [currentPrice])
 
     /**
@@ -126,7 +126,7 @@ const SideBarOrderLimit = (props) => {
                 onChange={(e) => {
                     if (e.target.value) {
                         let cleanLimitSellAmount = toMoneyValue(e.target.value)
-                        setLimitSellAmount('$' + toMoneyValue(e.target.value))
+                        setLimitSellAmount('$' + cleanLimitSellAmount)
                         getLimitSellAmount(cleanLimitSellAmount)
                     } else {
                         setLimitSellAmount('')
@@ -251,9 +251,24 @@ const SideBarOrderLimit = (props) => {
                     disabled={disabled}
                     onChange={(e) => {
                         setLimitType(e.target.value)
-                        if (e.target.value === 'percent') {
-                            setLimitBuyAmount('')
-                            setLimitSellAmount('')
+                        if (e.target.value === 'amount') {
+                            if (limitBuyPercent) {
+                                let buyAmountDiff = (toMoneyValue(currentPrice) * parseFloat(limitBuyPercent * -1)) / 100
+                                setLimitBuyAmount('$' + toSmartFixed((toMoneyValue(currentPrice) - buyAmountDiff)))
+                            }
+                            if (limitSellPercent) {
+                                let sellAmountDiff = (toMoneyValue(currentPrice) * parseFloat(limitSellPercent * -1)) / 100
+                                setLimitSellAmount('$' + toSmartFixed((toMoneyValue(currentPrice) - sellAmountDiff)))
+                            }
+                        } else if (e.target.value === 'percent') {
+                            if (limitBuyAmount) {
+                                let limitPercent = calcPercent(toMoneyValue(limitBuyAmount), toMoneyValue(currentPrice))
+                                setLimitBuyPercent(toSmartFixed((limitPercent - 100)))
+                            }
+                            if (limitSellAmount) {
+                                let limitPercent = calcPercent(toMoneyValue(limitSellAmount), toMoneyValue(currentPrice))
+                                setLimitSellPercent(toSmartFixed(limitPercent - 100))
+                            }
                         }
                     }}
                 >
