@@ -10,6 +10,8 @@ import fetch from 'cross-fetch'
 import {calcQuantity, toMoneyValue, toPercentValue} from '../../libs/value_conversions'
 import SideBarOrderSubmit from "./SideBarOrderSubmit";
 import SideBarOrderLimit from "./SideBarOrderLimit";
+import InputLabelTooltip from "../InputLabelTooltip/InputLabelTooltip";
+import Typography from "@material-ui/core/Typography";
 
 const SideBarOrderMenuSell = (props) => {
     const {
@@ -115,7 +117,18 @@ const SideBarOrderMenuSell = (props) => {
     return (
         <FormGroup>
             <TextField
-                label="Amount in USD"
+                InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                label={
+                    <InputLabelTooltip
+                        label="Amount in USD"
+                        tooltip={
+                            <Typography>
+                                The amount in USD you would like to sell. If this amount is less than your
+                                total equity the order will split after selling the amount specified.
+                            </Typography>
+                        }
+                    />
+                }
                 placeholder="$0.00"
                 variant="outlined"
                 value={orderAmount}
@@ -130,8 +143,6 @@ const SideBarOrderMenuSell = (props) => {
                         setOrderAmount('')
                     }
                 }}
-                InputLabelProps={{shrink: true}}
-                required
             />
 
             <SideBarOrderLimit

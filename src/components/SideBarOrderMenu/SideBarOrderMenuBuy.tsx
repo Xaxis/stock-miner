@@ -8,8 +8,10 @@ import SideBarOrderLimit from './SideBarOrderLimit'
 import SideBarOrderLossPrevent from './SideBarOrderLossPrevent'
 import SideBarOrderTotalBox from './SideBarOrderTotalBox'
 import SideBarOrderSubmit from './SideBarOrderSubmit'
+import InputLabelTooltip from '../InputLabelTooltip/InputLabelTooltip'
 import FormGroup from '@material-ui/core/FormGroup'
 import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
 import {toMoneyValue} from '../../libs/value_conversions'
 
 const SideBarOrderMenuBuy = (props) => {
@@ -131,7 +133,18 @@ const SideBarOrderMenuBuy = (props) => {
     return (
         <FormGroup>
             <TextField
-                label="Amount in USD"
+                InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                label={
+                    <InputLabelTooltip
+                        label="Amount in USD"
+                        tooltip={
+                            <Typography>
+                                The amount in USD you would like to buy. This amount can be no
+                                larger than your available buying power.
+                            </Typography>
+                        }
+                    />
+                }
                 placeholder="$0.00"
                 variant="outlined"
                 value={orderAmount}
@@ -146,8 +159,6 @@ const SideBarOrderMenuBuy = (props) => {
                         setOrderAmount('')
                     }
                 }}
-                InputLabelProps={{shrink: true}}
-                required
             />
 
             <SideBarOrderLimit

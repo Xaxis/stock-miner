@@ -11,6 +11,8 @@ import CheckBox from '@material-ui/core/CheckBox'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MenuItem from '@material-ui/core/MenuItem'
 import {toMoneyValue, toPercentValue, toSmartFixed, convertTemplateString, calcPercent, calcStockSumWithPercentageChange} from '../../libs/value_conversions'
+import InputLabelTooltip from '../InputLabelTooltip/InputLabelTooltip'
+import Typography from '@material-ui/core/Typography'
 
 const SideBarOrderLimit = (props) => {
     const {
@@ -92,10 +94,19 @@ const SideBarOrderLimit = (props) => {
     const TextFieldBuyLimitAmount = () => {
         return (
             <TextField
-                label="Buy At Stock $"
+                InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                label={
+                    <InputLabelTooltip
+                        label="Buy At Stock Value"
+                        tooltip={
+                            <Typography>
+                                The stock price value at which the order should attempt to execute a buy.
+                            </Typography>
+                        }
+                    />
+                }
                 placeholder={limitBuyAmountPlaceholder}
                 variant="outlined"
-                InputLabelProps={{shrink: true}}
                 value={limitBuyAmount}
                 disabled={disabled}
                 helperText={limitBuyAmountError ? limitBuyAmountHelperText.error : limitBuyAmountHelperText.default}
@@ -115,10 +126,19 @@ const SideBarOrderLimit = (props) => {
     const TextFieldSellLimitAmount = () => {
         return (
             <TextField
-                label="Sell At Stock $"
+                InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                label={
+                    <InputLabelTooltip
+                        label="Sell At Stock Value"
+                        tooltip={
+                            <Typography>
+                                The stock price value at which the order should attempt to execute a sell.
+                            </Typography>
+                        }
+                    />
+                }
                 placeholder={limitSellAmountPlaceholder}
                 variant="outlined"
-                InputLabelProps={{shrink: true}}
                 value={limitSellAmount}
                 disabled={disabled}
                 helperText={limitSellAmountError ? limitSellAmountHelperText.error : limitSellAmountHelperText.default}
@@ -138,10 +158,19 @@ const SideBarOrderLimit = (props) => {
     const TextFieldBuyLimitPercent = () => {
         return (
             <TextField
-                label={limitBuyPercentLabel}
+                InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                label={
+                    <InputLabelTooltip
+                        label={limitBuyPercentLabel}
+                        tooltip={
+                            <Typography>
+                                The percentage of stock value at which the order should attempt to execute a buy.
+                            </Typography>
+                        }
+                    />
+                }
                 placeholder={limitBuyPercentPlaceholder}
                 variant="outlined"
-                InputLabelProps={{shrink: true}}
                 value={limitBuyPercent}
                 disabled={disabled}
                 helperText={limitBuyPercentError ? limitBuyPercentHelperText.error : limitBuyPercentHelperText.default}
@@ -158,10 +187,19 @@ const SideBarOrderLimit = (props) => {
     const TextFieldSellLimitPercent = () => {
         return (
             <TextField
-                label={limitSellPercentLabel}
+                InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                label={
+                    <InputLabelTooltip
+                        label={limitSellPercentLabel}
+                        tooltip={
+                            <Typography>
+                                The percentage of stock value at which the order should attempt to execute a sell.
+                            </Typography>
+                        }
+                    />
+                }
                 placeholder={limitSellPercentPlaceholder}
                 variant="outlined"
-                InputLabelProps={{shrink: true}}
                 value={limitSellPercent}
                 disabled={disabled}
                 helperText={limitSellPercentError ? limitSellPercentHelperText.error : limitSellPercentHelperText.default}

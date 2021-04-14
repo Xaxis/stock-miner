@@ -32,6 +32,11 @@ const App = function () {
             light: '#3395c1',
             dark: '#00567c'
         },
+        quinary: {
+            main: '#f44336',
+            light: '#f6685e',
+            dark: '#aa2e25'
+        },
         error: {},
         warning: {},
         info: {},
@@ -108,6 +113,11 @@ const App = function () {
                 main: palette.quaternary.main,
                 light: palette.quaternary.light,
                 dark: palette.quaternary.dark,
+            },
+            quinary: {
+                main: palette.quinary.main,
+                light: palette.quinary.light,
+                dark: palette.quinary.dark,
             },
             // error: {},
             // warning: {},

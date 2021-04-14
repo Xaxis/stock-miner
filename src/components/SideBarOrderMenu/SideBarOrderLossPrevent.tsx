@@ -10,6 +10,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import CheckBox from '@material-ui/core/CheckBox'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import {toMoneyValue, toPercentValue} from '../../libs/value_conversions'
+import InputLabelTooltip from "../InputLabelTooltip/InputLabelTooltip";
+import Typography from "@material-ui/core/Typography";
 
 const SideBarOrderLossPrevent = (props) => {
     const {
@@ -105,10 +107,19 @@ const SideBarOrderLossPrevent = (props) => {
             </AccordionSummary>
             <AccordionDetails>
                 <TextField
-                    label="Max Stock Amount Loss"
+                    InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                    label={
+                        <InputLabelTooltip
+                            label="Max Stock Amount Loss"
+                            tooltip={
+                                <Typography>
+                                    The maximum amount of USD the stock's value can decrease before order is auto-sold.
+                                </Typography>
+                            }
+                        />
+                    }
                     placeholder={lossPreventAmountPlaceholder}
                     variant="outlined"
-                    InputLabelProps={{shrink: true}}
                     value={lossPreventAmount}
                     disabled={disabled}
                     helperText={lossPreventError ? lossPreventAmountHelperText.error : lossPreventAmountHelperText.default}
@@ -125,10 +136,19 @@ const SideBarOrderLossPrevent = (props) => {
                     }}
                 />
                 <TextField
-                    label="Max Stock Percent Loss"
+                    InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                    label={
+                        <InputLabelTooltip
+                            label="Max Stock Percent Loss"
+                            tooltip={
+                                <Typography>
+                                    The maximum percentage the stock's value can decrease before order is auto-sold.
+                                </Typography>
+                            }
+                        />
+                    }
                     placeholder={lossPreventPercentPlaceholder}
                     variant="outlined"
-                    InputLabelProps={{shrink: true}}
                     value={lossPreventPercent}
                     disabled={disabled}
                     helperText={lossPreventError ? lossPreventPercentHelperText.error : lossPreventPercentHelperText.default}
@@ -145,10 +165,19 @@ const SideBarOrderLossPrevent = (props) => {
                     }}
                 />
                 <TextField
-                    label="Max Stock Price Loss"
+                    InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
+                    label={
+                        <InputLabelTooltip
+                            label="Max Stock Price Loss"
+                            tooltip={
+                                <Typography>
+                                    The lowest total value a stock can reach before order is auto-sold.
+                                </Typography>
+                            }
+                        />
+                    }
                     placeholder={lossPreventPricePlaceholder}
                     variant="outlined"
-                    InputLabelProps={{shrink: true}}
                     value={lossPreventPrice}
                     disabled={disabled}
                     helperText={lossPreventError ? lossPreventPriceHelperText.error : lossPreventPriceHelperText.default}
