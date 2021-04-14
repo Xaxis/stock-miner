@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {useState} from 'react'
 import Layout from './components/Layout/Layout'
 import {Provider} from 'react-redux'
 import reducer from './store/reducers/index'

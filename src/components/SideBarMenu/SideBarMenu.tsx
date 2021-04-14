@@ -201,7 +201,7 @@ const SideBarMenu = ({
     /**
      * Handle toggling sidebar menu open/closed.
      */
-    const handleToggleMenu = (e) => {
+    const handleToggleMenu = () => {
         if (ui.sideBarOpen) {
             setSideBarMenuOpen(false)
             setSideBarOpen(false)

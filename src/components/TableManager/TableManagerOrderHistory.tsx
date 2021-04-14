@@ -102,11 +102,16 @@ const TableManagerOrderHistory = (props) => {
     const [timelineItems, setTimelineItems] = useState([])
 
     /**
-     * Update data whenever tableData is modified.
+     * Prevent memory leak no-op by using unmounted ref to prevent changing state if a component
+     * has become unmounted. See: https://stackoverflow.com/questions/58038008/how-to-stop-memory-leak-in-useeffect-hook-react
      */
     useEffect(() => {
         return () => { unmounted.current = true}
     }, [])
+
+    /**
+     * Update data whenever tableData is modified.
+     */
     useEffect(() => {
         renderTimeline(uuid)
     }, [tableData])
