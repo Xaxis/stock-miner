@@ -9,8 +9,9 @@ import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import SideBarOrderMenuBuy from './SideBarOrderMenuBuy'
 import SideBarOrderMenuSell from './SideBarOrderMenuSell'
+import {isTaskDone} from '../../libs/state_modifiers'
 
-const SideBarOrderMenu = ({currentSelectedRow}) => {
+const SideBarOrderMenu = ({tableData, currentSelectedRow}) => {
 
     /**
      * Component style overrides.
@@ -43,24 +44,55 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
      * Current selected row/trade states.
      */
     const [currentSymbol, setCurrentSymbol] = useState("")
+    const [tasks, setTasks] = useState(null)
 
     /**
      * Updates values in the trade/order menu when a row is selected.
      */
     useEffect(() => {
-        let updater = null
         if (currentSelectedRow) {
             setCurrentSymbol(currentSelectedRow.symbol)
         } else {
             setCurrentSymbol("")
         }
-
-        return () => clearInterval(updater)
     }, [currentSelectedRow])
+
+    /**
+     * Continually update tasks object.
+     */
+    useEffect(() => {
+        if (currentSelectedRow) {
+            setTasks(JSON.parse(currentSelectedRow.tasks))
+        }
+    }, [tableData])
+
+    /**
+     * Set the Buy menu disabled if Buy orders can no longer be placed.
+     */
+    const isBuyMenuDisabled = (tasks) => {
+        return (
+            !isTaskDone(tasks, 'REGISTERED')
+            || isTaskDone(tasks, 'SELL')
+        )
+    }
+
+    /**
+     * Set the Sell menu disabled if Sell orders can no longer be placed.
+     */
+    const isSellMenuDisabled = (tasks) => {
+        return (
+            !isTaskDone(tasks, 'BUY')
+        )
+    }
 
     return (
         <div>
-            <Accordion square expanded={expandedPanel1} onChange={handleTogglePanel1()}>
+            <Accordion
+                square
+                expanded={expandedPanel1}
+                onChange={handleTogglePanel1()}
+                disabled={isBuyMenuDisabled(tasks)}
+            >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
                 >
@@ -74,7 +106,12 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion square expanded={expandedPanel2} onChange={handleTogglePanel2()}>
+            <Accordion
+                square
+                expanded={expandedPanel2}
+                onChange={handleTogglePanel2()}
+                disabled={isSellMenuDisabled(tasks)}
+            >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
                 >
@@ -94,6 +131,7 @@ const SideBarOrderMenu = ({currentSelectedRow}) => {
 
 const mapStateToProps = (state) => {
     return {
+        tableData: state.tableData,
         currentSelectedRow: state.currentSelectedRow
     }
 }

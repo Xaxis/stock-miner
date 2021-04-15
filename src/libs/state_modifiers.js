@@ -69,3 +69,34 @@ export const makeRowObject = (row_arr) => {
     })
     return Object.fromEntries(key_values)
 }
+
+/**
+ * Returns a task object from the tasks list by its event name. If task not
+ * found returns null.
+ */
+export const getTask = (tasks, task_name) => {
+    let target_task = null
+    if (tasks) {
+        target_task = tasks.filter((task) => {
+            return task_name === task.event
+        })
+        if (target_task.length) {
+            return target_task[0]
+        } else {
+            return null
+        }
+    }
+    return target_task
+}
+
+/**
+ * Returns true if a task is found and is done.
+ */
+export const isTaskDone = (tasks, task_name) => {
+    let task = getTask(tasks, task_name)
+    if (task) {
+        return task.done === true
+    } else {
+        return false
+    }
+}
