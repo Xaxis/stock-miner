@@ -39,7 +39,8 @@ const InputLabelTooltip = (props) => {
             '& .MuiPopover-paper': {
                 backgroundColor: theme.palette.secondary.dark,
                 fontSize: theme.typography.pxToRem(14),
-                border: `1px solid ${theme.palette.primary.light}`,
+                border: `2px solid ${theme.palette.primary.light}`,
+                borderRadius: '2px !important',
                 maxWidth: '320px',
                 padding: '12px'
             }
