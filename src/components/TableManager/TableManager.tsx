@@ -13,6 +13,7 @@ import SymbolSearch from '../SymbolSearch/SymbolSearch'
 import TableManagerSelectedRowsToolBar from './TableManagerSelectedRowsToolBar'
 import TableManagerExpandableRow from './TableManagerExpandableRow'
 import TableManagerColumnStatus from './TableManagerColumnStatus'
+import TableManagerColumnEquity from './TableManagerColumnEquity'
 import TableManagerActionMenu from './TableManagerActionMenu'
 import {prepareDataTableValues} from '../../libs/value_conversions'
 import {getRowDataByUUID, makeRowObject, getRowTemplateObject} from '../../libs/state_modifiers'
@@ -194,7 +195,17 @@ const TableManager = (props) => {
             label: "Equity",
             options: {
                 filter: true,
-                sort: true
+                sort: true,
+                customBodyRender: (value, tableMeta) => {
+                    let uuid = tableMeta.rowData[0]
+                    let row = getRowDataByUUID(uuid, tableData)
+                    if (!row) {
+                        row = Object.assign(getRowTemplateObject(), makeRowObject(tableMeta.rowData))
+                    }
+                    return (
+                        <TableManagerColumnEquity row={row}/>
+                    )
+                }
             }
         },
         {
@@ -227,7 +238,7 @@ const TableManager = (props) => {
             options: {
                 filter: true,
                 sort: true,
-                customBodyRender: (value, tableMeta, test) => {
+                customBodyRender: (value, tableMeta) => {
                     let uuid = tableMeta.rowData[0]
                     let row = getRowDataByUUID(uuid, tableData)
                     if (!row) {
