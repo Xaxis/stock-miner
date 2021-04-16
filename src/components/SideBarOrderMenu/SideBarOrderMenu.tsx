@@ -71,7 +71,8 @@ const SideBarOrderMenu = ({tableData, currentSelectedRow}) => {
      */
     const isBuyMenuDisabled = (tasks) => {
         return (
-            !isTaskDone(tasks, 'REGISTERED')
+            !currentSelectedRow
+            || !isTaskDone(tasks, 'REGISTERED')
             || isTaskDone(tasks, 'SELL')
         )
     }
@@ -81,7 +82,8 @@ const SideBarOrderMenu = ({tableData, currentSelectedRow}) => {
      */
     const isSellMenuDisabled = (tasks) => {
         return (
-            !isTaskDone(tasks, 'BUY')
+            !currentSelectedRow
+            || !isTaskDone(tasks, 'BUY')
         )
     }
 
@@ -89,7 +91,7 @@ const SideBarOrderMenu = ({tableData, currentSelectedRow}) => {
         <div>
             <Accordion
                 square
-                expanded={expandedPanel1}
+                expanded={currentSelectedRow ? expandedPanel1 : false}
                 onChange={handleTogglePanel1()}
                 disabled={isBuyMenuDisabled(tasks)}
             >
@@ -108,7 +110,7 @@ const SideBarOrderMenu = ({tableData, currentSelectedRow}) => {
 
             <Accordion
                 square
-                expanded={expandedPanel2}
+                expanded={currentSelectedRow ? expandedPanel2 : false}
                 onChange={handleTogglePanel2()}
                 disabled={isSellMenuDisabled(tasks)}
             >

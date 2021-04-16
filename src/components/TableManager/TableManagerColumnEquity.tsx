@@ -40,7 +40,6 @@ const TableManagerColumnEquity = (props) => {
         if (row.tasks) {
             setTasks(JSON.parse(row.tasks))
             if (isTaskDone(tasks, 'BUY') || isTaskDone(tasks, 'LIMIT_BUY')) {
-                console.log(true)
                 setEquity(row.equity)
                 setIsEquitySet(true)
             }

@@ -1,23 +1,40 @@
 import * as React from 'react'
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
+import {useState, useEffect} from 'react'
+import {makeStyles} from '@material-ui/core/styles'
+import {connect} from 'react-redux'
+import Accordion from '@material-ui/core/Accordion'
+import AccordionSummary from '@material-ui/core/AccordionSummary'
+import AccordionDetails from '@material-ui/core/AccordionDetails'
+import Typography from '@material-ui/core/Typography'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
-export default function SideBarExtensionsMenu() {
-    const [expandedPanel1, setExpandedPanel1] = React.useState(true)
-    const handleChange = (panel) => (event) => {
-        setExpandedPanel1(expandedPanel1 ? false : true)
+const SideBarExtensionsMenu = ({tableData, currentSelectedRow}) => {
+
+    /**
+     * Component style overrides.
+     */
+    const classes = makeStyles(theme => ({
+        root: {}
+    }))()
+    
+    /**
+     * Handle toggling of Extensions menu
+     */
+    const [expandedPanel1, setExpandedPanel1] = useState(true)
+    const handleTogglePanel1 = (panel) => (event) => {
+        setExpandedPanel1(!expandedPanel1)
     }
 
     return (
         <div>
-            <Accordion square expanded={expandedPanel1} onChange={handleChange()}>
+            <Accordion
+                square
+                expanded={currentSelectedRow ? expandedPanel1 : false}
+                onChange={handleTogglePanel1()}
+                disabled={!currentSelectedRow}
+            >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="sidebar-controls-panel1"
-                    id="sidebar-controls-panel1"
                 >
                     <Typography>Extensions</Typography>
                 </AccordionSummary>
@@ -29,5 +46,18 @@ export default function SideBarExtensionsMenu() {
             </Accordion>
 
         </div>
-    );
-};
+    )
+}
+
+const mapStateToProps = (state) => {
+    return {
+        tableData: state.tableData,
+        currentSelectedRow: state.currentSelectedRow
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBarExtensionsMenu)

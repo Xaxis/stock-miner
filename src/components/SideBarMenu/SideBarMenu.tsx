@@ -154,17 +154,6 @@ const SideBarMenu = ({
     const [lastSideBarSubMenu, setLastSideBarSubMenu] = useState('none')
 
     /**
-     * Auto close the side bar menu if a row is not selected and user has a sub menu
-     * open that pertains to an order row.
-     */
-    useEffect(() => {
-        if (!currentSelectedRow && (value !== 0 || value !== 1)) {
-            setSideBarMenuOpen(false)
-            setSideBarOpen(false)
-        }
-    }, [currentSelectedRow])
-
-    /**
      * Handle switching tabs.
      */
     const handleChange = (e, newValue) => {
