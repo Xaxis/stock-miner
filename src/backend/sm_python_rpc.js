@@ -1,7 +1,8 @@
 const Spawn = require("child_process").spawn
 
 /**
- * PythonRPC manages invoking/calling procedures/functions within the python backend.
+ * PythonRPC manages invoking/calling procedures/functions within the Python backend and
+ * returning the results to Node.
  */
 class PythonRPC {
 
@@ -12,12 +13,14 @@ class PythonRPC {
     }
 
     /**
-     * Creates and calls a Python script as a Node process.
+     * Creates and calls a Python script as a Node process. Excepts the name of the
+     * task script to call and the arguments to pas to it. Returns a Promise that
+     * when successful resolves the JSON parsable result of the task.
      */
     run_process = (task, args=[]) => {
         if (this.does_task_exist(task)) {
             let task_script = this.TASK_SCRIPTS[task]
-            let process = Spawn('python', [`${__dirname}/python/${task_script}`, args.flat()])
+            let process = Spawn('python', [`${__dirname}/python/${task_script}`, ...args])
             return new Promise(function (resolve, reject) {
                 process.stdout.on('data', function (data) {
                     resolve(JSON.parse(data.toString()))
@@ -41,7 +44,7 @@ class PythonRPC {
 
 // @todo - Test Bed
 let PRPC = new PythonRPC()
-PRPC.run_process('rh_login', ['Some Argument'])
+PRPC.run_process('rh_login', ['william.neeley@gmail.com', 'u8^2kjHsd<mD7', 'NHHD6DSAC7DI6HLH'])
     .then((results) => {
         console.log(results)
     })

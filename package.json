@@ -1,5 +1,5 @@
 {
-  "name": "stock-miner-rebuild",
+  "name": "stock-miner",
   "version": "0.0.0",
   "description": "Stock Miner is a predictive analysis and stock market trading application.",
   "main": "index.js",
@@ -11,7 +11,7 @@
     "dev": "npm run backend:dev && parcel serve src/index.html",
     "frontend:dev": "parcel build src/index.html --public-url . -d gui",
     "frontend:prod": "parcel build src/index.html --public-url . --no-source-maps -d gui",
-    "init": "npm install",
+    "init": "npm install && ./src/backend/scripts/install_deps.sh",
     "start": "npm run frontend:dev",
     "rebuild:db": "node src/backend/scripts/rebuild_db.js"
   },
