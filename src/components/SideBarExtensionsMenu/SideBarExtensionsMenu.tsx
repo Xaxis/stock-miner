@@ -16,7 +16,7 @@ const SideBarExtensionsMenu = ({tableData, currentSelectedRow}) => {
     const classes = makeStyles(theme => ({
         root: {}
     }))()
-    
+
     /**
      * Handle toggling of Extensions menu
      */

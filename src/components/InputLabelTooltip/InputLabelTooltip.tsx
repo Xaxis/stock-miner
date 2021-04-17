@@ -4,7 +4,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import Popover from '@material-ui/core/Popover'
-import HelpIcon from '@material-ui/icons/Help'
+import InfoIcon from '@material-ui/icons/Info'
 
 const InputLabelTooltip = (props) => {
     const {
@@ -73,7 +73,7 @@ const InputLabelTooltip = (props) => {
     return (
         <div className={classes.root}>
             {label}
-            <HelpIcon
+            <InfoIcon
                 className={clsx(classes.icon_default, {
                     [classes.icon_active]: anchorEl
                 })}
