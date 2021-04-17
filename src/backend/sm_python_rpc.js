@@ -20,7 +20,6 @@ class PythonRPC {
     run_process = (task, args=[]) => {
         if (this.does_task_exist(task)) {
             let task_script = this.TASK_SCRIPTS[task]
-            console.log(__dirname)
             let process = Spawn(
                 'python3',
                 [`${__dirname}/python/${task_script}`, ...args],
