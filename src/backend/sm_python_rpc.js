@@ -13,8 +13,8 @@ class PythonRPC {
     }
 
     /**
-     * Creates and calls a Python script as a Node process. Excepts the name of the
-     * task script to call and the arguments to pas to it. Returns a Promise that
+     * Creates a Node Process and calls a Python script. Excepts the name of the
+     * task script to call and the arguments to pass to it. Returns a Promise that
      * when successful resolves the JSON parsable result of the task.
      */
     run_process = (task, args=[]) => {
@@ -49,7 +49,7 @@ class PythonRPC {
 //     PythonRPC: PythonRPC
 // }
 
-// @todo - Test Bed
+// @todo - Test Bed/Example
 let PRPC = new PythonRPC()
 PRPC.run_process('rh_login', ['william.neeley@gmail.com', 'u8^2kjHsd<mD7', 'NHHD6DSAC7DI6HLH'])
     .then((results) => {
