@@ -20,8 +20,16 @@ class PythonRPC {
     run_process = (task, args=[]) => {
         if (this.does_task_exist(task)) {
             let task_script = this.TASK_SCRIPTS[task]
-            let process = Spawn('python', [`${__dirname}/python/${task_script}`, ...args])
+            console.log(__dirname)
+            let process = Spawn(
+                'python3',
+                [`${__dirname}/python/${task_script}`, ...args],
+                {cwd: __dirname}
+            )
             return new Promise(function (resolve, reject) {
+                process.stderr.on('data', function (data) {
+                    console.error(data.toString())
+                })
                 process.stdout.on('data', function (data) {
                     resolve(JSON.parse(data.toString()))
                 })
