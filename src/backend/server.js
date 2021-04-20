@@ -95,7 +95,7 @@ app.get('/app/set/config/credentials/:username/:password', (req, res) => {
             DBM.add_profiles_history_entry({
                 profile: DT.get_active_stream_profile(),
                 event: 'RH_CREDENTIALS_UPDATED',
-                info: `Robinhood credentials have been updated`
+                info: `Robinhood credentials have been updated.`
             })
             res.send({success: true})
         })
