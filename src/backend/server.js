@@ -86,6 +86,24 @@ app.get('/app/get/config', (req, res) => {
         })
 })
 
+app.get('/app/set/config/credentials/:username/:password', (req, res) => {
+    DBM.update_config_multi_field_values({
+        rh_username: req.params.username,
+        rh_password: req.params.password
+    })
+        .then(() => {
+            DBM.add_profiles_history_entry({
+                profile: DT.get_active_stream_profile(),
+                event: 'RH_CREDENTIALS_UPDATED',
+                info: `Robinhood credentials have been updated`
+            })
+            res.send({success: true})
+        })
+        .catch(() => {
+            res.send({success: false})
+        })
+})
+
 app.get('/app/set/taskfrequency/:ms', (req, res) => {
     DBM.update_config_multi_field_values({task_frequency: req.params.ms})
         .then(() => {

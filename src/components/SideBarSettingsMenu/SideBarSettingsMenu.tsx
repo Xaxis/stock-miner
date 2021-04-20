@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {useState, useEffect} from 'react'
+import fetch from 'cross-fetch'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
@@ -31,7 +32,7 @@ export default function SideBarSettingsMenu() {
     const [username, setUsername] = useState("")
     const [usernameError, setUsernameError] = useState(false)
     const [usernameHelperText, setUsernameHelperText] = useState({
-        default: "Enter/Return saves and renames profile.",
+        default: "Your Robinhood username.",
         error: "Username provided is invalid!"
     })
 
@@ -64,10 +65,37 @@ export default function SideBarSettingsMenu() {
     const [submitProcessing, setSubmitProcessing] = useState(false)
 
     /**
+     * Attempt to update credential fields with any existing values.
+     */
+    useEffect(() => {
+        getConfig()
+    }, [])
+
+    /**
+     * Retrieves config values from the server.
+     */
+    const getConfig = () => {
+        (async () => {
+            const config_response = await fetch(`http://localhost:2222/app/get/config`)
+            let config_result = await config_response.json()
+            if (config_result.hasOwnProperty('rh_username')) {
+                setUsername(config_result.rh_username)
+                setPassword(config_result.rh_password)
+            }
+        })()
+    }
+
+    /**
      * Handle updating settings.
      */
     const handleSubmit = () => {
+        (async () => {
+            const credentials_response = await fetch(encodeURI(`http://localhost:2222/app/set/config/credentials/${username}/${password}`))
+            let credentials_result = await credentials_response.json()
 
+            // Reset order processing flag and input fields
+            setSubmitProcessing(false)
+        })()
     }
 
     return (
@@ -154,7 +182,7 @@ export default function SideBarSettingsMenu() {
                                 handleSubmit()
                             }}
                         >
-                            <span>Update Credentials</span>
+                            <span>Update Settings</span>
                             {submitProcessing && <CircularProgress size={24} />}
                         </Button>
                     </FormGroup>
