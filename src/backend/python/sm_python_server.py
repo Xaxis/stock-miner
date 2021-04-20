@@ -28,7 +28,11 @@ class rh_login_mfa(Resource):
 
 class rh_logout(Resource):
     def get(self):
-        return {'hello': 'world'}
+        try:
+            r.logout()
+            return {'success': True}
+        except:
+            return {'success': False}
 
 
 class rh_buy_stock(Resource):
@@ -52,8 +56,8 @@ class rh_buy_crypto_limit(Resource):
 
 
 api.add_resource(rh_login, '/app/rh/login/<username>/<password>')
-api.add_resource(rh_login, '/app/rh/login/mfa/<username>/<password>/<token>')
-api.add_resource(rh_logout, '/app/rh/logout/<username>')
+api.add_resource(rh_login_mfa, '/app/rh/login/mfa/<username>/<password>/<token>')
+api.add_resource(rh_logout, '/app/rh/logout')
 
 if __name__ == '__main__':
     app.run(debug=True)
