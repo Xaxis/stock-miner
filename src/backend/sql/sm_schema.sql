@@ -2,7 +2,9 @@ CREATE TABLE IF NOT EXISTS `Config` (
     `id`                INTEGER NOT NULL PRIMARY KEY,
     `active_profile`    TEXT DEFAULT 'noop',
     `task_frequency`    TEXT DEFAULT '1000',
-    `polling_frequency` TEXT DEFAULT '1000'
+    `polling_frequency` TEXT DEFAULT '1000',
+    `rh_username`       TEXT DEFAULT 'noop',
+    `rh_password`       TEXT DEFAULT 'noop'
 );
 CREATE TABLE IF NOT EXISTS `Profiles` (
     `id`            INTEGER NOT NULL PRIMARY KEY,

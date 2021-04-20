@@ -27,17 +27,7 @@ const SideBarOrderMenuBuy = (props) => {
     /**
      * Component style overrides.
      */
-    const classes = makeStyles(theme => ({
-        button_progress: {
-            color: theme.palette.text.primary,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginTop: '-12px',
-            marginLeft: '-12px',
-            zIndex: 1
-        }
-    }))()
+    // const classes = makeStyles(theme => ({}))()
 
     /**
      * Order field values.

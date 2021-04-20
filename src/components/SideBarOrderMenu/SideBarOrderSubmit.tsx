@@ -16,22 +16,8 @@ const SideBarOrderSubmit = (props) => {
     /**
      * Component style overrides.
      */
-    const classes = makeStyles(theme => ({
-        button: {
-            '& .MuiButtonBase-root.StockMiner-BigButton:first-of-type': {
-                marginTop: '36px'
-            }
-        },
-        button_progress: {
-            color: theme.palette.tertiary.main,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginTop: '-12px',
-            marginLeft: '-12px',
-            zIndex: 1
-        }
-    }))()
+    // const classes = makeStyles(theme => ({
+    // }))()
 
     /**
      * Component states.
@@ -71,7 +57,7 @@ const SideBarOrderSubmit = (props) => {
                         }}
                     >
                         <span>Submit Order</span>
-                        {orderProcessing && <CircularProgress size={24} className={classes.button_progress}/>}
+                        {orderProcessing && <CircularProgress size={24} />}
                     </Button>
                     <Button
                         className="StockMiner-BigButton"

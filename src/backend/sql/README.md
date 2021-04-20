@@ -12,6 +12,8 @@ id                      # Primary key
 active_profile          # The name of the currently active profile
 task_frequency          # The rate at which backend attempts to process tasks
 polling_frequency       # The rate at which the frontend receives data updates
+rh_username             # Users Robinhood username
+rh_password             # Users Robinhood password
 ```
 
 ### Table: `Profiles`

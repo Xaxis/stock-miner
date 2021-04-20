@@ -197,6 +197,18 @@ const App = function () {
                         borderRadius: '4px !important',
                         '&.Mui-disabled': {
                             opacity: '0.5'
+                        },
+                        '&:first-of-type': {
+                            marginTop: '36px'
+                        },
+                        '& .MuiCircularProgress-root': {
+                            color: palette.text.secondary,
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            marginTop: '-12px',
+                            marginLeft: '-12px',
+                            zIndex: 1
                         }
                     },
                     '&.StockMiner-BigButton.MuiButton-outlined': {
