@@ -36,6 +36,15 @@ class rh_logout(Resource):
             return {'success': False}
 
 
+class rh_get_crypto_quote(Resource):
+    def get(self, symbol):
+        try:
+            rh_result = robin_stocks.robinhood.crypto.get_crypto_quote(symbol).get('ask_price')
+            return dict(list({'success': True}.items()) + list({'price': rh_result}.items()))
+        except:
+            return {'success': False}
+
+
 class rh_buy_crypto(Resource):
     def get(self, symbol, amount):
         clean_amount = float(amount)
@@ -56,10 +65,18 @@ class rh_buy_crypto(Resource):
             return result
 
 
+# class rh_sell_crypto(Resource):
+#     def get(self):
+#         return {'success': True}
+
+
+
 api.add_resource(rh_login, '/app/rh/login/<username>/<password>')
 api.add_resource(rh_login_mfa, '/app/rh/login/mfa/<username>/<password>/<token>')
 api.add_resource(rh_logout, '/app/rh/logout')
+api.add_resource(rh_get_crypto_quote, '/app/rh/get/crypto/quote/<symbol>')
 api.add_resource(rh_buy_crypto, '/app/rh/buy/crypto/<symbol>/<amount>')
+# api.add_resource(rh_sell_crypto, '/app/rh/sell/crypto/<symbol>/<amount>')
 
 if __name__ == '__main__':
     app.run(debug=True)
