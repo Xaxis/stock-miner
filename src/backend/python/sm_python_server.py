@@ -3,7 +3,6 @@ from flask_restful import Resource, Api
 import robin_stocks.robinhood as r
 import robin_stocks
 import pyotp
-
 app = Flask(__name__)
 api = Api(app)
 
@@ -53,7 +52,7 @@ class rh_buy_crypto(Resource):
         # ordering solution until another is found.
         if (symbol == 'DOGE'):
             price = float(robin_stocks.robinhood.crypto.get_crypto_quote('DOGE').get('ask_price'))
-            shares = round(clean_amount/price, 0)
+            shares = round(clean_amount / price, 0)
             rh_result = robin_stocks.robinhood.order_buy_crypto_by_quantity('DOGE', shares, timeInForce='gtc')
             result = dict(list({'success': True}.items()) + list(rh_result.items()))
             return result
@@ -65,10 +64,24 @@ class rh_buy_crypto(Resource):
             return result
 
 
-# class rh_sell_crypto(Resource):
-#     def get(self):
-#         return {'success': True}
+class rh_sell_crypto(Resource):
+    def get(self, symbol, amount):
+        clean_amount = float(amount)
 
+        # DOGE returns an error unless sold by quantity. The below is a temporary
+        # ordering solution until another is found.
+        if (symbol == 'DOGE'):
+            price = float(robin_stocks.robinhood.crypto.get_crypto_quote('DOGE').get('ask_price'))
+            shares = round(clean_amount / price, 0)
+            rh_result = robin_stocks.robinhood.order_sell_crypto_by_quantity(symbol, shares, timeInForce='gtc')
+            result = dict(list({'success': True}.items()) + list(rh_result.items()))
+            return result
+
+        # Order all other cryptos with '..._by_price'
+        else:
+            rh_result = robin_stocks.robinhood.order_sell_crypto_by_price(symbol, clean_amount, timeInForce='gtc')
+            result = dict(list({'success': True}.items()) + list(rh_result.items()))
+            return result
 
 
 api.add_resource(rh_login, '/app/rh/login/<username>/<password>')
@@ -76,7 +89,8 @@ api.add_resource(rh_login_mfa, '/app/rh/login/mfa/<username>/<password>/<token>'
 api.add_resource(rh_logout, '/app/rh/logout')
 api.add_resource(rh_get_crypto_quote, '/app/rh/get/crypto/quote/<symbol>')
 api.add_resource(rh_buy_crypto, '/app/rh/buy/crypto/<symbol>/<amount>')
-# api.add_resource(rh_sell_crypto, '/app/rh/sell/crypto/<symbol>/<amount>')
+api.add_resource(rh_sell_crypto, '/app/rh/sell/crypto/<symbol>/<amount>')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
