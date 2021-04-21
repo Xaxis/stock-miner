@@ -1,3 +1,5 @@
+const Request = require('request')
+
 /**
  * OrderProcessor manages the execution (buys & sells) of order tasks.
  */
@@ -245,6 +247,22 @@ class OrderProcessor {
         let change = clean_current_price - clean_buy_price
         let percent_change = Math.abs(((change / clean_buy_price) * 100))
         return percent_change <= margin
+    }
+
+    /**
+     * Method uses the Stock Miner Flask server to perform REST requests to Robinhood. Returns
+     * a Promise with result on success.
+     */
+    rh_request = (url) => {
+        return new Promise(function (resolve, reject) {
+            Request(`http://127.0.0.1/app/rh/${url}`, {json: true}, (err, res, body) => {
+                if (err) {
+                    console.log('SMOP: Error: ', err)
+                    reject(err)
+                }
+                resolve(body)
+            })
+        })
     }
 }
 

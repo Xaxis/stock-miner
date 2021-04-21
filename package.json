@@ -7,8 +7,9 @@
     "build": "npm run clean && npm run frontend:prod",
     "clean": "npm run clean:default",
     "clean:default": "rm -rf dist 2>/dev/null; rm -rf build 2>/dev/null; ",
-    "backend:dev": "node src/backend/server.js &",
-    "dev": "npm run backend:dev && parcel serve src/index.html",
+    "backend:node-server": "node src/backend/server.js &",
+    "backend:flask-server": "python3 src/backend/python/sm_python_server.py",
+    "dev": "npm run backend:node-server && parcel serve src/index.html & npm run backend:flask-server",
     "frontend:dev": "parcel build src/index.html --public-url . -d gui",
     "frontend:prod": "parcel build src/index.html --public-url . --no-source-maps -d gui",
     "init": "npm install && ./src/backend/scripts/install_deps.sh",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "parcel-bundler": "1.12.4",
+    "request": "^2.88.2",
     "run-script-os": "1.0.7",
     "sass": "1.25.0",
     "typescript": "^3.7.5"
