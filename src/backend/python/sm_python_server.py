@@ -35,6 +35,20 @@ class rh_logout(Resource):
             return {'success': False}
 
 
+class rh_get_crypto_order(Resource):
+    def get(self, id):
+        all_orders = robin_stocks.robinhood.orders.get_all_crypto_orders()
+        result = []
+        for item in all_orders:
+            if id == item["id"]:
+                result.append(item)
+                break
+        if len(result) > 0:
+            return {'success': True, 'order': result[0]}
+        else:
+            return {'success': False}
+
+
 class rh_get_crypto_quote(Resource):
     def get(self, symbol):
         try:
@@ -87,6 +101,7 @@ class rh_sell_crypto(Resource):
 api.add_resource(rh_login, '/app/rh/login/<username>/<password>')
 api.add_resource(rh_login_mfa, '/app/rh/login/mfa/<username>/<password>/<token>')
 api.add_resource(rh_logout, '/app/rh/logout')
+api.add_resource(rh_get_crypto_order, '/app/rh/get/crypto/order/<id>')
 api.add_resource(rh_get_crypto_quote, '/app/rh/get/crypto/quote/<symbol>')
 api.add_resource(rh_buy_crypto, '/app/rh/buy/crypto/<symbol>/<amount>')
 api.add_resource(rh_sell_crypto, '/app/rh/sell/crypto/<symbol>/<amount>')
