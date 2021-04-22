@@ -62,6 +62,7 @@ limit_sell              # The amount to sell at with a limit order
 loss_perc               # The maximum percent a stock/security price can lose before auto selling
 order_date              # A Unix timestamp representing the time an order was created
 exec_date               # A Unix timestamp representing the last time an order task executed
+simulated               # Flag used by Order Processor indicating NOT simulated. Default 0
 tasks                   # A JSON string containing an order's tasks and those tasks states
 ```
 
@@ -89,6 +90,7 @@ limit_sell              # The amount to sell at with a limit order
 loss_perc               # The maximum percent a stock/security price can lose before auto selling
 order_date              # A Unix timestamp representing the time an order was created
 exec_date               # A Unix timestamp representing the last time an order task executed
+simulated               # Flag used by Order Processor indicating IS simulated. Default: 1
 tasks                   # A JSON string containing an order's tasks and those tasks states
 ```
 
