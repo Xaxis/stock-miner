@@ -1,5 +1,3 @@
-const Request = require('request')
-
 /**
  * OrderProcessor manages the execution (buys & sells) of order tasks.
  */
