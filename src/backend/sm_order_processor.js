@@ -3,8 +3,10 @@
  */
 class OrderProcessor {
 
-    constructor(DBManager) {
+    constructor(DBManager, RobinhoodHelper) {
         this.DB = DBManager
+        this.RH = RobinhoodHelper
+        this.RH_LOGGING_IN = false
         this.TASK_ORDER = [
             'LOSS_PREVENT',
             'LIMIT_BUY',
@@ -154,16 +156,33 @@ class OrderProcessor {
      * outside this class.
      */
     process_order = (order) => {
-        let tasks_obj = this.get_order_tasks_object(order)
-        this.TASK_ORDER.forEach((event) => {
-            let task = this.get_order_task_by_event(tasks_obj, event)
-            if (task) {
-                if (this.TASK_PROCEDURES[event].process(order, tasks_obj)) {
-                    console.log(`SMOP: Task ${event} is being processed for order: ${order.uuid}`)
-                }
-            }
-        })
 
+        // Confirm logged in to Robinhood
+        let login_expired = this.RH.rh_is_login_expired()
+        if (login_expired && !this.RH_LOGGING_IN) {
+            this.RH_LOGGING_IN = true
+            this.RH.rh_login()
+                .then((result) => {
+                    if (result) {
+                        this.RH_LOGGING_IN = false
+                    }
+                })
+
+
+        }
+
+        // Proceed with executing tasks once logged in
+        if (!login_expired) {
+            let tasks_obj = this.get_order_tasks_object(order)
+            this.TASK_ORDER.forEach((event) => {
+                let task = this.get_order_task_by_event(tasks_obj, event)
+                if (task) {
+                    if (this.TASK_PROCEDURES[event].process(order, tasks_obj)) {
+                        console.log(`SMOP: Task ${event} is being processed for order: ${order.uuid}`)
+                    }
+                }
+            })
+        }
     }
 
     /**

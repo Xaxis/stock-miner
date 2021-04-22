@@ -5,8 +5,9 @@ const BodyParser = require('body-parser')
 const {DBManager} = require('./sm_db_manager.js')
 const {SymbolProvider} = require('./sm_symbol_provider.js')
 const {DataProvider} = require('./sm_data_provider.js')
-const {DataTransducer} = require('./sm_data_transducer.js')
+const {RobinhoodHelper} = require('./sm_robinhood_helper.js')
 const {OrderProcessor} = require('./sm_order_processor.js')
+const {DataTransducer} = require('./sm_data_transducer.js')
 const {WebSocketServer} = require('./sm_websocket_server.js')
 const app = Express()
 const server_name = 'Stock Miner API Server'
@@ -54,9 +55,15 @@ let DP = new DataProvider()
 
 
 /**
+ * Initialize the Robinhood Helper.
+ */
+let RH = new RobinhoodHelper(DBM)
+
+
+/**
  * Initialize the Order Processor.
  */
-let OP = new OrderProcessor(DBM)
+let OP = new OrderProcessor(DBM, RH)
 
 
 /**

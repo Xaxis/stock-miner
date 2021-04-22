@@ -3,12 +3,14 @@ const {DBManager} = require('./sm_db_manager.js')
 
 /**
  * RobinhoodHelper contains helper methods for more easily interacting with the
- * SM Robinhood Flask REST server.
+ * SM Robinhood Flask REST server and managing state in regard to the robin_stocks/
+ * Robinhood API in general.
  */
 class RobinhoodHelper {
 
     constructor(DBManager) {
         this.DB = DBManager
+        this.RH_SERVER_PREFIX = 'http://127.0.0.1:5000/app/rh/'
         this.RH_LOGIN_OBJ = null
         this.RH_LOGIN_EXPIRES_AT = null
     }
@@ -18,8 +20,9 @@ class RobinhoodHelper {
      * a Promise with result on success.
      */
     rh_request = (url) => {
+        let self = this
         return new Promise(function (resolve, reject) {
-            Request(`http://127.0.0.1:5000/app/rh/${url}`, {json: true}, (err, res, body) => {
+            Request(`${self.RH_SERVER_PREFIX}${url}`, {json: true}, (err, res, body) => {
                 if (err) {
                     console.log('SMOP: Error: ', err)
                     reject(err)
@@ -42,17 +45,18 @@ class RobinhoodHelper {
                 .then((config) => {
                     if (config) {
                         if (config.rh_username !== 'noop' && config.rh_password !== 'noop') {
-                            RH.rh_request(`login/${config.rh_username}/${config.rh_password}`)
+                            self.rh_request(`login/${config.rh_username}/${config.rh_password}`)
                                 .then((login) => {
                                     if (login.success === true) {
                                         self.RH_LOGIN_OBJ = login
                                         self.RH_LOGIN_EXPIRES_AT = Date.now() + (login.expires_in * 1000)
-                                        resolve(login)
+                                        resolve(true)
+                                    } else {
+                                        resolve(false)
                                     }
                                 })
                         }
                     }
-                    resolve(null)
                 })
         })
     }
@@ -61,8 +65,10 @@ class RobinhoodHelper {
      * Returns true when the RH_LOGIN_EXPIRES_AT timestamp is surpassed by the current time.
      */
     rh_is_login_expired = () => {
+        if (!this.RH_LOGIN_EXPIRES_AT) return true
         if (this.RH_LOGIN_EXPIRES_AT) {
             if (Date.now() >= this.RH_LOGIN_EXPIRES_AT) {
+                this.RH_LOGIN_EXPIRES_AT = null
                 return true
             }
         }
@@ -91,7 +97,7 @@ class RobinhoodHelper {
     }
 }
 
-let RH = new RobinhoodHelper(new DBManager())
+// let RH = new RobinhoodHelper(new DBManager())
 
 // RH.rh_login()
 
@@ -104,6 +110,6 @@ let RH = new RobinhoodHelper(new DBManager())
 //         console.log(result)
 //     })
 
-// module.exports = {
-//     RobinhoodHelper: RobinhoodHelper
-// }
+module.exports = {
+    RobinhoodHelper: RobinhoodHelper
+}
