@@ -7,6 +7,7 @@ class OrderProcessor {
         this.DB = DBManager
         this.RH = RobinhoodHelper
         this.RH_LOGGING_IN = false
+        this.EXEC_PRICE_MARGIN = 0.99
         this.TASK_ORDER = [
             'LOSS_PREVENT',
             'LIMIT_BUY',
@@ -30,22 +31,29 @@ class OrderProcessor {
                         && !this.is_order_task_done(sell)
                         && this.is_exec_price_within_margin(order.buy_price, order.price)
                     ) {
+                        let self = this
 
                         // When simulated order
                         if (order.simulated) {
-                            console.log('SIMULATED', order.symbol)
+                            this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                                tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true}),
+                                exec_date: Date.now()
+                            })
                         }
 
-                        // When actual order
-                        else {
-                            console.log('ACTUAL', order.symbol)
-                        }
+                        // When actual order @todo - Let's do it
+                        else if (!order.hasOwnProperty('rh_executing')) {
+                            order.rh_executing = true
 
-                        // @todo - Build complete execution steps
-                        // this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                        //     tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true}),
-                        //     exec_date: Date.now()
-                        // })
+                            // Get quote directly from Robinhood and enforce execution price is within price margin
+                            this.RH.rh_get_quote(order.symbol, order.market).then((quote) => {
+                                console.log(quote.success, self.is_exec_price_within_margin(order.buy_price, quote.price))
+                                if (quote.success && self.is_exec_price_within_margin(order.buy_price, quote.price)) {
+                                    console.log(quote.price, order.price)
+                                }
+                            })
+
+                        }
                         return true
                     }
                     return false
@@ -269,7 +277,7 @@ class OrderProcessor {
      * of the market. To overcome this orders must be executed within an acceptable margin
      * +/- % of the intended buy price.
      */
-    is_exec_price_within_margin = (buy_price, current_price, margin=0.99) => {
+    is_exec_price_within_margin = (buy_price, current_price, margin=this.EXEC_PRICE_MARGIN) => {
         let clean_current_price = parseFloat(current_price)
         let clean_buy_price = parseFloat(buy_price)
         let change = clean_current_price - clean_buy_price

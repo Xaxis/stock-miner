@@ -95,11 +95,23 @@ class RobinhoodHelper {
                 })
         })
     }
+
+    /**
+     * Returns a Promise that returns a Robinhood quote object that contains the most
+     * recent price quote for a stock/crypto/security.
+     */
+    rh_get_quote = (symbol, market) => {
+        let self = this
+        return new Promise(function (resolve, reject) {
+            self.rh_request(`get/${market.toLowerCase()}/quote/${symbol.toUpperCase()}`)
+                .then((result) => {
+                    resolve(result)
+                })
+        })
+    }
 }
 
 // let RH = new RobinhoodHelper(new DBManager())
-
-// RH.rh_login()
 
 // RH.rh_request('login/william.neeley@gmail.com/u8%5E2kjHsd<mD7')
 //     .then((result) => {

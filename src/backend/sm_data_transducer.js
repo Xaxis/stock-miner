@@ -16,6 +16,7 @@ class DataTransducer {
         this.TASK_INTERVAL = null
         this.DB.get_config()
             .then((config) => {
+                this.build_all_active_tasks_from_db()
                 if (config) {
                     this.init_task_interval(config.task_frequency)
                 } else {
