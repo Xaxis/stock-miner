@@ -30,11 +30,22 @@ class OrderProcessor {
                         && !this.is_order_task_done(sell)
                         && this.is_exec_price_within_margin(order.buy_price, order.price)
                     ) {
+
+                        // When simulated order
+                        if (order.simulated) {
+                            console.log('SIMULATED', order.symbol)
+                        }
+
+                        // When actual order
+                        else {
+                            console.log('ACTUAL', order.symbol)
+                        }
+
                         // @todo - Build complete execution steps
-                        this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
-                            tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true}),
-                            exec_date: Date.now()
-                        })
+                        // this.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                        //     tasks: this.update_order_task_by_event(tasks_obj, 'BUY', {done: true}),
+                        //     exec_date: Date.now()
+                        // })
                         return true
                     }
                     return false

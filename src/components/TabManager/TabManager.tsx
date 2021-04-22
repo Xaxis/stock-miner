@@ -1,5 +1,8 @@
 import * as React from 'react'
+import {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
+import * as ActionTypes from '../../store/actions'
 import {makeStyles} from '@material-ui/core/styles'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
@@ -39,8 +42,7 @@ function a11yProps(index) {
     }
 }
 
-export default function TabManager() {
-    const [value, setValue] = React.useState(0);
+const TabManager = ({setSelectedRow}) => {
 
     /**
      * Component style overrides.
@@ -61,7 +63,16 @@ export default function TabManager() {
         }
     }))()
 
+    /**
+     * Component states.
+     */
+    const [value, setValue] = useState(0)
+
+    /**
+     * Handle switching tabs.
+     */
     const handleChange = (event, newValue) => {
+        setSelectedRow(null)
         setValue(newValue)
     }
 
@@ -91,3 +102,15 @@ export default function TabManager() {
         </div>
     )
 }
+
+const mapStateToProps = (state) => {
+    return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setSelectedRow: (row) => dispatch(ActionTypes.setSelectedRow(row))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TabManager)
