@@ -41,19 +41,58 @@ class OrderProcessor {
                             })
                         }
 
-                        // When actual order @todo - Let's do it
+                        // Place actual order
+                        // @todo - This is not all the way working, continue on! Do it to it!
                         else if (!order.hasOwnProperty('rh_executing')) {
                             order.rh_executing = true
 
                             // Get quote directly from Robinhood and enforce execution price is within price margin
                             this.RH.rh_get_quote(order.symbol, order.market).then((quote) => {
-                                console.log(quote.success, self.is_exec_price_within_margin(order.buy_price, quote.price))
                                 if (quote.success && self.is_exec_price_within_margin(order.buy_price, quote.price)) {
-                                    console.log(quote.price, order.price)
+
+                                    // Create the order with Robinhood
+                                    self.RH.rh_request(`buy/${order.market.toLowerCase()}/${order.symbol}/${order.cost_basis}`)
+                                        .then((rh_order) => {
+                                            order.rh_updated_at = Date.now()
+                                            self.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                                                rh_order_id: rh_order.id
+                                            })
+                                        })
                                 }
                             })
-
                         }
+
+                        // Fulfill actual orders that are executing once completed with Robinhood
+                        // @todo - This is not all the way working, continue on! Do it to it!
+                        if (!order.simulated && order.hasOwnProperty('rh_executing')) {
+
+                            // Poll the status of order no more than every 3 seconds
+                            if (order.rh_order_id && order.rh_executing && (order.rh_updated_at + 3000 > Date.now())) {
+                                order.rh_updated_at = Date.now()
+
+                                console.log('CHECKING IF ORDER IS FULFILLED...', false)
+
+                                this.RH.rh_get_order(order.rh_order_id, order.market)
+                                    .then((rh_order) => {
+                                        if (rh_order.success) {
+
+                                            // Update DB with filled order data & indicate order is no longer executing
+                                            if (rh_order.order.state === 'filled') {
+                                                order.rh_executing = false
+
+                                                console.log('ORDER FULFILLED!!!', true)
+
+                                                self.DB.update_all_stock_orders_by_uuid_with_multi_field_values(order.uuid, {
+                                                    cost_basis: parseFloat(rh_order.price) * parseFloat(rh_order.quantity),
+                                                    tasks: self.update_order_task_by_event(tasks_obj, 'BUY', {done: true}),
+                                                    exec_date: Date.now()
+                                                })
+                                            }
+                                        }
+                                    })
+                            }
+                        }
+
                         return true
                     }
                     return false
@@ -186,8 +225,6 @@ class OrderProcessor {
                         this.RH_LOGGING_IN = false
                     }
                 })
-
-
         }
 
         // Proceed with executing tasks once logged in

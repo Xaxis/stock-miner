@@ -55,14 +55,15 @@ shares                  # The approx. number of shares owned
 price                   # The most current evaluation of the stock/security
 buy_price               # The intended price to buy a stock/security at
 sell_price              # The intended price to sell a stock/security at
-cost_basis              # The actual amount a stock/security was purchased at
-sale_basis              # The actual amount a stock/security was sold at
-limit_buy               # The amount do buy at with a limit order
+cost_basis              # The actual amount a stock/security to buy/was bought
+sale_basis              # The actual amount a stock/security to sell/was sold
+limit_buy               # The amount to buy at with a limit order
 limit_sell              # The amount to sell at with a limit order
 loss_perc               # The maximum percent a stock/security price can lose before auto selling
 order_date              # A Unix timestamp representing the time an order was created
 exec_date               # A Unix timestamp representing the last time an order task executed
 simulated               # Flag used by Order Processor indicating NOT simulated. Default 0
+rh_order_id             # The unique Robinhood idnetifier pertaining to a specific order.
 tasks                   # A JSON string containing an order's tasks and those tasks states
 ```
 
@@ -83,9 +84,9 @@ shares                  # The approx. number of shares owned
 price                   # The most current evaluation of the stock/security
 buy_price               # The intended price to buy a stock/security at
 sell_price              # The intended price to sell a stock/security at
-cost_basis              # The actual amount a stock/security was purchased at
-sale_basis              # The actual amount a stock/security was sold at
-limit_buy               # The amount do buy at with a limit order
+cost_basis              # The actual amount a stock/security to buy/was bought
+sale_basis              # The actual amount a stock/security to sell/was sold
+limit_buy               # The amount to buy at with a limit order
 limit_sell              # The amount to sell at with a limit order
 loss_perc               # The maximum percent a stock/security price can lose before auto selling
 order_date              # A Unix timestamp representing the time an order was created

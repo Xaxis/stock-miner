@@ -191,10 +191,11 @@ class DBManager {
                 loss_perc = options.loss_perc || 0,
                 order_date = options.order_date,
                 exec_date = options.exec_date || 0,
+                rh_order_id = options.rh_order_id || '',
                 tasks = options.tasks ? JSON.stringify(options.tasks) : '[]'
-            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, buy_price, sell_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, tasks) `
-            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, buy_price, sell_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, tasks], function (err) {
+            let sql = `INSERT INTO ${table} (uuid, profile, market, status, paused, symbol, name, price, buy_price, sell_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, rh_order_id, tasks) `
+            sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            self.DB.run(sql, [uuid, profile, market, status, paused, symbol, name, price, buy_price, sell_price, shares, cost_basis, sale_basis, limit_buy, limit_sell, loss_perc, order_date, exec_date, rh_order_id, tasks], function (err) {
                 if (err) {
                     console.log("SMDB: " + err)
                     reject({success: false})

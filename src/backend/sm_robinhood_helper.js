@@ -76,22 +76,15 @@ class RobinhoodHelper {
     }
 
     /**
-     * Returns a Promise that returns a boolean indicating whether or not a crypto order's
-     * state property is 'filled', indicating that the Robinhood order has been executed.
+     * Returns a Promise that returns the Robinhood order object containing all information
+     * associated with an order.
      */
-    rh_is_crypto_order_filled = (id) => {
+    rh_get_order = (id, market) => {
         let self = this
         return new Promise(function (resolve, reject) {
-            self.rh_request(`get/crypto/order/${id}`)
+            self.rh_request(`get/${market.toLowerCase()}/order/${id}`)
                 .then((result) => {
-                    if (result) {
-                        if (result.order.state === 'filled') {
-                            resolve(true)
-                        } else {
-                            resolve(false)
-                        }
-                    }
-                    resolve(false)
+                    resolve(result)
                 })
         })
     }

@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `Stock_Orders` (
     `order_date`        DATE,
     `exec_date`         DATE,
     `simulated`         NUMERIC NOT NULL DEFAULT 0,
+    `rh_order_id`       TEXT DEFAULT '',
     `tasks`             TEXT NOT NULL DEFAULT '[]'
 );
 CREATE TABLE IF NOT EXISTS `Stock_Simulations` (
