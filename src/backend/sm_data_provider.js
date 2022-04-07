@@ -8,7 +8,7 @@ const W3CWebSocket = require('websocket').w3cwebsocket
 class DataProvider {
 
     constructor() {
-        this.API_KEY = '_nnkbN3IuzOKDecrdiwKe5eLmU_dAzV1'
+        this.API_KEY = 'YOUR_API_KEY_FROM_POLYGON_IO'
         this.WS_URL = 'wss://socket.polygon.io/'
         this.STREAM_DATA = {
             STOCK: {},
