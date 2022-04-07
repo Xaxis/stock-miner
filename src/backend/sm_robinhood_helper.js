@@ -104,17 +104,6 @@ class RobinhoodHelper {
     }
 }
 
-// let RH = new RobinhoodHelper(new DBManager())
-
-// RH.rh_request('login/william.neeley@gmail.com/u8%5E2kjHsd<mD7')
-//     .then((result) => {
-//         console.log(result)
-//     })
-// RH.rh_request('get/crypto/order/6080905c-4310-4ac6-b333-b6f9652eddc2')
-//     .then((result) => {
-//         console.log(result)
-//     })
-
 module.exports = {
     RobinhoodHelper: RobinhoodHelper
 }
